@@ -13,5 +13,4 @@ public class Room {
     public State state;
     public boolean isStarted;
 
-
 }

@@ -1,6 +1,7 @@
 package controller;
 
 
+import model.CardsOnTable;
 import model.Player;
 
 import java.util.ArrayList;
@@ -9,6 +10,8 @@ public class PlayersCollectionController {
     public PlayersCollectionController() {
         this.players = new ArrayList<>();
         this.attackerIndex = 0;
+        this.defenderIndex = 1;
+        this.cardsOnTable = new CardsOnTable();
     }
 
     public boolean addPlayer(int player_id, String nick) {
@@ -51,8 +54,18 @@ public class PlayersCollectionController {
         return players.get(attackerIndex).player;
     }
 
+    public Player getDefender() {
+        return players.get(defenderIndex).player;
+    }
+
+    public int numberOfPlayers() {
+        return players.size();
+    }
+
     private ArrayList<PlayerController> players;
+    public CardsOnTable cardsOnTable;
     private int attackerIndex;
+    private int defenderIndex;
     private final static int MAX_PLAYERS;
 
     static {

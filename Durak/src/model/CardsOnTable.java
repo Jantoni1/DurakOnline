@@ -3,8 +3,8 @@ package model;
 import java.util.ArrayList;
 
 
-public class cardsOnTable {
-    public cardsOnTable() {
+public class CardsOnTable {
+    public CardsOnTable() {
         attackingCards = new ArrayList<>();
         defendingCards = new ArrayList<>();
     }

@@ -23,5 +23,16 @@ public class PlayersDeck {
         return availableCards;
     }
 
+    public ArrayList<Integer> getAvailableCards(ArrayList<Card> cardsOnTable) {
+        ArrayList<Integer> availableCards = new ArrayList<>();
+        for(Card card : playersDeck) {
+            for(Card card1 : cardsOnTable) {
+                if(card1.figure == card.figure) {
+                    availableCards.add(playersDeck.indexOf(card1));
+                }
+            }
+        }
+        return availableCards;
+    }
     public ArrayList<Card> playersDeck;
 }
