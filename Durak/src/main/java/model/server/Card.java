@@ -1,7 +1,10 @@
-package main.java.model;
+package main.java.model.server;
 
-public class Card {
+import java.io.Serializable;
 
+public class Card implements Serializable{
+
+    Card() {}
 
     Card(Figures pFigure, Suit pSuit) {
         if(pFigure != null && pSuit != null) {
@@ -22,6 +25,13 @@ public class Card {
         }
         return false;
     }
+
+    public boolean equals(Card other) {
+        return mFigure == other.mFigure && mSuit == other.mSuit;
+    }
+
+    private static final long serialVersionUID = 98L;
+
     public Figures mFigure;
     public Suit mSuit;
     public static Suit trump;

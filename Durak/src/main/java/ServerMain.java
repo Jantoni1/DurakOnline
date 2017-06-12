@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 
-public class Main {
+public class ServerMain {
     public static void main(String [ ] args)  throws IOException
     {
         try {

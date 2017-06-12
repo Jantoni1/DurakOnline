@@ -13,8 +13,6 @@ public class Disconnected extends BaseServerMessage {
         visitor.visit(this);
     }
 
-    public void accept(ClientConnectionVisitor pClientVisitor) {}
-
     private static final long serialVersionUID = 16L;
 
 

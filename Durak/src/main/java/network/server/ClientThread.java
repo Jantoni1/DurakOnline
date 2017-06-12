@@ -52,7 +52,7 @@ public class ClientThread extends Thread {
         while (!mSocket.isClosed() && mSocket.isConnected()) {
             try {
                 final BaseClientMessage message = (BaseClientMessage) mObjectInputStream.readObject();
-                System.out.println(message.toString());
+//                System.out.println(message.toString());
                 mListeners.forEach(l -> l.onClientMessage(this, message));
 
             } catch (SocketException e) {
@@ -60,7 +60,8 @@ public class ClientThread extends Thread {
 //                disconnect();
                 break;
             } catch (IOException | ClassNotFoundException e) {
-                System.out.println("Server crashed due to exception thrown in run() method.");
+                mConnectionListener.onDisconnect(this);
+//                disconnect();
             }
         }
     }
@@ -89,9 +90,11 @@ public class ClientThread extends Thread {
      */
     public synchronized void sendMessage(BaseServerMessage pServerMessage) {
         try {
+            System.out.println(pServerMessage.toString());
             mObjectOutputStream.writeObject(pServerMessage);
             mObjectOutputStream.reset();
         } catch (IOException e) {
+            System.out.println("NOM TUTAJ JEST LIPTON EH XD");
             mConnectionListener.onDisconnect(this);
         }
     }

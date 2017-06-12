@@ -1,4 +1,4 @@
-package main.java.model;
+package main.java.model.server;
 
 import main.java.network.message.server.BaseServerMessage;
 

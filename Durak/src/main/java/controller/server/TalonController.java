@@ -1,15 +1,15 @@
 package main.java.controller.server;
 
-import main.java.model.Card;
-import main.java.model.Suit;
-import main.java.model.Talon;
-import main.java.model.Player;
+import main.java.model.server.Card;
+import main.java.model.server.Suit;
+import main.java.model.server.Talon;
+import main.java.model.server.Player;
 
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class TalonController {
+class TalonController {
 
     public TalonController(Talon pTalon) {
         mTalon = pTalon;
@@ -17,12 +17,13 @@ public class TalonController {
 
     public ArrayList<Card> dealCards(Player player) {
         ArrayList<Card> newCards = new ArrayList<>();
-        while (player.mPlayersDeck.playersDeck.size() <= MAX_CARDS && !mTalon.deck.isEmpty()) {
+        while (player.mPlayersDeck.playersDeck.size() < MAX_CARDS && !mTalon.deck.isEmpty()) {
             newCards.add(mTalon.remove());
+            player.mPlayersDeck.playersDeck.add(newCards.get(newCards.size() - 1));
         }
-        player.mPlayersDeck.playersDeck.addAll(newCards);
         return newCards;
     }
+
     public Suit shuffle() {
         if(mTalon.size() != FULL_DECK) {
             mTalon = new Talon();

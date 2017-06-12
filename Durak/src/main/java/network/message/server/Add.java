@@ -2,23 +2,25 @@ package main.java.network.message.server;
 
 import main.java.controller.client.BaseClientVisitor;
 import main.java.controller.client.ClientConnectionVisitor;
+import main.java.model.client.AnotherPlayer;
 
 
 public class Add extends BaseServerMessage {
 
-    public Add(String mUserName, int pUserId) {
-        this.mUserName = mUserName;
-        mUserId = pUserId;
+    public Add(String pUserName, int pUserId) {
+        mAnotherPlayer = new AnotherPlayer(pUserName, pUserId);
     }
 
+    @Override
     public void accept(BaseClientVisitor visitor) {
         visitor.visit(this);
     }
 
-    public void accept(ClientConnectionVisitor pClientVisitor) {}
-
     private static final long serialVersionUID = 20L;
 
-    private final String mUserName;
-    private final int mUserId;
+    public AnotherPlayer getmAnotherPlayer() {
+        return mAnotherPlayer;
+    }
+
+    private final AnotherPlayer mAnotherPlayer;
 }

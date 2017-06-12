@@ -17,7 +17,7 @@ import java.util.LinkedList;
 public class LobbyVisitor extends BaseServerVisitor {
 
     /**
-     * Create visitor used exclusively by main Lobby. It processes messages meant for Lobby only
+     * Create visitor used exclusively by main ClientMain. It processes messages meant for ClientMain only
      * @param mLobby        lobby which uses visitor
      * @param mClients
      * @param mGameLobbies
@@ -37,8 +37,6 @@ public class LobbyVisitor extends BaseServerVisitor {
 
 //    @Override
     public void visit(ClientThread pClient, CreateRoom pCreateRoom) {
-        System.out.println("HALKO");
-
         GameRoom room = mLobby.createGame(pCreateRoom);
         if (room != null) {
             room.addClient(pClient);
@@ -46,25 +44,26 @@ public class LobbyVisitor extends BaseServerVisitor {
             pClient.removeListener(mLobby);
         }
         else {
-            pClient.sendMessage(new Enter(room.getLobbyName(), room.getID(), room.getMaxPlayers(), true));
+            pClient.sendMessage(new Enter(room.getLobbyName(), room.getMaxPlayers(), true));
         }
     }
 
     public void visit(ClientThread pClient, Add pAdd) {
-        System.out.println("eh xD");
         mGameLobbies.stream()
                 .filter(gameRoom -> pAdd.getRoomId() == gameRoom.getID())
                 .findFirst()
                 .ifPresent(room -> {
-                    room.addClient(pClient);
-                    room.getGameLobbyChangeListener().onGameUpdate(room);
-                    mClients.remove(pClient);
-                    pClient.removeListener(mLobby);
-                    return;
+                    if(!room.isFull()) {
+                        room.addClient(pClient);
+                        mClients.remove(pClient);
+                        pClient.removeListener(mLobby);
+                        room.getGameLobbyChangeListener().onGameUpdate(room);
+                    }
+                    else {
+                        pClient.sendMessage(new Enter("failed", 2, true));
+                    }
                 });
-        pClient.sendMessage(new Enter("failed", pAdd.getRoomId(), 4, true));
     }
-
     private Lobby mLobby;
     private LinkedList<ClientThread> mClients;
     private ArrayList<GameRoom> mGameLobbies;

@@ -1,7 +1,7 @@
 package main.java.network.message.server;
 
 
-import main.java.model.Card;
+import main.java.model.server.Card;
 import main.java.controller.client.BaseClientVisitor;
 import main.java.controller.client.ClientConnectionVisitor;
 
@@ -18,9 +18,11 @@ public class Get extends BaseServerMessage {
         visitor.visit(this);
     }
 
-    public void accept(ClientConnectionVisitor pClientVisitor) {}
-
     private static final long serialVersionUID = 11L;
 
-    public ArrayList<Card> cardArrayList;
+    public ArrayList<Card> getCardArrayList() {
+        return cardArrayList;
+    }
+
+    private ArrayList<Card> cardArrayList;
 }

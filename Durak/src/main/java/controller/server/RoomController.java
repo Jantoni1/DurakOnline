@@ -1,13 +1,14 @@
 package main.java.controller.server;
 
 
-import main.java.model.Card;
-import main.java.model.CardsOnTable;
-import main.java.model.Room;
+import main.java.model.server.Card;
+import main.java.model.server.CardsOnTable;
+import main.java.model.server.Room;
+import main.java.network.client.Client;
 import main.java.network.message.client.Play;
 import main.java.network.message.server.*;
 import main.java.network.server.ClientThread;
-import main.java.model.Player;
+import main.java.model.server.Player;
 import main.java.network.message.server.End;
 import main.java.network.message.server.Get;
 import main.java.network.message.server.Next;
@@ -16,8 +17,22 @@ import main.java.network.message.server.NextRound;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+/**
+ * @brief class modifying data in Room, responsible for conducting game and sending info to players
+ */
 public class RoomController {
 
+    public Room mRoom;
+    public TalonController mTalonController;
+    public PlayersCollectionController mPCController;
+    private LinkedList<ClientThread> mClients;
+    private int mPassedAttackers;
+
+    /**
+     *
+     * @param pRoom contains all data about game
+     * @param pClients list of players participating in the game
+     */
     public RoomController(Room pRoom, LinkedList<ClientThread> pClients) {
         mRoom = pRoom;
         mTalonController = new TalonController(mRoom.mTalon);
@@ -26,182 +41,371 @@ public class RoomController {
         mPassedAttackers = mPCController.playersInGame - 1;
     }
 
+    /**
+     * @return true if there is max number of players in the room
+     */
     public boolean isFull() {
+        System.out.println("NUMBER OF PLAYERS XD: " + mPCController.numberOfPlayers());
+        System.out.println("MAX: " + mRoom.mMaxPlayers);
+        System.out.println("KEK");
         return mPCController.numberOfPlayers() == mRoom.mMaxPlayers;
     }
 
+    /**
+     *
+     * @return name of the room
+     */
     public String getRoomName() {
         return mRoom.mLobbyName;
     }
 
+    /**
+     * @brief shuffles cards in talon, then adds all players to game and sends start messages (start, get and next)
+     */
     public void startGame() {
+        mRoom.isStarted = true;
         mTalonController.shuffle();
         mRoom.mPlayersReady.forEach(playerId -> mPCController.addPlayer(playerId));
+        sendGameInitialMessages();
+    }
+
+    /**
+     * @brief gets all player's cards' indices so he can play whatever card he wants to
+     *
+     * @return all cards player can use when he's a first player in a turn
+     */
+    private ArrayList<Integer> getInitialAvailableCardsIndices() {
         ArrayList<Integer> availableCards = new ArrayList<>();
         for(int i = 0; i < 5; ++i) {
             availableCards.add(i);
         }
+        return availableCards;
+    }
+
+    /**
+     * @brief sends three types of messages that mean to inform players about game starting, the cards they are given and who is attacking first
+     */
+    private void sendGameInitialMessages() {
         mClients.forEach(player -> {
             player.sendMessage(new Start());
             player.sendMessage(new Get(mTalonController.dealCards(mPCController.findPlayer(player.getID()))));
-            player.sendMessage(new Next(mPCController.getDefender().id, availableCards, 4));
+            player.sendMessage(new Next(attacker(0).id, getInitialAvailableCardsIndices(), true));
         });
     }
 
+    /**
+     * @brief method handling all play-type messages from clients
+     *
+     * @param pClientThread
+     * @param pPlay
+     */
     public void updateGameStatus(ClientThread pClientThread, Play pPlay) {
-        if(isDefender(pClientThread.getID())) {
-            updateDefenderGameStatus(pClientThread, pPlay);
-            return;
+        if(defender().id == pClientThread.getID()) {
+            System.out.println("WTF");
+            playDefenderSide(pClientThread, pPlay);
         }
-
-
-
-    }
-
-    public void updateDefenderGameStatus(ClientThread pClientThread, Play pPlay) {
-    if(isDefender(pClientThread.getID())) {
-        playDefenderSide(pClientThread, pPlay);
-    }
-    else {
-        playAttackerSide(pClientThread, pPlay);
-    }
-    if(pPlay.getCardNumber().isEmpty()) {
-            refuse(isStillDefending());
-            return;
-        }
-        addDefendingCard(pClientThread.getID(), pPlay.getCardNumber().get(0));
-        if(outOfCards(pClientThread.getID())) {
-
-        }
-        if(isStillDefending()) {
-            ArrayList<Integer> availableCards = getAvailableCards(pClientThread.getID(), false);
-            mClients.forEach(player -> {
-                player.sendMessage(new main.java.network.message.server.Play(getLastDefendingCard(), false, player.getID()));
-                if(player.getID() == pClientThread.getID()) {
-                    player.sendMessage(new Next(mPCController.getDefender().id, availableCards, maxOffensiveCardsToGive()));
-                }
-                else {
-
-                }
-
-            });
+        else if(attacker(0).id == pClientThread.getID()) {
+            System.out.println("NOM");
+            playAttackerSide(pClientThread, pPlay);
         }
     }
 
-    public void playAttackerSide(ClientThread pClientThread, Play pPlay) {
-        if(pPlay.getCardNumber().isEmpty()) {
-            mPCController.getNextAttacker(1);
-            --mPassedAttackers;
-            if(mPassedAttackers == 0) {
-                int attackerid = mPCController.getNextDefender(false);
-                mClients.forEach(player -> {
-                    player.sendMessage(new NextRound(false, pClientThread.getID()));
-                    player.sendMessage(new Get(mTalonController.dealCards(mPCController.findPlayer(player.getID()))));
-                    if (player.getID() == pClientThread.getID()) {
-                        player.sendMessage(new Next(mPCController.getNextAttacker(0).id, getAvailableCards(mPCController.getNextAttacker(0).id, false), maxOffensiveCardsToGive()));
-                    } else {
-                        player.sendMessage(new Next(mPCController.getNextAttacker(0).id, null, maxOffensiveCardsToGive()));
-                    }
-                });
-                return;
-            }
-            mClients.forEach(player -> {
-                if(player.getID() == pClientThread.getID()) {
-                    player.sendMessage(new Next(mPCController.getNextAttacker(0).id, mPCController.getNextAttacker(0).mPlayersDeck.getAvailableCards(
-                            (Card) null), maxOffensiveCardsToGive()
-                    ));
-                }
-                else {
-                    player.sendMessage(new Next(mPCController.getNextAttacker(0).id, null, maxOffensiveCardsToGive()));
-                }
-            });
-            return;
+    /**
+     * @brief sends next-type message to given player
+     *
+     * @param pPlayerID current attacker's/defender's ID
+     * @param pPlayer player that will receive a message
+     * @param pAvailableCards indices of cards that current player can use
+     * @param pTrueIfAttackingFalseIfDefending true if attacker, false if defender
+     */
+    private void sendNextPlayerMessage(int pPlayerID, ClientThread pPlayer, ArrayList<Integer> pAvailableCards, boolean pTrueIfAttackingFalseIfDefending) {
+        pPlayer.sendMessage(new Next(pPlayerID, pAvailableCards, pTrueIfAttackingFalseIfDefending));
+    }
+
+    /**
+     * @brief gets indices all cards that current player is able to play
+     *
+     * @param pPlayerID current player's ID
+     * @param pItIsMe used to block passing information if method is used in messages to other players
+     * @param pTrueIfAttackingFalseIfDefending true if current player is an attacker, false if defender
+     * @return either ArrayList of indices of available cards or null
+     */
+    private ArrayList<Integer> getPlayersAvailableCards(int pPlayerID, boolean pItIsMe, boolean pTrueIfAttackingFalseIfDefending) {
+        if(pItIsMe) {
+            return getAvailableCards(pPlayerID, pTrueIfAttackingFalseIfDefending);
         }
-        mPassedAttackers = mPCController.playersInGame - 1;
+        return null;
+    }
+
+    /**
+     * @brief sends broadcast message containing information about next player to play a card
+     *
+     * @param pPlayerID ID of next player to play a card
+     * @param pTrueIfAttackingFalseIfDefending determines whether player is an attacker or a defender
+     */
+    private void sendNextPlayerToAll(int pPlayerID, boolean pTrueIfAttackingFalseIfDefending) {
+        mClients.forEach(player -> sendNextPlayerMessage(pPlayerID, player,
+                getPlayersAvailableCards(pPlayerID, player.getID() == pPlayerID, pTrueIfAttackingFalseIfDefending), pTrueIfAttackingFalseIfDefending));
+    }
+
+    /**
+     * @brief sends messages that call current defender
+     */
+    private void sendCallCurrentPlayerMessage(int pPlayerID, boolean pTrueIfAttackingFalseIfDefending) {
         mClients.forEach(player -> {
-            player.sendMessage(new main.java.network.message.server.Play(mPCController.playCard(pClientThread.getID(), pPlay.getCardNumber(), true), true, pClientThread.getID()));
-            if (player.getID() == pClientThread.getID()) {
-                player.sendMessage(new Next(mPCController.getDefender().id, getAvailableCards(mPCController.getDefender().id, false), maxOffensiveCardsToGive()));
-            } else {
-                player.sendMessage(new Next(mPCController.getDefender().id, null, maxOffensiveCardsToGive()));
-            }
+            ArrayList<Integer> availableCards = getPlayersAvailableCards(pPlayerID, player.getID() == pPlayerID, pTrueIfAttackingFalseIfDefending);
+            sendNextPlayerMessage(pPlayerID, player, availableCards, pTrueIfAttackingFalseIfDefending);
         });
-        if(mPCController.getNextAttacker(0).mPlayersDeck.playersDeck.isEmpty() && mTalonController.mTalon.deck.isEmpty()) {
-            if(checkIfGameEnds(mPCController.findPlayer((pClientThread.getID())))) {
-                resetRoom();
-                return;
-            }
-        }
-
     }
 
-    public void playDefenderSide(ClientThread pClientThread, Play pPlay) {
-        if(pPlay.getCardNumber().isEmpty()) {
-            mPCController.mCardsOnTable.giveCardsToLosingDefender(mPCController.findPlayer(pClientThread.getID()));
-            mPCController.getNextDefender(true);
-            mClients.forEach(player -> {
-                player.sendMessage(new NextRound(true, pClientThread.getID()));
-                player.sendMessage(new Get(mTalonController.dealCards(mPCController.findPlayer(player.getID()))));
-                if(player.getID() == pClientThread.getID()) {
-                    player.sendMessage(new Next(mPCController.getNextAttacker(0).id, mPCController.getNextAttacker(0).mPlayersDeck.getAvailableCards(
-                            (Card) null), maxOffensiveCardsToGive()
-                    ));
-                }
-                else {
-                    player.sendMessage(new Next(mPCController.getNextAttacker(0).id, null, maxOffensiveCardsToGive()));
-                }
-            });
+    /**
+     * @brief sends play message to everybody
+     *
+     * @param pPlayerID ID of player that played a card
+     * @param pCardNumber index of the card
+     * @param pTrueIfAttackingFalseOtherwise true if attacking, false otherwise
+     */
+    private void sendPlayMessage(int pPlayerID, int pCardNumber, boolean pTrueIfAttackingFalseOtherwise) {
+        Card card = mPCController.playCard(mPCController.findPlayer(pPlayerID), pCardNumber
+                ,pTrueIfAttackingFalseOtherwise);
+        mClients.forEach(player -> {
+            player.sendMessage(new main.java.network.message.server.Play(card, pTrueIfAttackingFalseOtherwise, pPlayerID));
+        });
+    }
+
+    /**
+     * @brief checks if player has definitely finished his game participation
+     *
+     * @param pPlayerID ID of player that will be checked
+     */
+    private boolean checkIfPlayerHasFinished(int pPlayerID) {
+        if(mPCController.findPlayer(pPlayerID).mPlayersDeck.playersDeck.isEmpty() && mTalonController.mTalon.deck.isEmpty()) {
+            if(checkIfGameEnds()) {
+                resetRoom();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @brief calls current defender
+     *
+      * @param pPlayerID idk
+     * @param pCardNumber number of card that is played
+     */
+    private void callCurrentDefender(int pPlayerID, int pCardNumber) {
+        sendPlayMessage(pPlayerID, pCardNumber, true);
+        if(!checkIfPlayerHasFinished(pPlayerID)) {
+            sendCallCurrentPlayerMessage(pPlayerID, false);
+        }
+    }
+
+    /**
+     * @brief Checks every possibility in case an attacker passes
+     */
+    private void attackerHasPassed(int pPlayerID) {
+        if(defenderHasToBeatCardsOnTable()) {
+            sendCallCurrentPlayerMessage(defender().id, false);
+        }
+        else if(allAttackersPassed()) {
+            conductNextRound(false);
         }
         else {
-            mClients.forEach(player -> {
-                player.sendMessage(new main.java.network.message.server.Play(mPCController.playCard(pClientThread.getID(), pPlay.getCardNumber(), false), false, pClientThread.getID()));
-            });
-            if (isStillDefending()) {
-                mClients.forEach(player -> {
-                    if (player.getID() == pClientThread.getID()) {
-                        player.sendMessage(new Next(pClientThread.getID(), getAvailableCards(pClientThread.getID(), false), maxOffensiveCardsToGive()));
-                    } else {
-                        player.sendMessage(new Next(pClientThread.getID(), null, maxOffensiveCardsToGive()));
-                    }
-                });
+            sendNextAttackerInfo(attacker(1).id);
+        }
+    }
+
+    /**
+     * @brief handles all activities that need to be done when starting new round, clearing table and sending proper messages to players
+     */
+    private void conductNextRound(boolean pTrueIfTakesFalseOtherwise) {
+        clearTableAndGetNextAttacker(pTrueIfTakesFalseOtherwise);
+        sendNextRoundMessages(pTrueIfTakesFalseOtherwise);
+        sendNextAttackerInfo(attacker(0).id);
+    }
+
+    /**
+     * @brief removes all cards from the table, sets number of players that passed to the standard number, and sets new defender
+     */
+    private void clearTableAndGetNextAttacker(boolean pTrueIfTakesFalseOtherwise) {
+        mPassedAttackers = mPCController.playersInGame - 1;
+        mRoom.mCardsOnTable.endTurn();
+        mPCController.getNextDefender(pTrueIfTakesFalseOtherwise);
+    }
+
+    /**
+     * sends nextround message that informs if recent defender is taking cards and get message that informs about new cards player gets
+     */
+    private void sendNextRoundMessages(boolean pTrueIfTakesFalseOtherwise) {
+        mClients.forEach(player -> {
+            player.sendMessage(new NextRound(pTrueIfTakesFalseOtherwise, defender().id));
+            player.sendMessage(new Get(mTalonController.dealCards(mPCController.findPlayer(player.getID()))));
+        });
+    }
+
+    /**
+     * @brief checks if all attackers have gave up this round
+     *
+     * @return true if there are no attackers left
+     */
+    private boolean allAttackersPassed() {
+        return --mPassedAttackers == 0;
+    }
+
+    /**
+     * @brief sends messages containing info about next attacker and his cards (that information passed to attacker himself exclusively)
+     *
+     * @param pPlayerID ID of next attacker
+     */
+    private void sendNextAttackerInfo(int pPlayerID) {
+        sendNextPlayerToAll(pPlayerID, true);
+    }
+
+    /**
+     * @brief checks whether player said empty message or not
+     *
+     * @param pCardNumber index of card
+     * @return true if there is no card passed
+     */
+    private boolean playerPlayedNoCard(int pCardNumber) {
+        return pCardNumber == -1;
+    }
+
+    /**
+     * @brief handles attacker's play message
+     *
+     * @param pClientThread message's author
+     * @param pPlay play-type message containing information about played card
+     */
+    public void playAttackerSide(ClientThread pClientThread, Play pPlay) {
+        if(playerPlayedNoCard(pPlay.getCardNumber())) {
+            attackerHasPassed(pClientThread.getID());
+            return;
+        }
+        if(!playAttackerCardAndCheckIfGameIsOver(pPlay.getCardNumber())) {
+            findNextPlayerAfterAttackerPlayedCard();
+        }
+    }
+
+    /**
+     * @brief modify model and check if game over conditions occured
+     *
+     * @param pCardNumber number of played card's index
+     * @return true if game is over
+     */
+    private boolean playAttackerCardAndCheckIfGameIsOver(int pCardNumber) {
+        mPassedAttackers = mPCController.playersInGame - 1;
+        sendPlayMessage(attacker(0).id, pCardNumber, true);
+        return checkIfPlayerHasFinished(attacker(0).id);
+    }
+
+    /**
+     * @brief pick either current attacker or current defender to play a card
+     */
+    private void findNextPlayerAfterAttackerPlayedCard() {
+        if(attackerCanPlayMoreCards()) {
+            sendNextPlayerToAll(attacker(0).id, true);
+        }
+        else {
+            sendNextPlayerToAll(defender().id, false);
+        }
+    }
+
+    /**
+     *
+     * @param shift number of seats to skip, if 0, method chooses current attacker
+     * @return player who attacks the defender
+     */
+    private Player attacker(int shift) {
+        return mPCController.getNextAttacker(shift);
+    }
+
+    /**
+     * @return current defender
+     */
+    private Player defender() {
+        return mPCController.getDefender();
+    }
+
+    /**
+     * @return true if attack can play any additional cards, false otherwise
+     */
+    private boolean attackerCanPlayMoreCards() {
+        return !attacker(0).mPlayersDeck.playersDeck.isEmpty() &&
+                maxOffensiveCardsToGive() > 0 &&
+                mPCController.mCardsOnTable.attackingCards.size()  - mPCController.mCardsOnTable.defendingCards.size() <
+                        defender().mPlayersDeck.playersDeck.size();
+    }
+
+
+    /**
+     * @brief handles defender's play message
+     *
+     * @param pClientThread message's author
+     * @param pPlay play-type message containing information about played card
+     */
+    public void playDefenderSide(ClientThread pClientThread, Play pPlay) {
+        if(!noCardPassed(pClientThread.getID(), pPlay.getCardNumber())) {
+            sendPlayMessage(defender().id, pPlay.getCardNumber(), false);
+            playerPlayedACard();
+        }
+    }
+
+    /**
+     * @brief either choose current defender as next to play a card, start next round, or get an attacker
+     */
+    private void playerPlayedACard() {
+        if (defenderHasToBeatCardsOnTable()) {
+            sendCallCurrentPlayerMessage(defender().id, false);
+            return;
+        }
+        chooseNextPlayerAfterDefenderPlayedACard();
+    }
+
+    /**
+     * @brief either start new round or get an attacker to play a card
+     */
+    private void chooseNextPlayerAfterDefenderPlayedACard() {
+         if(!checkIfPlayerHasFinished(defender().id)){
+            if(!defender().isPlaying() || mPCController.mCardsOnTable.defendingCards.size() == 5) {
+                conductNextRound(false);
             }
             else {
-                if(!mPCController.findPlayer(pClientThread.getID()).isPlaying() && mTalonController.mTalon.deck.isEmpty()) {
-                    if(checkIfGameEnds(mPCController.findPlayer((pClientThread.getID())))) {
-                        resetRoom();
-                        return;
-                    }
-                }
-                if(!mPCController.getDefender().isPlaying() || mPCController.mCardsOnTable.defendingCards.size() == 5) {
-                    mPCController.getNextDefender(false);
-                    mClients.forEach(player -> {
-                        player.sendMessage(new NextRound(false, pClientThread.getID()));
-                        player.sendMessage(new Get(mTalonController.dealCards(mPCController.findPlayer(player.getID()))));
-                        if(player.getID() == pClientThread.getID()) {
-                            player.sendMessage(new Next(mPCController.getNextAttacker(0).id, mPCController.getNextAttacker(0).mPlayersDeck.getAvailableCards(
-                                    (Card) null), maxOffensiveCardsToGive()
-                            ));
-                        }
-                        else {
-                            if (player.getID() == mPCController.getNextAttacker(1).id) {
-                                player.sendMessage(new Next(mPCController.getNextAttacker(0).id, getAvailableCards(mPCController.getNextAttacker(0).id, true), maxOffensiveCardsToGive()));
-                            } else {
-                                player.sendMessage(new Next(mPCController.getNextAttacker(0).id, null, maxOffensiveCardsToGive()));
-                            }
-                        }
-                    });
-                }
+                sendNextAttackerInfo(attacker(1).id);
             }
         }
     }
 
-    public boolean checkIfGameEnds(Player player) {
+    /**
+     * @brief give cards to defender and start new round
+     *
+     * @param pPlayerID id of defender
+     * @param pCardNumber id of card defender played
+     * @return true if player sent no card - he gave up
+     */
+    private boolean noCardPassed(int pPlayerID, int pCardNumber) {
+        if(playerPlayedNoCard(pCardNumber)) {
+            mPCController.mCardsOnTable.giveCardsToLosingDefender(mPCController.findPlayer(pPlayerID));
+            conductNextRound(true);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @brief check whether game has finished already or not
+     *
+     * @return true if game is over
+     */
+    public boolean checkIfGameEnds() {
         --mPCController.playersInGame;
         if(mPCController.playersInGame == 1) {
             for(ClientThread clientThread : mClients) {
                 if(mPCController.findPlayer(clientThread.getID()).isPlaying()) {
                     final int durakId = clientThread.getID();
                     mClients.forEach(client -> client.sendMessage(new End(durakId)));
+                    mRoom.isStarted = false;
                     return true;
                 }
             }
@@ -210,62 +414,71 @@ public class RoomController {
         return false;
     }
 
+    /**
+     *
+     * @return number of cards that attackers can play this round
+     */
     public int maxOffensiveCardsToGive() {
         return 5 - mPCController.mCardsOnTable.attackingCards.size();
     }
 
-    public ArrayList<Card> getLastDefendingCard() {
-        ArrayList<Card> cards = new ArrayList<>();
-        cards.add(mRoom.mCardsOnTable.defendingCards.get(mRoom.mCardsOnTable.defendingCards.size()-1));
-            return cards;
-    }
-
-
-    public boolean outOfCards(int playedId) {
-        return mPCController.findPlayer(playedId).mPlayersDeck.playersDeck.isEmpty() && mTalonController.mTalon.deck.isEmpty();
-    }
-
-    public void refuse(boolean isDefender) {
-
-    }
-
-    public void addDefendingCard(int playerId, int cardId) {
-        mPCController.mCardsOnTable.addDefendingCard(mPCController.findPlayer(playerId).mPlayersDeck.playCard(cardId));
-    }
-
-    public boolean isDefender(int pPlayerId) {
-        return mPCController.getDefenderIndex() == pPlayerId;
-    }
-
-    public boolean isStillDefending() {
+    /**
+     *
+     * @return true if there are more attacking cards than defending ones on the table
+     */
+    public boolean defenderHasToBeatCardsOnTable() {
         return mPCController.mCardsOnTable.attackingCards.size() > mPCController.mCardsOnTable.defendingCards.size();
     }
 
+    /**
+     *
+     * @param pPlayerId player's ID
+     * @param ifAttacking true if player is an attacker, false if he's a defender
+     * @return ArrayList of indices of cards that can be used this turn by a player
+     */
     public ArrayList<Integer> getAvailableCards(int pPlayerId, boolean ifAttacking) {
         ArrayList<Integer> availableCards = new ArrayList<>();
         if(ifAttacking) {
-            mPCController.findPlayer(pPlayerId).mPlayersDeck.getAvailableCards(mPCController.mCardsOnTable.defendingCards);
+            availableCards.addAll(mPCController.findPlayer(pPlayerId).mPlayersDeck.getAvailableCards(
+                    mPCController.mCardsOnTable.attackingCards, mPCController.mCardsOnTable.defendingCards));
         }
         else {
-            mPCController.findPlayer(pPlayerId).mPlayersDeck.getAvailableCards(mRoom.mCardsOnTable.attackingCards.get(mRoom.mCardsOnTable.attackingCards.size() - 1));
+            availableCards = mPCController.findPlayer(pPlayerId).mPlayersDeck.getAvailableCards(mRoom.mCardsOnTable.attackingCards.get(
+                    mRoom.mCardsOnTable.attackingCards.size() - mRoom.mCardsOnTable.defendingCards.size() - 1));
         }
         return availableCards;
     }
 
+    /**
+     *
+     * @return ID of the room
+     */
     public int getRoomId() {
         return mRoom.mLobbyId;
     }
 
+    /**
+     *
+     * @return maximum number of players in the room
+     */
     public int getMaxPlayers() {
         return mRoom.mMaxPlayers;
     }
 
+    /**
+     * @brief resets room's properties in order to clear all the data from last game. Used between games in a room
+     *
+     * @param pRoom current room containing all the data about the game
+     */
     public void updateRoom(Room pRoom) {
         mRoom = pRoom;
         mTalonController.mTalon = mRoom.mTalon;
         mPCController.resetRoom(mRoom);
     }
 
+    /**
+     * @brief clears room's data
+     */
     public void resetRoom() {
         mRoom.mPlayerArrayList.clear();
         mRoom.mTalon.deck.clear();
@@ -273,11 +486,39 @@ public class RoomController {
         mPassedAttackers = 0;
         mRoom.mCardsOnTable = new CardsOnTable();
         mRoom.isStarted = false;
+        mPCController.resetPlayersIndices();
     }
 
-    public Room mRoom;
-    public TalonController mTalonController;
-    public PlayersCollectionController mPCController;
-    private LinkedList<ClientThread> mClients;
-    private int mPassedAttackers;
+
+
+//    public void updateDefenderGameStatus(ClientThread pClientThread, Play pPlay) {
+//        if(isDefender(pClientThread.getID())) {
+//            playDefenderSide(pClientThread, pPlay);
+//        }
+//        else {
+//            playAttackerSide(pClientThread, pPlay);
+//        }
+//        if(pPlay.getCardNumber() == -1) {
+//            refuse(defenderHasToBeatCardsOnTable());
+//            return;
+//        }
+//        addDefendingCard(pClientThread.getID(), pPlay.getCardNumber());
+//        if(outOfCards(pClientThread.getID())) {
+//
+//        }
+//        if(defenderHasToBeatCardsOnTable()) {
+//            ArrayList<Integer> availableCards = getAvailableCards(pClientThread.getID(), false);
+//            mClients.forEach(player -> {
+//                player.sendMessage(new main.java.network.message.server.Play(getLastDefendingCard(), false, player.getID()));
+//                if(player.getID() == pClientThread.getID()) {
+//                    player.sendMessage(new Next(defender().id, availableCards, false));
+//                }
+//                else {
+//
+//                }
+//
+//            });
+//        }
+//    }
+
 }

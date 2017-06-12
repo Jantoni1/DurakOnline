@@ -1,8 +1,8 @@
-package main.java.model;
+package main.java.model.server;
 
 public enum Suit {
-    NONE(-1), SPADES(0), CLUBS(1),
-    DIAMONDS(2), HEARTS(3);
+    NONE(-1), SPADES(40), CLUBS(60),
+    DIAMONDS(80), HEARTS(100);
 
     private int color;
     Suit(int color) {

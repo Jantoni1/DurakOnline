@@ -1,4 +1,4 @@
-package main.java.model;
+package main.java.model.server;
 
 
 import java.io.Serializable;
@@ -32,8 +32,7 @@ public class RoomInfo implements Serializable {
         return mMaxPlayerNumber;
     }
 
-    public String toString() {
-        return mRoomName + " (" + mRoomId + "/" + mMaxPlayerNumber + ")";
+    public String toString() {return mRoomName + " (" + mPlayersNumber + "/" + mMaxPlayerNumber + ")";
     }
 
     private String mRoomName;

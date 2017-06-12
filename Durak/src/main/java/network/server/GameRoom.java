@@ -3,12 +3,14 @@ package main.java.network.server;
 
 import main.java.controller.server.RoomController;
 import main.java.controller.server.RoomVisitor;
-import main.java.model.Room;
+import main.java.model.client.AnotherPlayer;
+import main.java.model.server.Room;
 import main.java.network.message.client.BaseClientMessage;
 import main.java.network.message.server.Add;
 import main.java.network.message.server.Enter;
 import main.java.network.message.server.BaseServerMessage;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -27,8 +29,8 @@ public class GameRoom implements ClientThread.ClientMessageListener {
     /**
      * Create new lobby
      *
-     * @param pLobby      Main (root) lobby
-     * @param pName       Lobby name
+     * @param pLobby      ServerMain (root) lobby
+     * @param pName       ClientMain name
      * @param pMaxPlayers max players in game
      */
     public GameRoom(Lobby pLobby, String pName, int pMaxPlayers) {
@@ -52,7 +54,7 @@ public class GameRoom implements ClientThread.ClientMessageListener {
     }
 
     public boolean isFull() {
-        return mRoomController.isFull();
+        return mRoomController.mPCController.getmMaxPlayers() == mClients.size();
     }
 
     public int getMaxPlayers() {
@@ -72,17 +74,27 @@ public class GameRoom implements ClientThread.ClientMessageListener {
      */
     public synchronized boolean addClient(ClientThread pClient) {
         if(!isFull() && !mRoomController.mRoom.isStarted) {
-            pClient.sendMessage(new Enter(mRoomController.getRoomName(), mRoomController.getRoomId(), getNumberOfPlayers(),  false));
-            mClients.forEach(client -> {
-                client.sendMessage(new Add(pClient.getUsername(), pClient.getID()));
-                pClient.sendMessage(new Add(client.getUsername(), pClient.getID()));
-            });
             mClients.add(pClient);
+            pClient.sendMessage(createEnterMessage());
+            mClients.forEach(client -> {
+                if(client.getID() != pClient.getID())
+                client.sendMessage(new Add(pClient.getUsername(), pClient.getID()));
+            });
             pClient.registerListener(this);
             return true;
         }
-        pClient.sendMessage(new Enter(mRoomController.getRoomName(), mRoomController.getRoomId(), getNumberOfPlayers(), true));
+        pClient.sendMessage(new Enter(mRoomController.getRoomName(), getNumberOfPlayers(), true));
         return false;
+    }
+
+    private Enter createEnterMessage() {
+        Enter enterMessage = new Enter(mRoom.mLobbyName, mRoom.mMaxPlayers, false);
+        ArrayList<AnotherPlayer> playersToAdd = new ArrayList<>();
+        for(ClientThread client : mClients) {
+            playersToAdd.add(new AnotherPlayer(client.getUsername(), client.getID()));
+        }
+        enterMessage.setmPlayers(playersToAdd);
+        return enterMessage;
     }
 
     /** get room ID
@@ -156,10 +168,14 @@ public class GameRoom implements ClientThread.ClientMessageListener {
     public void leaveGame(ClientThread pClient, boolean pReturnToLobby) {
         mClients.remove(pClient);
         pClient.removeListener(this);
-        if (mClients.isEmpty()) {
-            if (mListener != null)
-                mListener.onLobbyEmpty();
-        }
+            if (mListener != null) {
+                if(mClients.isEmpty()) {
+                    mListener.onLobbyEmpty();
+                }
+                else {
+                    mListener.onGameUpdate(this);
+                }
+            }
         if (pReturnToLobby)
             mRootLobby.addClient(pClient);
 //        propagateUpdate();

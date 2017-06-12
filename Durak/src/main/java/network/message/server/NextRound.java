@@ -15,9 +15,15 @@ public class NextRound extends BaseServerMessage {
         visitor.visit(this);
     }
 
-    public void accept(ClientConnectionVisitor pClientVisitor) {}
-
     private static final long serialVersionUID = 14L;
+
+    public boolean isTaking() {
+        return isTaking;
+    }
+
+    public int getPlayerId() {
+        return playerId;
+    }
 
     boolean isTaking;
     /**

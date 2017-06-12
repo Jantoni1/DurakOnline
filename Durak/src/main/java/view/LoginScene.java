@@ -40,15 +40,16 @@ public class LoginScene {
     private void createLoginScene() {
         final StackPane root = new StackPane();
         ImageView backgroundImage = new ImageView("main/resources/background.jpg");
-        root.getChildren().addAll(backgroundImage, createLoginFormBackground(), createLoginBox());
+        root.getChildren().addAll(backgroundImage, createLoginFormBackground(),createLoginBox());
         mLoginScene = new Scene(root, 1200, 800, Color.AZURE);
+        mLoginScene.getStylesheets().add("main/resources/LoginScene.css");
         setLogin = true;
     }
 
     private Rectangle createLoginFormBackground() {
         Rectangle rectangle = new Rectangle(600, 300);
-        rectangle.setFill(Color.GREY);
-        rectangle.setStroke(Color.DEEPSKYBLUE);
+        rectangle.setFill(Color.LIGHTGREY);
+        rectangle.setStroke(Color.web("#768aa5"));
         return rectangle;
     }
 
@@ -56,7 +57,7 @@ public class LoginScene {
     private Label createLoginLabel() {
         Label label = new Label("CHOOSE YOUR NAME");
         label.setFont(Font.font("Roboto", FontWeight.LIGHT, 24));
-        label.setTextFill(Color.web("#12a6ee"));
+        label.setTextFill(Color.web("#768aa5"));
         return label;
     }
 
@@ -67,6 +68,8 @@ public class LoginScene {
         textField.setMaxWidth(400);
         textField.setMaxHeight(200);
         textField.setFont(Font.font("Roboto", FontWeight.BOLD, 36));
+//        textField.setStyle("-fx-text-box-border: #768aa5");
+        //        textField.setColor.web("#768aa5")
         return textField;
     }
 
@@ -103,10 +106,9 @@ public class LoginScene {
                 sendNick(pTextField.getText());
             }
         });
-
         mButton.setText("Login");
         mButton.setMaxWidth(400);
-        mButton.setStyle("-fx-font: 30 Roboto; -fx-base: #12a6ee;");
+        mButton.setStyle("-fx-font: 30 Roboto; -fx-text-fill: white; -fx-base: #768aa5;");
         mButton.setDefaultButton(true);
         return mButton;
     }
@@ -114,8 +116,8 @@ public class LoginScene {
     private Button createExitButton() {
         Button mButton = new Button();
         mButton.setOnAction(event -> Platform.exit());
-        mButton.setText("Wyjscie");
-        mButton.setStyle("-fx-font: 18 Roboto; -fx-base: #12a6ee;");
+        mButton.setText("Exit");
+        mButton.setStyle("-fx-font: 18 Roboto; -fx-base: #768aa5;");
         mButton.setMaxHeight(60);
         mButton.setMaxWidth(100);
         return mButton;

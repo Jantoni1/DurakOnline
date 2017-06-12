@@ -17,13 +17,6 @@ public class Welcome extends BaseServerMessage {
         visitor.visit(this);
     }
 
-    @Override
-    public void accept(ClientConnectionVisitor pClientVisitor) {
-        pClientVisitor.visit(this);
-    }
-
-    public void accept(ClientGameplayVisitor pClientGameplayVisitor) {pClientGameplayVisitor.visit(this); }
-
     private static final long serialVersionUID = 19L;
 
     public int getPlayerId() {

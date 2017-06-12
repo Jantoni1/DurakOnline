@@ -1,7 +1,7 @@
 package main.java.network.server;
 
 import main.java.controller.server.LobbyVisitor;
-import main.java.model.RoomInfo;
+import main.java.model.server.RoomInfo;
 import main.java.network.message.client.BaseClientMessage;
 import main.java.network.message.client.CreateRoom;
 import main.java.network.message.server.ExistingRooms;
@@ -40,6 +40,7 @@ public class Lobby implements ClientThread.ClientMessageListener {
     public ArrayList<RoomInfo> returnExistingRooms() {
         ArrayList<RoomInfo> existingRooms = new ArrayList<>();
         mGameLobbies.forEach(gameRoom -> {
+            System.out.println(gameRoom.getNumberOfPlayers());
             existingRooms.add(new RoomInfo(gameRoom.getLobbyName(), gameRoom.getLobbyId(), gameRoom.getNumberOfPlayers(), gameRoom.getMaxPlayers()));
         });
         return existingRooms;
@@ -67,7 +68,7 @@ public class Lobby implements ClientThread.ClientMessageListener {
             GameRoom room = new GameRoom(this, pCreateRoom.getmRoomName(), pCreateRoom.getmMaxPlayers());
             mGameLobbies.add(room);
             mClients.forEach(client ->
-                    client.sendMessage(new RoomUpdate(new RoomInfo(room.getLobbyName(),room.getID(), room.getNumberOfPlayers(), room.getMaxPlayers()),true, false))
+                    client.sendMessage(new RoomUpdate(new RoomInfo(room.getLobbyName(),room.getID(), 1, room.getMaxPlayers()),true, false))
             );
             room.setGameLobbyChangeListener(new GameRoom.GameLobbyChangeListener() {
                 @Override

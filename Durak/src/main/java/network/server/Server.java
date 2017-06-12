@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.logging.Logger;
 
 /**
- * Main server thread - accepts new connections, and sends them to lobby
+ * ServerMain server thread - accepts new connections, and sends them to lobby
  */
 public class Server extends Thread implements ClientThread.ClientMessageListener {
     private static final Logger LOG = Logger.getLogger(Server.class.getName());

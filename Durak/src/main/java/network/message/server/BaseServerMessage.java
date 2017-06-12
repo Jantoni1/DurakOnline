@@ -10,6 +10,6 @@ import java.io.Serializable;
 public abstract class BaseServerMessage implements Serializable {
 
     abstract public void accept(BaseClientVisitor visitor);
-    public void accept(ClientConnectionVisitor pClientVisitor) {}
-    public void accept(ClientGameplayVisitor mClientGameplayVisitor) {}
+//    public void accept(ClientConnectionVisitor pClientVisitor) {}
+//    public void accept(ClientGameplayVisitor mClientGameplayVisitor) {}
 }

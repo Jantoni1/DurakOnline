@@ -16,7 +16,5 @@ public class Leave extends BaseServerMessage {
         visitor.visit(this);
     }
 
-    public void accept(ClientConnectionVisitor pClientVisitor) {}
-
     public int playerId;
 }

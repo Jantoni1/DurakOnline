@@ -8,21 +8,32 @@ import java.util.ArrayList;
 
 public class Next extends BaseServerMessage {
 
-    public Next(int pPlayerId, ArrayList<Integer> pAvailableCards, int pMaxCards) {
+    private int mPlayerId;
+    private ArrayList<Integer> mAvailableCards;
+    private boolean mTrueIfAttackingFalseIfDefending;
+
+    public Next(int pPlayerId, ArrayList<Integer> pAvailableCards, boolean pTrueIfAttackingFalseIfDefending) {
         mPlayerId = pPlayerId;
         mAvailableCards = pAvailableCards;
-        mMaxCards = pMaxCards;
+        mTrueIfAttackingFalseIfDefending = pTrueIfAttackingFalseIfDefending;
     }
 
     public void accept(BaseClientVisitor visitor) {
         visitor.visit(this);
     }
 
-    public void accept(ClientConnectionVisitor pClientVisitor) {}
+    public int getmPlayerId() {
+        return mPlayerId;
+    }
+
+    public boolean ismTrueIfAttackingFalseIfDefending() {
+        return mTrueIfAttackingFalseIfDefending;
+    }
+
+    public ArrayList<Integer> getmAvailableCards() {
+        return mAvailableCards;
+    }
 
     private static final long serialVersionUID = 15L;
 
-    int mPlayerId;
-    ArrayList<Integer> mAvailableCards;
-    int mMaxCards;
 }

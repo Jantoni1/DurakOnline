@@ -11,8 +11,6 @@ public class End extends BaseServerMessage {
         visitor.visit(this);
     }
 
-    public void accept(ClientConnectionVisitor pClientVisitor) {}
-
     private static final long serialVersionUID = 24L;
 
     public static long getSerialVersionUID() {

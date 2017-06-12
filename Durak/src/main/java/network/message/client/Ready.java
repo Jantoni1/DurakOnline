@@ -7,7 +7,8 @@ import main.java.controller.server.RoomVisitor;
 
 public class Ready extends BaseClientMessage {
 
-    public Ready() {
+    public Ready(boolean pReadyIfTrueUnreadyOtherwise) {
+        this.mReadyIfTrueUnreadyOtherwise = pReadyIfTrueUnreadyOtherwise;
     }
 
     @Override
@@ -22,4 +23,12 @@ public class Ready extends BaseClientMessage {
     }
 
     private static final long serialVersionUID = 5L;
+
+    boolean mReadyIfTrueUnreadyOtherwise;
+
+    public boolean ismReadyIfTrueUnreadyOtherwise() {
+        return mReadyIfTrueUnreadyOtherwise;
+    }
+
+
 }

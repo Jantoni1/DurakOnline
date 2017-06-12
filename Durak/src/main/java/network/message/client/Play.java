@@ -23,15 +23,16 @@ public class Play extends BaseClientMessage {
 
     private static final long serialVersionUID = 7L;
 
-    public ArrayList<Integer> getCardNumber() {
+
+    public int getCardNumber() {
         return cardNumber;
     }
 
-    public Play(ArrayList<Integer> cardNumber) {
+    public Play(int cardNumber) {
 
         this.cardNumber = cardNumber;
     }
 
-    private ArrayList<Integer> cardNumber;
+    private int cardNumber;
 
 }

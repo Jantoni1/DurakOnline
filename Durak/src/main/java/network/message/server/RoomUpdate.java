@@ -3,7 +3,7 @@ package main.java.network.message.server;
 import main.java.controller.client.BaseClientVisitor;
 import main.java.controller.client.ClientConnectionVisitor;
 import main.java.controller.client.ClientGameplayVisitor;
-import main.java.model.RoomInfo;
+import main.java.model.server.RoomInfo;
 
 /**
  * Created by Kuba on 28.05.2017.
@@ -19,10 +19,6 @@ public class RoomUpdate extends BaseServerMessage{
     public void accept(BaseClientVisitor visitor) {
         visitor.visit(this);
     }
-
-    public void accept(ClientConnectionVisitor pClientVisitor) {}
-
-    public void accept(ClientGameplayVisitor visitor) {visitor.visit(this);}
 
     private static final long serialVersionUID = 22L;
 

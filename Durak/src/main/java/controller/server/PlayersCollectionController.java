@@ -1,15 +1,15 @@
 package main.java.controller.server;
 
 
-import main.java.model.CardsOnTable;
-import main.java.model.Card;
-import main.java.model.Player;
-import main.java.model.Room;
+import main.java.model.server.CardsOnTable;
+import main.java.model.server.Card;
+import main.java.model.server.Player;
+import main.java.model.server.Room;
 
 import java.util.ArrayList;
 
 public class PlayersCollectionController {
-    public PlayersCollectionController(ArrayList<Player> pPlayerArrayList, CardsOnTable pCardsOnTable, int pMaxPlayers) {
+    PlayersCollectionController(ArrayList<Player> pPlayerArrayList, CardsOnTable pCardsOnTable, int pMaxPlayers) {
         mPlayerArrayList = pPlayerArrayList;
         mMaxPlayers = pMaxPlayers;
         mCardsOnTable = pCardsOnTable;
@@ -18,8 +18,9 @@ public class PlayersCollectionController {
         playersInGame = 0;
     }
 
-    public void addPlayer(int player_id) {
+    void addPlayer(int player_id) {
         mPlayerArrayList.add(new Player(player_id));
+        System.out.println(mPlayerArrayList.size());
         ++playersInGame;
     }
 
@@ -64,7 +65,8 @@ public class PlayersCollectionController {
         int i = 0;
         while(i<shift) {
             ++attackerIndex;
-            if(mPlayerArrayList.get(attackerIndex % mMaxPlayers).isPlaying() && mPlayerArrayList.indexOf(mPlayerArrayList.get(attackerIndex % mMaxPlayers)) != defenderIndex){
+            attackerIndex %= mMaxPlayers;
+            if(mPlayerArrayList.get(attackerIndex).isPlaying() && mPlayerArrayList.indexOf(mPlayerArrayList.get(attackerIndex)) != defenderIndex){
                 ++i;
             }
         }
@@ -81,13 +83,13 @@ public class PlayersCollectionController {
         return attackerIndex;
     }
 
-    public ArrayList<Card> playCard(int pPlayerId, ArrayList<Integer> pCardNumbers, boolean isAttacking) {
-        ArrayList<Card> cardArrayList = new ArrayList<>();
-        for(int cardId : pCardNumbers) {
-            cardArrayList.add(playCard(findPlayer(pPlayerId), cardId, isAttacking));
-        }
-        return cardArrayList;
-    }
+//    public ArrayList<Card> playCard(int pPlayerId, ArrayList<Integer> pCardNumbers, boolean isAttacking) {
+//        ArrayList<Card> cardArrayList = new ArrayList<>();
+//        for(int cardId : pCardNumbers) {
+//            cardArrayList.add(playCard(findPlayer(pPlayerId), cardId, isAttacking));
+//        }
+//        return cardArrayList;
+//    }
 
     public Card playCard(Player pPlayer, int cardId, boolean isAttacking) {
         Card card = pPlayer.mPlayersDeck.playCard(cardId);
@@ -117,8 +119,18 @@ public class PlayersCollectionController {
         return mPlayerArrayList.get(defenderIndex);
     }
 
+    public void resetPlayersIndices() {
+        attackerIndex = 0;
+        defenderIndex = 1;
+        --playersInGame;
+    }
+
     public int numberOfPlayers() {
-        return mPlayerArrayList.size();
+        return playersInGame;
+    }
+
+    public int getmMaxPlayers() {
+        return mMaxPlayers;
     }
 
     private ArrayList<Player> mPlayerArrayList;

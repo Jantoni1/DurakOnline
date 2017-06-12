@@ -1,8 +1,8 @@
 package main.java.controller.server;
 
 
-import main.java.model.Card;
-import main.java.model.Player;
+import main.java.model.server.Card;
+import main.java.model.server.Player;
 
 public class PlayerController {
 

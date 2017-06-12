@@ -1,7 +1,7 @@
 package main.java.network.message.server;
 
 
-import main.java.model.RoomInfo;
+import main.java.model.server.RoomInfo;
 import main.java.controller.client.BaseClientVisitor;
 import main.java.controller.client.ClientConnectionVisitor;
 import main.java.controller.client.ClientGameplayVisitor;
@@ -22,11 +22,6 @@ public class ExistingRooms extends BaseServerMessage {
     public String toString() {
         return "ExistingRooms " + existingRooms.size();
     }
-
-    public void accept(ClientConnectionVisitor pClientVisitor) {}
-
-    public void accept(ClientGameplayVisitor pGameplayVisitor) {
-        pGameplayVisitor.visit(this); }
 
     private static final long serialVersionUID = 18L;
 

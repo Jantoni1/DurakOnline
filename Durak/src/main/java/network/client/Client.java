@@ -1,13 +1,9 @@
 package main.java.network.client;
 
-import main.java.controller.client.ClientConnectionVisitor;
-import main.java.controller.client.ClientGameplayVisitor;
 import main.java.network.message.client.BaseClientMessage;
-import main.java.network.message.client.HandShake;
+import main.java.network.message.client.Leave;
 import main.java.network.message.server.BaseServerMessage;
 import main.java.network.message.server.Disconnected;
-import main.java.view.ClientManager;
-import main.java.view.LoginScene;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -27,8 +23,6 @@ public class Client extends Thread {
     private final ObjectOutputStream mObjectOutputStream;
     private final ObjectInputStream mObjectInputStream;
     private final CopyOnWriteArrayList<MessageListener> mListeners;
-    public int mUserID;
-    private String userName;
 
     /**
      * Create connector connected to given server
@@ -42,8 +36,6 @@ public class Client extends Thread {
         mObjectOutputStream = new ObjectOutputStream(mSocket.getOutputStream());
         mObjectInputStream = new ObjectInputStream(mSocket.getInputStream());
         mListeners = new CopyOnWriteArrayList<>();
-        mUserID = 1;
-        userName = new String();
     }
 
     /**
@@ -53,6 +45,7 @@ public class Client extends Thread {
      */
     public synchronized void sendMessage(BaseClientMessage pClientMessage) {
         try {
+            System.out.println(pClientMessage.toString());
             mObjectOutputStream.writeObject(pClientMessage);
             mObjectOutputStream.reset();
         } catch (IOException e) {
@@ -83,18 +76,7 @@ public class Client extends Thread {
      * @param pName     username
      * @param pUserID handshake callback function
      */
-    public void setUserData(String pName, int pUserID) {
-        userName = pName;
-        mUserID = pUserID;
-    }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public int getUserId() {
-        return mUserID;
-    }
 
     /**
      * Thread run function
@@ -116,8 +98,8 @@ public class Client extends Thread {
                 thread.start();
             }
             catch (ClassNotFoundException | IOException e) {
-                System.out.println("Client infinite loop crashed for some reason.");
-                e.printStackTrace();
+//                System.out.println("Client infinite loop crashed for some reason.");
+//                e.printStackTrace();
                 break;
             }
         }
@@ -126,12 +108,14 @@ public class Client extends Thread {
     /**
      * Disconnects fromm the server
      */
-    public void disconnect() {
+    public synchronized void disconnect() {
+        //sendMessage(new Leave(true));
+        //TODO ADD CHATBOX KILL no need?
         mListeners.forEach(l -> l.onClientMessage(new Disconnected()));
         try {
             mSocket.close();
         } catch (Exception e) {
-            System.out.println("Disconnect crashed");
+            System.out.println("Could not disconnect");
         }
     }
 
