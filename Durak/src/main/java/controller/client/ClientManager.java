@@ -44,6 +44,24 @@ public class ClientManager {
         setClientThreadShutdownWhenWindowIsClosed(pStage);
     }
 
+    public void setTrumpCard(Card pCard) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                mRoomScene.setTrumpCard(pCard);
+            }
+        });
+    }
+
+    public void hideTrumpCard() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                mRoomScene.hideTrumpCard();
+            }
+        });
+    }
+
     private void setClientThreadShutdownWhenWindowIsClosed(Stage stage) {
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
@@ -100,12 +118,15 @@ public class ClientManager {
         mClient.sendMessage(new Ready(trueIfReadyFalseIfUnready));
     }
 
-    public void updateRoomScene(AnotherPlayer pAnotherPlayer) {
+    public void sendChatMessage(String pChatMessage) {
+        mClient.sendMessage(new Chat(pChatMessage));
+    }
+
+    public void updateRoomScene(AnotherPlayer pAnotherPlayer, boolean pTrueIfFirstAttack) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                mRoomScene.updateOtherPlayersViewProperty(pAnotherPlayer, false);
-//                mStage.show();
+                mRoomScene.updateOtherPlayersViewProperty(pAnotherPlayer, pTrueIfFirstAttack);
             }
         });
     }

@@ -90,11 +90,9 @@ public class ClientThread extends Thread {
      */
     public synchronized void sendMessage(BaseServerMessage pServerMessage) {
         try {
-            System.out.println(pServerMessage.toString());
             mObjectOutputStream.writeObject(pServerMessage);
             mObjectOutputStream.reset();
         } catch (IOException e) {
-            System.out.println("NOM TUTAJ JEST LIPTON EH XD");
             mConnectionListener.onDisconnect(this);
         }
     }

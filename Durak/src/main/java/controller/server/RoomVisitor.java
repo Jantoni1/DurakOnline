@@ -23,11 +23,6 @@ public class RoomVisitor extends BaseServerVisitor {
     }
 
     @Override
-    public void visit(BaseClientMessage baseClientMessage) {
-
-    }
-
-    @Override
     public void visit(ClientThread pClientThread, BaseClientMessage baseClientMessage) {}
 
     public void onClientMessage(ClientThread pClientThread, BaseClientMessage pBaseClientMessage) {}

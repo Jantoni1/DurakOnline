@@ -8,15 +8,7 @@ import main.java.controller.server.LobbyVisitor;
 public class CreateRoom extends BaseClientMessage {
 
 
-    @Override
-    public void accept(BaseServerVisitor visitor) {
-        visitor.visit(this);
-    }
-
     public void accept(ClientThread pClientThread, BaseServerVisitor visitor) { visitor.visit(pClientThread, this);}
-
-    public void accept(ClientThread pClientThread, LobbyVisitor pLobbyVisitor) {
-        pLobbyVisitor.visit(pClientThread, this);}
 
     public String toString() {
         return mRoomName;

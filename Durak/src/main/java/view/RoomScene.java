@@ -1,6 +1,7 @@
 package main.java.view;
 
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -14,8 +15,10 @@ import main.java.controller.client.ClientManager;
 import main.java.model.client.AnotherPlayer;
 import main.java.model.server.Card;
 import main.java.model.server.RoomInfo;
+import main.java.network.message.server.Chat;
 
 import java.util.ArrayList;
+import java.util.Observable;
 
 public class RoomScene {
     private ClientManager mClientManager;
@@ -31,6 +34,7 @@ public class RoomScene {
     private final int mMaxNumberOfPlayers;
     private CardsOnTable mCardsOnTable;
     private Button mPass;
+    private ImageView mTrumpCard;
 
     public RoomScene(int pNumberOfPlayers, ClientManager pClientManager) {
         mMaxNumberOfPlayers = pNumberOfPlayers;
@@ -43,6 +47,23 @@ public class RoomScene {
         createCardsOnTable();
     }
 
+    public void setTrumpCard(Card pCard) {
+        mTrumpCard = new ImageView("main/resources/images/"+ pCard.mFigure.getFigure() + "_" + pCard.mSuit.getColor() + ".png");
+        mRoot.getChildren().add(mTrumpCard);
+        createmTrumpCard();
+    }
+
+    public void hideTrumpCard() {
+        mTrumpCard.setVisible(false);
+    }
+
+    private void createmTrumpCard() {
+        AnchorPane.setBottomAnchor(mTrumpCard, 20.0);
+        AnchorPane.setRightAnchor(mTrumpCard, 120.0);
+        mTrumpCard.setVisible(true);
+
+    }
+
     private void createPassButton() {
         mPass = new Button("PASS");
         mRoot.getChildren().add(mPass);
@@ -51,7 +72,7 @@ public class RoomScene {
     }
 
     private void setPassButtonProperties() {
-        AnchorPane.setBottomAnchor(mPass, 160.0);
+        AnchorPane.setBottomAnchor(mPass, 220.0);
         AnchorPane.setLeftAnchor(mPass, 330.0);
         mPass.setVisible(false);
         setPassButtonStyle();
@@ -92,6 +113,8 @@ public class RoomScene {
         else
             mPass.setVisible(false);
     }
+
+
 
     public void resetPlayersViewProperty(ArrayList<AnotherPlayer> pOtherPlayers, boolean pFirstAttack) {
         mOtherPlayers.forEach(player -> player.updateView(null));
@@ -202,7 +225,7 @@ public class RoomScene {
     }
 
     private void setBottomPlayerViewProperty() {
-        AnchorPane.setBottomAnchor(mBottomPlayer, 0.0);
+        AnchorPane.setBottomAnchor(mBottomPlayer, 20.0);
         AnchorPane.setLeftAnchor(mBottomPlayer, 400.0);
         AnchorPane.setRightAnchor(mBottomPlayer, 800.0);
     }
@@ -267,9 +290,16 @@ public class RoomScene {
 
     private void createChatBox() {
         ChatBox chatBox = new ChatBox();
-        mRoot.getChildren().add(chatBox);
-        AnchorPane.setRightAnchor(chatBox, 10.0);
-        AnchorPane.setTopAnchor(chatBox, 50.0);
+//        chatBox.setSendListener( new ChatBox.MessageSendListener() {
+//                @Override
+//                public void onMessageSend(String pMessage) {
+//                    mClientManager.sendChatMessage(pMessage);
+//                }
+//        });
+
+//        mRoot.getChildren().add(chatBox);
+//        AnchorPane.setRightAnchor(chatBox, 10.0);
+//        AnchorPane.setTopAnchor(chatBox, 50.0);
     }
 
     private ImageView createBackgroundImage() {

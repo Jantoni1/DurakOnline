@@ -12,14 +12,7 @@ public class Add extends BaseClientMessage {
         this.roomId = roomId;
     }
 
-    @Override
-    public void accept(BaseServerVisitor visitor) {
-        visitor.visit(this);
-    }
-
     public void accept(ClientThread pClientThread, BaseServerVisitor visitor) { visitor.visit(pClientThread, this);}
-
-    public void accept(ClientThread pClientThread, LobbyVisitor pLobbyVisitor) {pLobbyVisitor.visit(pClientThread, this);}
 
     private static final long serialVersionUID = 2L;
 

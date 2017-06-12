@@ -113,7 +113,6 @@ public class Room {
     }
 
     private int findMyIndex() {
-        System.out.println(mPlayerID);
         for(AnotherPlayer player : mOtherPlayers) {
             if(isItMe(player, mPlayerID)) {
                 return mOtherPlayers.indexOf(player);

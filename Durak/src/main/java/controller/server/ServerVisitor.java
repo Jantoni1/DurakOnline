@@ -18,13 +18,6 @@ public class ServerVisitor extends BaseServerVisitor {
         this.mLobby = mLobby;
     }
 
-    /** Overridden parent class method, does absolutely nothing
-     *
-     * @param pBaseClientMessage absstract base server message class
-     */
-    @Override
-    public void visit(BaseClientMessage pBaseClientMessage) {}
-
     /** If message is not an instance  of HandShake, ServerVisitor
      *
      * @param pClientThread message's author's thread

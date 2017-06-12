@@ -45,7 +45,6 @@ public class Client extends Thread {
      */
     public synchronized void sendMessage(BaseClientMessage pClientMessage) {
         try {
-            System.out.println(pClientMessage.toString());
             mObjectOutputStream.writeObject(pClientMessage);
             mObjectOutputStream.reset();
         } catch (IOException e) {
@@ -87,7 +86,6 @@ public class Client extends Thread {
         while (!mSocket.isClosed()) {
             try {
                 BaseServerMessage message = (BaseServerMessage) mObjectInputStream.readObject();
-                System.out.println(message.toString());
                 Thread thread = new Thread() {
                     public void run() {
                         for (MessageListener listener : mListeners){

@@ -20,7 +20,6 @@ public class PlayersCollectionController {
 
     void addPlayer(int player_id) {
         mPlayerArrayList.add(new Player(player_id));
-        System.out.println(mPlayerArrayList.size());
         ++playersInGame;
     }
 
@@ -122,7 +121,6 @@ public class PlayersCollectionController {
     public void resetPlayersIndices() {
         attackerIndex = 0;
         defenderIndex = 1;
-        --playersInGame;
     }
 
     public int numberOfPlayers() {

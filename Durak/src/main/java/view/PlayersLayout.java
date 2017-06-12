@@ -64,7 +64,7 @@ public class PlayersLayout extends VBox {
     private void setDefaultProperties() {
         setNickProperties();
         setAlignment(Pos.CENTER);
-        mCards.setStyle("-fx-rotate: 180;");
+//        mCards.setStyle("-fx-rotate: 180;");
     }
 
     public void updateView(AnotherPlayer pAnotherPlayer) {
@@ -84,11 +84,16 @@ public class PlayersLayout extends VBox {
     }
 
     private synchronized void createPlayersDeck(ArrayList<Card> pPlayersCard, boolean pIsMyTurn) {
-        mCards.getChildren().clear();
-        mCards.setSpacing(-75.0 + (400.0 / (double) pPlayersCard.size() - 1));
-        for(Card card : pPlayersCard) {
-            mCards.getChildren().add(createCardBackImage(card, pIsMyTurn));
+        synchronized(pPlayersCard) {
+            getChildren().remove(mCards);
+            mCards = new HBox();
+            mCards.setSpacing(-75.0 + (400.0 / (double) pPlayersCard.size() - 1));
+            for(Card card : pPlayersCard) {
+                mCards.getChildren().add(createCardBackImage(card, pIsMyTurn));
+            }
+            getChildren().add(mCards);
         }
+
 //        pPlayersCard.forEach(card -> mCards.getChildren().add(createCardBackImage(card, pIsMyTurn)));
     }
 
@@ -113,11 +118,13 @@ public class PlayersLayout extends VBox {
         if(pAnotherPlayer.ismIsMyTurn()) {
             mNick.setEffect(new Glow(1));
             mNick.setFont(Font.font("Roboto", FontWeight.EXTRA_BOLD, 26));
+            mNick.setStyle("-fx-stroke: black; -fx-stroke-width: 2;");
         }
         else
         {
             mNick.setEffect(null);
             mNick.setFont(Font.font("Roboto", FontWeight.LIGHT, 26));
+            mNick.setStyle("-fx-strike-width: 0;");
         }
         mNick.setVisible(true);
     }

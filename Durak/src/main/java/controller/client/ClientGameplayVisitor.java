@@ -41,7 +41,7 @@ public class ClientGameplayVisitor extends BaseClientVisitor implements Client.M
     public void visit(Add pAdd) {
         if(pAdd.getmAnotherPlayer().getmUserID() != mClientManager.getPlayerData().getmUserID()) {
             mRoom.addPlayer(pAdd.getmAnotherPlayer());
-            mClientManager.updateRoomScene(pAdd.getmAnotherPlayer());
+            mClientManager.updateRoomScene(pAdd.getmAnotherPlayer(), true);
             mClientManager.setReadyPanelVisible(mRoom.getmOtherPlayers().size());
         }
     }
@@ -59,6 +59,7 @@ public class ClientGameplayVisitor extends BaseClientVisitor implements Client.M
     public void visit(Start pStart) {
         mClientManager.setReadyPanelVisible(0);
         giveOtherPlayersStartingCards();
+        mClientManager.setTrumpCard(pStart.getCard());
         mClientManager.updateMultiplePlayersView(mRoom.getmOtherPlayers(), true);
     }
 
@@ -70,6 +71,7 @@ public class ClientGameplayVisitor extends BaseClientVisitor implements Client.M
             }
         });
         mRoom.clearCardsOnTable();
+        mClientManager.hideTrumpCard();
         mClientManager.updateCardsOnTable(mRoom.getmAttackingCards(), mRoom.getmDefendingCards());
     }
 
@@ -125,7 +127,7 @@ public class ClientGameplayVisitor extends BaseClientVisitor implements Client.M
     public void visit(Get pGet) {
         mRoom.getmOtherPlayers().get(findMe()).addMultipleCards(pGet.getCardArrayList());
         addMissingCardsToPlayers();
-        mClientManager.updateRoomScene(mRoom.getmOtherPlayers().get(findMe()));
+        mClientManager.updateRoomScene(mRoom.getmOtherPlayers().get(findMe()), mRoom.isTurnBeginning());
     }
 
     private void addMissingCardsToPlayers() {
@@ -151,7 +153,7 @@ public class ClientGameplayVisitor extends BaseClientVisitor implements Client.M
         if(isMyID(pNext.getmPlayerId())) {
             setUpMyTurn(pNext.getmAvailableCards());
         }
-        mClientManager.updateMultiplePlayersView(mRoom.getmOtherPlayers(), mRoom.getmAttackingCards().isEmpty());
+        mClientManager.updateMultiplePlayersView(mRoom.getmOtherPlayers(), mRoom.isTurnBeginning());
     }
 
     private void lightPlayersNick(int playersID) {

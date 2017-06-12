@@ -13,22 +13,10 @@ public class HandShake extends BaseClientMessage{
         this.userName = userName;
     }
 
-    @Override
-    public void accept(BaseServerVisitor visitor) {
-        visitor.visit(this);
-    }
 
     @Override
     public void accept(ClientThread pClientThread, BaseServerVisitor visitor) {
         visitor.visit(pClientThread, this);
-    }
-
-    public void accept(ClientThread pClientThread, ServerVisitor visitor) {
-        visitor.visit(pClientThread, this);
-    }
-
-    void accept(ServerVisitor pServerVisitor) {
-        pServerVisitor.visit(this);
     }
 
     private static final long serialVersionUID = 8L;

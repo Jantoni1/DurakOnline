@@ -17,13 +17,17 @@ public class Card implements Serializable{
         mSuit = other.mSuit;
     }
     boolean isBigger(Card other) {
-        if(this.mSuit.equals(other.mSuit)) {
+        if(this.mSuit.getColor() == other.mSuit.getColor()) {
             return this.mFigure.isBigger(other.mFigure);
         }
-        else if(other.mSuit == trump) {
+        else if(mSuit.getColor() == Card.trump.getColor()) {
             return true;
         }
         return false;
+    }
+
+    public static void setTrump(Suit trump) {
+        Card.trump = trump;
     }
 
     public boolean equals(Card other) {

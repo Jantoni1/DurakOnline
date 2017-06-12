@@ -13,15 +13,8 @@ public abstract class BaseClientMessage implements Serializable {
 
     public BaseClientMessage() {}
 
-    abstract public void accept(BaseServerVisitor visitor);
-
     abstract public void accept(ClientThread pClientThread, BaseServerVisitor visitor);
 
-    public void accept(ClientThread pClientThread, ServerVisitor visitor) {visitor.visit(pClientThread, this);}
-
-    public void accept(ClientThread pClientThread, LobbyVisitor visitor) {visitor.visit(pClientThread, this);}
-
-    public void accept(ClientThread pClientThread, RoomVisitor visitor) {visitor.visit(pClientThread, this);}
 
     private static final long serialVersionUID = 1L;
 }

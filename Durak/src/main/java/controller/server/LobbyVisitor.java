@@ -30,9 +30,6 @@ public class LobbyVisitor extends BaseServerVisitor {
     }
 
     @Override
-    public void visit(BaseClientMessage baseClientMessage) {}
-
-    @Override
     public void visit(ClientThread pClientThread, BaseClientMessage baseClientMessage) {}
 
 //    @Override
