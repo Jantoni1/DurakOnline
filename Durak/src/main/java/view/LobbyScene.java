@@ -6,9 +6,12 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import main.java.controller.client.ClientManager;
 import main.java.model.server.RoomInfo;
 import main.java.network.message.server.RoomUpdate;
@@ -28,6 +31,9 @@ public class LobbyScene {
     private GridPane mGrid;
     private int column;
     private int row;
+    private static int BUTTONS_PER_LINE = 2;
+    private TextField textField;
+
 
     public LobbyScene(ClientManager pClientManager) {
 //        mButtons = new ArrayList<>();
@@ -35,6 +41,7 @@ public class LobbyScene {
         mLock = new Boolean(true);
         column = 0;
         row = 0;
+        textField = createRoomNameTextField();
     }
 
     public Scene getLobbyScene() {
@@ -92,6 +99,7 @@ public class LobbyScene {
         column = 0;
         row = 0;
         mLobbyScene = new Scene(createSceneRoot(pRoomInfo), 1200, 800, Color.AZURE);
+
         mLobbyScene.getStylesheets().add("main/resources/LobbyScene.css");
 //        mLobbyScene.getStylesheets().add("main/resources/stylesheet.css");
     }
@@ -109,10 +117,18 @@ public class LobbyScene {
         return backgroundImage;
     }
 
-    private Button createNewGameButton() {
-        Button button = createRoomButton(new RoomInfo("New Room", -1, 0, 2));
+    private TextField createRoomNameTextField() {
+        textField = new TextField ();
+        textField.setMaxHeight(200);
+        textField.setFont(Font.font("Roboto", FontWeight.BOLD, 36));
+        textField.setMaxWidth(400);
+        return textField;
+    }
+
+    private Button createNewGameButtons(int numberOfSeats) {
+        Button button = createRoomButton(new RoomInfo("New Room", -1, 0, numberOfSeats));
         button.setId("newgame");
-        button.setText("CREATE ROOM");
+        button.setText("CREATE " + numberOfSeats +"-SEAT ROOM");
         return button;
     }
 
@@ -147,12 +163,19 @@ public class LobbyScene {
         mGrid.setPadding(new Insets(BUTTON_PADDING));
         mGrid.setHgap(99);
         mGrid.setVgap(50);
-        mGrid.add(createNewGameButton(), column++, row);
+        addCreateGameButtons();
+    }
+
+    private void addCreateGameButtons() {
+        for(int i = 2; i< 5; ++i) {
+            mGrid.add(createNewGameButtons(i), column, row);
+            row += column;
+            column = (column + 1) % BUTTONS_PER_LINE;
+        }
     }
 
     private GridPane createRoomGridPane(ArrayList<RoomInfo> rooms) {
         setGridPaneProperties();
-        int BUTTONS_PER_LINE = 2;
         if(rooms != null) {
             for(RoomInfo room : rooms) {
                 mGrid.add(createRoomButton(room), column, row);

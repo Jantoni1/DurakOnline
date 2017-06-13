@@ -5,13 +5,12 @@ import main.java.controller.server.RoomController;
 import main.java.controller.server.RoomVisitor;
 import main.java.model.client.AnotherPlayer;
 import main.java.model.server.Room;
-import main.java.network.message.client.BaseClientMessage;
 import main.java.network.message.server.Add;
 import main.java.network.message.server.Enter;
-import main.java.network.message.server.BaseServerMessage;
+import main.java.network.message.Message;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class for specyfic GameRoom
@@ -89,7 +88,7 @@ public class GameRoom implements ClientThread.ClientMessageListener {
 
     private Enter createEnterMessage() {
         Enter enterMessage = new Enter(mRoom.mLobbyName, mRoom.mMaxPlayers, false);
-        ArrayList<AnotherPlayer> playersToAdd = new ArrayList<>();
+        CopyOnWriteArrayList<AnotherPlayer> playersToAdd = new CopyOnWriteArrayList<>();
         for(ClientThread client : mClients) {
             playersToAdd.add(new AnotherPlayer(client.getUsername(), client.getID()));
         }
@@ -125,40 +124,7 @@ public class GameRoom implements ClientThread.ClientMessageListener {
     public GameLobbyChangeListener getGameLobbyChangeListener() {
         return mListener;
     }
-//    /**
-//     * Add new player to Game
-//     *
-//     * @param pName player name
-//     * @param pID   owner clientID
-//     */
-//    private void addPlayer(String pName, int pID) {
-//        Player p = mGame.addPlayer(pName, pID);
-//        if (p != null) {
-//            p.setName(pName + p.getID());
-//            propagateUpdate();
-//        }
-//    }
 
-//    /**
-//     * Update given player (replace player with the same ID with the given one)
-//     *
-//     * @param pPlayer new version of Player
-//     */
-//    private void updatePlayer(Player pPlayer) {
-//        mGame.getPlayers().replaceAll(p -> p.getID() == pPlayer.getID() ? pPlayer : p);
-//        propagateUpdate();
-//    }
-
-//    /**
-//     * Delete player from the lobby
-//     *
-//     * @param pPlayer player to delete
-//     */
-//    private void deletePlayer(Player pPlayer) {
-//        mGame.getColorBank().returnColor(pPlayer.getColor());
-//        mGame.getPlayers().removeIf(p -> p.getID() == pPlayer.getID());
-//        propagateUpdate();
-//    }
 
     /**
      * Remove Client from the Room
@@ -178,13 +144,12 @@ public class GameRoom implements ClientThread.ClientMessageListener {
             }
         if (pReturnToLobby)
             mRootLobby.addClient(pClient);
-//        propagateUpdate();
     }
 
     /**
      * Send upadte message to all clients, and notify main lobby to update game list
      */
-    public void propagateUpdate(BaseServerMessage pBaseServeMessage, boolean ifUpdateLobby) {
+    public void propagateUpdate(Message pBaseServeMessage, boolean ifUpdateLobby) {
         mClients.forEach(client -> client.sendMessage(pBaseServeMessage));
         if (mListener != null) {
             mListener.onGameUpdate(this);
@@ -199,7 +164,7 @@ public class GameRoom implements ClientThread.ClientMessageListener {
      * @param pClient  source client
      * @param pMessage message
      */
-    public synchronized void onClientMessage(ClientThread pClient, BaseClientMessage pMessage) {
+    public synchronized void onClientMessage(ClientThread pClient, Message pMessage) {
         pMessage.accept(pClient, mRoomVisitor);
     }
 

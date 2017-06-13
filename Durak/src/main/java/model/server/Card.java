@@ -4,15 +4,15 @@ import java.io.Serializable;
 
 public class Card implements Serializable{
 
-    Card() {}
+    public Card() {}
 
-    Card(Figures pFigure, Suit pSuit) {
+    public Card(Figures pFigure, Suit pSuit) {
         if(pFigure != null && pSuit != null) {
             mFigure = pFigure;
             mSuit = pSuit;
         }
     }
-    Card(Card other) {
+    public Card(Card other) {
         mFigure = other.mFigure;
         mSuit = other.mSuit;
     }

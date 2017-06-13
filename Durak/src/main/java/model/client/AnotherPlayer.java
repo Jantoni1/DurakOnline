@@ -5,6 +5,7 @@ import main.java.model.server.Card;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AnotherPlayer implements Serializable {
 
@@ -12,7 +13,7 @@ public class AnotherPlayer implements Serializable {
     private String mNick;
     private int mUserID;
     private int mPositionOnTable;
-    private ArrayList<Card> mPlayerCards;
+    private CopyOnWriteArrayList<Card> mPlayerCards;
     private static final long serialVersionUID = 41L;
 
     //Add jest odpowiedzialne za dodawanie wszystkich z klientem włącznie, dzięki czemu rozwiązuje się problem kolejności dodwania użytkowników do pokoju
@@ -26,11 +27,11 @@ public class AnotherPlayer implements Serializable {
         mNumberOfCards = 0;
     }
 
-    public ArrayList<Card> getPlayerCards() {
+    public CopyOnWriteArrayList<Card> getPlayerCards() {
         return mPlayerCards;
     }
 
-    public void setPlayerCards(ArrayList<Card> mPlayerCards) {
+    public void setPlayerCards(CopyOnWriteArrayList<Card> mPlayerCards) {
         this.mPlayerCards = mPlayerCards;
     }
 
@@ -40,7 +41,7 @@ public class AnotherPlayer implements Serializable {
 
     public void addMultipleCards(ArrayList<Card> pCards) {
         if(mPlayerCards == null) {
-            mPlayerCards = new ArrayList<>();
+            mPlayerCards = new CopyOnWriteArrayList<>();
         }
         mPlayerCards.addAll(pCards);
     }

@@ -1,7 +1,8 @@
 package main.java.controller.server;
 
+import main.java.controller.Visitor;
 import main.java.network.message.client.Add;
-import main.java.network.message.client.BaseClientMessage;
+import main.java.network.message.Message;
 import main.java.network.message.client.CreateRoom;
 import main.java.network.message.server.Enter;
 import main.java.network.server.ClientThread;
@@ -14,7 +15,7 @@ import java.util.LinkedList;
 /**
  * Created by Kuba on 28.05.2017.
  */
-public class LobbyVisitor extends BaseServerVisitor {
+public class LobbyVisitor extends Visitor {
 
     /**
      * Create visitor used exclusively by main ClientMain. It processes messages meant for ClientMain only
@@ -30,7 +31,7 @@ public class LobbyVisitor extends BaseServerVisitor {
     }
 
     @Override
-    public void visit(ClientThread pClientThread, BaseClientMessage baseClientMessage) {}
+    public void visit(ClientThread pClientThread, Message baseClientMessage) {}
 
 //    @Override
     public void visit(ClientThread pClient, CreateRoom pCreateRoom) {

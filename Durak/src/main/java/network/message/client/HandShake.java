@@ -1,11 +1,11 @@
 package main.java.network.message.client;
 
 
-import main.java.controller.server.BaseServerVisitor;
+import main.java.controller.Visitor;
+import main.java.network.message.Message;
 import main.java.network.server.ClientThread;
-import main.java.controller.server.ServerVisitor;
 
-public class HandShake extends BaseClientMessage{
+public class HandShake extends Message {
 
     public HandShake() {}
 
@@ -15,7 +15,7 @@ public class HandShake extends BaseClientMessage{
 
 
     @Override
-    public void accept(ClientThread pClientThread, BaseServerVisitor visitor) {
+    public void accept(ClientThread pClientThread, Visitor visitor) {
         visitor.visit(pClientThread, this);
     }
 

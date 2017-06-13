@@ -2,19 +2,19 @@ package main.java.network.message.server;
 
 
 import main.java.model.server.Card;
-import main.java.controller.client.BaseClientVisitor;
-import main.java.controller.client.ClientConnectionVisitor;
+import main.java.controller.Visitor;
+import main.java.network.message.Message;
 
 import java.util.ArrayList;
 
-public class Get extends BaseServerMessage {
+public class Get extends Message {
 
 
     public Get(ArrayList<Card> cardArrayList) {
         this.cardArrayList = cardArrayList;
     }
 
-    public void accept(BaseClientVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 

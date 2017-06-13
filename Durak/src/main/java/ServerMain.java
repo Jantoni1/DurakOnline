@@ -14,7 +14,7 @@ public class ServerMain {
             Server server = new Server(3000, 10);
             server.start();
             Scanner scanner = new Scanner(System.in);
-            while(!scanner.next().equals("Exit")) {} //FIXME add event handlet
+            while(!scanner.next().equals("Exit")) {}
             server.close();
             try {
                 server.join();

@@ -1,7 +1,8 @@
 package main.java.controller.server;
 
+import main.java.controller.Visitor;
+import main.java.network.message.Message;
 import main.java.network.message.client.*;
-import main.java.network.message.client.Chat;
 import main.java.network.message.client.Leave;
 import main.java.network.message.client.Play;
 import main.java.network.message.client.Ready;
@@ -14,7 +15,11 @@ import java.util.LinkedList;
 /**
  * Created by Kuba on 28.05.2017.
  */
-public class RoomVisitor extends BaseServerVisitor {
+public class RoomVisitor extends Visitor {
+
+    GameRoom mGameRoom;
+    public RoomController mRoomController;
+    private LinkedList<ClientThread> mClients;
 
     public RoomVisitor(RoomController pRoomController, LinkedList<ClientThread> pClients, GameRoom pGameRoom) {
         mRoomController = pRoomController;
@@ -23,9 +28,9 @@ public class RoomVisitor extends BaseServerVisitor {
     }
 
     @Override
-    public void visit(ClientThread pClientThread, BaseClientMessage baseClientMessage) {}
+    public void visit(ClientThread pClientThread, Message baseClientMessage) {}
 
-    public void onClientMessage(ClientThread pClientThread, BaseClientMessage pBaseClientMessage) {}
+    public void onClientMessage(ClientThread pClientThread, Message pMessage) {}
 
     public void visit(ClientThread pClientThread, main.java.network.message.client.Chat pChat) {
         mClients.forEach(client -> client.sendMessage(new main.java.network.message.server.Chat(pChat.getChatMessage())));
@@ -60,7 +65,7 @@ public class RoomVisitor extends BaseServerVisitor {
     }
 
     public void visit(ClientThread pClientThread, Play pPlay) {
-        mRoomController.updateGameStatus(pClientThread, pPlay);
+        mRoomController.updateGameStatus(pClientThread.getID(), pPlay);
     }
 
     public void visit(ClientThread pClientThread, Leave leave) {
@@ -69,13 +74,14 @@ public class RoomVisitor extends BaseServerVisitor {
         }
         if(mRoomController.mRoom.isStarted) {
             mRoomController.resetRoom();
-            mClients.forEach(client ->  client.sendMessage(new End(pClientThread.getID())));
+            mClients.forEach(client ->  client.sendMessage(new End(pClientThread.getID(), pClientThread.getUsername())));
         }
         mClients.forEach(client -> client.sendMessage(new main.java.network.message.server.Leave(pClientThread.getID())));
         mGameRoom.leaveGame(pClientThread, !leave.isFinal());
     }
 
-    GameRoom mGameRoom;
-    public RoomController mRoomController;
-    private LinkedList<ClientThread> mClients;
+
+    public interface Client {
+        void sendMessage(Message pServerMessage);
+    }
 }

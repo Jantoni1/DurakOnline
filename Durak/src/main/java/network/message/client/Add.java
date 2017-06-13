@@ -1,18 +1,18 @@
 package main.java.network.message.client;
 
 
-import main.java.controller.server.BaseServerVisitor;
+import main.java.controller.Visitor;
+import main.java.network.message.Message;
 import main.java.network.server.ClientThread;
-import main.java.controller.server.LobbyVisitor;
 
-public class Add extends BaseClientMessage {
+public class Add extends Message {
 
 
     public Add(int roomId) {
         this.roomId = roomId;
     }
 
-    public void accept(ClientThread pClientThread, BaseServerVisitor visitor) { visitor.visit(pClientThread, this);}
+    public void accept(ClientThread pClientThread, Visitor visitor) { visitor.visit(pClientThread, this);}
 
     private static final long serialVersionUID = 2L;
 

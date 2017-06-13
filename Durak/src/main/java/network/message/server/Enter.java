@@ -1,25 +1,24 @@
 package main.java.network.message.server;
 
-import main.java.controller.client.BaseClientVisitor;
-import main.java.controller.client.ClientConnectionVisitor;
-import main.java.controller.client.ClientGameplayVisitor;
+import main.java.controller.Visitor;
 import main.java.model.client.AnotherPlayer;
+import main.java.network.message.Message;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
-public class Enter extends BaseServerMessage {
+public class Enter extends Message {
     public Enter(String pRoomName, int pMaxPlayers, boolean pIfFailed ) {
         mRoomName = pRoomName;
         mMaxPlyaers = pMaxPlayers;
         mIfFailed = pIfFailed;
     }
 
-    public void accept(BaseClientVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 
-    public void setmPlayers(ArrayList<AnotherPlayer> mPlayers) {
+    public void setmPlayers(CopyOnWriteArrayList<AnotherPlayer> mPlayers) {
         this.mPlayers = mPlayers;
     }
 
@@ -36,7 +35,7 @@ public class Enter extends BaseServerMessage {
         return mIfFailed;
     }
 
-    public ArrayList<AnotherPlayer> getmPlayers() {
+    public CopyOnWriteArrayList<AnotherPlayer> getmPlayers() {
         return mPlayers;
     }
 
@@ -45,5 +44,5 @@ public class Enter extends BaseServerMessage {
     private final int mMaxPlyaers;
     private final String mRoomName;
     private boolean mIfFailed;
-    private ArrayList<AnotherPlayer> mPlayers;
+    private CopyOnWriteArrayList<AnotherPlayer> mPlayers;
 }

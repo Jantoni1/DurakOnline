@@ -18,6 +18,7 @@ import main.java.model.client.AnotherPlayer;
 import main.java.model.server.Card;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @brief class creating
@@ -83,7 +84,7 @@ public class PlayersLayout extends VBox {
         }
     }
 
-    private synchronized void createPlayersDeck(ArrayList<Card> pPlayersCard, boolean pIsMyTurn) {
+    private synchronized void createPlayersDeck(CopyOnWriteArrayList<Card> pPlayersCard, boolean pIsMyTurn) {
         synchronized(pPlayersCard) {
             getChildren().remove(mCards);
             mCards = new HBox();

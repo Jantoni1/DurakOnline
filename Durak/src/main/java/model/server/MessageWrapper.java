@@ -1,16 +1,16 @@
 package main.java.model.server;
 
-import main.java.network.message.server.BaseServerMessage;
+import main.java.network.message.Message;
 
 import java.util.ArrayList;
 
 public class MessageWrapper {
 
-    public MessageWrapper(BaseServerMessage baseServerMessage, ArrayList<Integer> playerIdArrayList) {
-        this.baseServerMessage = baseServerMessage;
+    public MessageWrapper(Message message, ArrayList<Integer> playerIdArrayList) {
+        this.message = message;
         this.playerIdArrayList = playerIdArrayList;
     }
 
-    BaseServerMessage baseServerMessage;
+    Message message;
     ArrayList<Integer> playerIdArrayList;
 }

@@ -1,10 +1,9 @@
 package main.java.network.server;
 
 
-import main.java.network.message.client.BaseClientMessage;
-import main.java.network.message.server.Welcome;
+import main.java.controller.server.RoomVisitor;
+import main.java.network.message.Message;
 import main.java.network.message.client.Leave;
-import main.java.network.message.server.BaseServerMessage;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,7 +13,7 @@ import java.net.SocketException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class ClientThread extends Thread {
+public class ClientThread extends Thread implements RoomVisitor.Client {
     private static int UID = 0;
     private final Socket mSocket;
     private final ClientConnectionListener mConnectionListener;
@@ -51,7 +50,7 @@ public class ClientThread extends Thread {
     public void run() {
         while (!mSocket.isClosed() && mSocket.isConnected()) {
             try {
-                final BaseClientMessage message = (BaseClientMessage) mObjectInputStream.readObject();
+                final Message message = (Message) mObjectInputStream.readObject();
 //                System.out.println(message.toString());
                 mListeners.forEach(l -> l.onClientMessage(this, message));
 
@@ -88,7 +87,7 @@ public class ClientThread extends Thread {
      *
      * @param pServerMessage Message to be sent from server to client
      */
-    public synchronized void sendMessage(BaseServerMessage pServerMessage) {
+    public synchronized void sendMessage(Message pServerMessage) {
         try {
             mObjectOutputStream.writeObject(pServerMessage);
             mObjectOutputStream.reset();
@@ -148,11 +147,13 @@ public class ClientThread extends Thread {
 
     public interface ClientMessageListener {
 
-        void onClientMessage(ClientThread ClientThread, BaseClientMessage clientMessage);
+        void onClientMessage(ClientThread ClientThread, Message clientMessage);
     }
 
     public interface ClientConnectionListener {
 
         void onDisconnect(ClientThread clientThread);
     }
+
+
 }

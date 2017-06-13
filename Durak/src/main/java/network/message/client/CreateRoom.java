@@ -1,14 +1,14 @@
 package main.java.network.message.client;
 
-import main.java.controller.server.BaseServerVisitor;
+import main.java.controller.Visitor;
+import main.java.network.message.Message;
 import main.java.network.server.ClientThread;
-import main.java.controller.server.LobbyVisitor;
 
 
-public class CreateRoom extends BaseClientMessage {
+public class CreateRoom extends Message {
 
 
-    public void accept(ClientThread pClientThread, BaseServerVisitor visitor) { visitor.visit(pClientThread, this);}
+    public void accept(ClientThread pClientThread, Visitor visitor) { visitor.visit(pClientThread, this);}
 
     public String toString() {
         return mRoomName;

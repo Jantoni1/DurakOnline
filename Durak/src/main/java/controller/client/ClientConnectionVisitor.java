@@ -1,22 +1,20 @@
 package main.java.controller.client;
 
+import main.java.controller.Visitor;
 import main.java.model.client.Player;
-import main.java.model.server.RoomInfo;
 import main.java.network.client.Client;
-import main.java.network.message.client.Add;
-import main.java.network.message.client.CreateRoom;
 import main.java.network.message.client.HandShake;
 import main.java.network.message.server.ExistingRooms;
+import main.java.network.message.Message;
 import main.java.network.message.server.RoomUpdate;
 import main.java.network.message.server.Welcome;
-import main.java.network.message.server.BaseServerMessage;
 import main.java.view.LobbyScene;
 import main.java.view.LoginScene;
 
 
-public class ClientConnectionVisitor extends BaseClientVisitor implements Client.MessageListener {
+public class ClientConnectionVisitor extends Visitor implements Client.MessageListener {
 
-//    public void visit(BaseServerMessage pBaseServerMessage) {}
+//    public void visit(Message pBaseServerMessage) {}
 
     public void visit(ExistingRooms pExistingRooms) {
         mClientManager.showLobbyScene(pExistingRooms);
@@ -43,7 +41,7 @@ public class ClientConnectionVisitor extends BaseClientVisitor implements Client
     }
 
     @Override
-    public void onClientMessage(BaseServerMessage pServerMessage) {
+    public void onClientMessage(Message pServerMessage) {
         pServerMessage.accept(this);
     }
 

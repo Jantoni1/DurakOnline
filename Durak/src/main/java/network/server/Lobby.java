@@ -2,7 +2,7 @@ package main.java.network.server;
 
 import main.java.controller.server.LobbyVisitor;
 import main.java.model.server.RoomInfo;
-import main.java.network.message.client.BaseClientMessage;
+import main.java.network.message.Message;
 import main.java.network.message.client.CreateRoom;
 import main.java.network.message.server.ExistingRooms;
 import main.java.network.message.server.RoomUpdate;
@@ -96,7 +96,7 @@ public class Lobby implements ClientThread.ClientMessageListener {
      * @param pClientMessage message from client
      */
     @Override
-    public synchronized void onClientMessage(ClientThread pClient, BaseClientMessage pClientMessage) {
+    public synchronized void onClientMessage(ClientThread pClient, Message pClientMessage) {
         pClientMessage.accept(pClient, mLobbyVisitor);
     }
 

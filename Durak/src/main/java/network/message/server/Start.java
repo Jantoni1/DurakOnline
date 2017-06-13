@@ -1,11 +1,11 @@
 package main.java.network.message.server;
 
 
-import main.java.controller.client.BaseClientVisitor;
-import main.java.controller.client.ClientConnectionVisitor;
+import main.java.controller.Visitor;
 import main.java.model.server.Card;
+import main.java.network.message.Message;
 
-public class Start extends BaseServerMessage {
+public class Start extends Message {
 
     public Start(Card card) {
         this.card = card;
@@ -15,7 +15,7 @@ public class Start extends BaseServerMessage {
         return card;
     }
 
-    public void accept(BaseClientVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 

@@ -1,16 +1,16 @@
 package main.java.network.message.server;
 
 
-import main.java.controller.client.BaseClientVisitor;
-import main.java.controller.client.ClientConnectionVisitor;
+import main.java.controller.Visitor;
+import main.java.network.message.Message;
 
-public class Chat extends BaseServerMessage {
+public class Chat extends Message {
 
     public Chat(String chatMessage) {
         this.chatMessage = chatMessage;
     }
 
-    public void accept(BaseClientVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 

@@ -1,8 +1,7 @@
 package main.java.network.client;
 
-import main.java.network.message.client.BaseClientMessage;
-import main.java.network.message.client.Leave;
-import main.java.network.message.server.BaseServerMessage;
+import main.java.network.message.Message;
+import main.java.network.message.Message;
 import main.java.network.message.server.Disconnected;
 
 import java.io.IOException;
@@ -43,7 +42,7 @@ public class Client extends Thread {
      *
      * @param pClientMessage message to sent
      */
-    public synchronized void sendMessage(BaseClientMessage pClientMessage) {
+    public synchronized void sendMessage(Message pClientMessage) {
         try {
             mObjectOutputStream.writeObject(pClientMessage);
             mObjectOutputStream.reset();
@@ -85,7 +84,7 @@ public class Client extends Thread {
     public void run() {
         while (!mSocket.isClosed()) {
             try {
-                BaseServerMessage message = (BaseServerMessage) mObjectInputStream.readObject();
+                Message message = (Message) mObjectInputStream.readObject();
                 Thread thread = new Thread() {
                     public void run() {
                         for (MessageListener listener : mListeners){
@@ -126,7 +125,7 @@ public class Client extends Thread {
          *
          * @param pServerMessage received message
          */
-        void onClientMessage(BaseServerMessage pServerMessage);
+        void onClientMessage(Message pServerMessage);
     }
 
 //    /**

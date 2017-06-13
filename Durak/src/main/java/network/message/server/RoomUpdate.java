@@ -1,14 +1,13 @@
 package main.java.network.message.server;
 
-import main.java.controller.client.BaseClientVisitor;
-import main.java.controller.client.ClientConnectionVisitor;
-import main.java.controller.client.ClientGameplayVisitor;
+import main.java.controller.Visitor;
 import main.java.model.server.RoomInfo;
+import main.java.network.message.Message;
 
 /**
  * Created by Kuba on 28.05.2017.
  */
-public class RoomUpdate extends BaseServerMessage{
+public class RoomUpdate extends Message {
 
     public RoomUpdate(RoomInfo pRoomInfo, boolean pIsCreated, boolean pIsDeleted) {
         mRoomInfo = pRoomInfo;
@@ -16,7 +15,7 @@ public class RoomUpdate extends BaseServerMessage{
         mIsDeleted = pIsDeleted;
     }
 
-    public void accept(BaseClientVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 

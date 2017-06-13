@@ -20,6 +20,7 @@ import main.java.view.RoomScene;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Kuba on 30.05.2017.
@@ -131,6 +132,15 @@ public class ClientManager {
         });
     }
 
+    public void showEndGameScreen(String pPlayersNick) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                mRoomScene.showEndGamePanel(pPlayersNick);
+            }
+        });
+    }
+
     public void sendCreateRoomMessage(String pRoomName, int pMaxPlayers) {
         mClient.sendMessage(new CreateRoom(pRoomName, pMaxPlayers));
     }
@@ -161,7 +171,7 @@ public class ClientManager {
         });
     }
 
-    public void updateMultiplePlayersView(ArrayList<AnotherPlayer> pOtherPlayers, boolean pFirstAttack) {
+    public void updateMultiplePlayersView(CopyOnWriteArrayList<AnotherPlayer> pOtherPlayers, boolean pFirstAttack) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {

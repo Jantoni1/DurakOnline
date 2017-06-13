@@ -28,6 +28,13 @@ public class RoomController {
     private LinkedList<ClientThread> mClients;
     private int mPassedAttackers;
 
+    public RoomController() {
+        mRoom = new Room("Name", 4);
+        mTalonController = new TalonController(mRoom.mTalon);
+        mPCController = new PlayersCollectionController(mRoom.mPlayerArrayList, mRoom.mCardsOnTable, mRoom.mMaxPlayers);
+        mPassedAttackers = mPCController.playersInGame - 1;
+    }
+
     /**
      *
      * @param pRoom contains all data about game
@@ -94,21 +101,16 @@ public class RoomController {
     /**
      * @brief method handling all play-type messages from clients
      *
-     * @param pClientThread
+     * @param pPlayerID ID ot message's author
      * @param pPlay
      */
-    public void updateGameStatus(ClientThread pClientThread, Play pPlay) {
-        if(defender().id == pClientThread.getID()) {
-            playDefenderSide(pClientThread, pPlay);
-//            System.out.println("DEFENDER");
-//            System.out.println("ATTACKING");
-//            mPCController.mCardsOnTable.attackingCards.forEach(card -> System.out.println(card.mFigure + " " + card.mSuit));
-//            System.out.println("DEFENDING");
-//            mPCController.mCardsOnTable.defendingCards.forEach(card -> System.out.println(card.mFigure + " " + card.mSuit));
+    public void updateGameStatus(int pPlayerID, Play pPlay) {
+        if(defender().id == pPlayerID) {
+            playDefenderSide(pPlayerID, pPlay);
 
         }
-        else if(attacker(0).id == pClientThread.getID()) {
-            playAttackerSide(pClientThread, pPlay);
+        else if(attacker(0).id == pPlayerID) {
+            playAttackerSide(pPlayerID, pPlay);
         }
     }
 
@@ -277,12 +279,12 @@ public class RoomController {
     /**
      * @brief handles attacker's play message
      *
-     * @param pClientThread message's author
+     * @param pPlayerID ID of message's author
      * @param pPlay play-type message containing information about played card
      */
-    public void playAttackerSide(ClientThread pClientThread, Play pPlay) {
+    public void playAttackerSide(int pPlayerID, Play pPlay) {
         if(playerPlayedNoCard(pPlay.getCardNumber())) {
-            attackerHasPassed(pClientThread.getID());
+            attackerHasPassed(pPlayerID);
             return;
         }
 
@@ -345,11 +347,11 @@ public class RoomController {
     /**
      * @brief handles defender's play message
      *
-     * @param pClientThread message's author
+     * @param pPlayerID ID of message's author
      * @param pPlay play-type message containing information about played card
      */
-    public void playDefenderSide(ClientThread pClientThread, Play pPlay) {
-        if(!noCardPassed(pClientThread.getID(), pPlay.getCardNumber())) {
+    public void playDefenderSide(int pPlayerID, Play pPlay) {
+        if(!noCardPassed(pPlayerID, pPlay.getCardNumber())) {
             sendPlayMessage(defender().id, pPlay.getCardNumber(), false);
             playerPlayedACard();
         }
@@ -407,7 +409,7 @@ public class RoomController {
             for(ClientThread clientThread : mClients) {
                 if(mPCController.findPlayer(clientThread.getID()).isPlaying()) {
                     final int durakId = clientThread.getID();
-                    mClients.forEach(client -> client.sendMessage(new End(durakId)));
+                    mClients.forEach(client -> client.sendMessage(new End(durakId, clientThread.getUsername())));
                     mRoom.isStarted = false;
                     return true;
                 }

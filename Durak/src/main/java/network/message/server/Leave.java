@@ -1,10 +1,10 @@
 package main.java.network.message.server;
 
 
-import main.java.controller.client.BaseClientVisitor;
-import main.java.controller.client.ClientConnectionVisitor;
+import main.java.controller.Visitor;
+import main.java.network.message.Message;
 
-public class Leave extends BaseServerMessage {
+public class Leave extends Message {
 
     public Leave(int playerId) {
         this.playerId = playerId;
@@ -12,7 +12,7 @@ public class Leave extends BaseServerMessage {
 
     private static final long serialVersionUID = 12L;
 
-    public void accept(BaseClientVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 

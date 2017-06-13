@@ -1,18 +1,18 @@
 package main.java.network.message.server;
 
-import main.java.controller.client.BaseClientVisitor;
-import main.java.controller.client.ClientConnectionVisitor;
+import main.java.controller.Visitor;
 import main.java.model.client.AnotherPlayer;
+import main.java.network.message.Message;
 
 
-public class Add extends BaseServerMessage {
+public class Add extends Message {
 
     public Add(String pUserName, int pUserId) {
         mAnotherPlayer = new AnotherPlayer(pUserName, pUserId);
     }
 
     @Override
-    public void accept(BaseClientVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 

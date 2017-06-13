@@ -1,10 +1,9 @@
 package main.java.controller.client;
+import main.java.controller.Visitor;
 import main.java.model.client.AnotherPlayer;
 import main.java.model.client.Room;
-import main.java.model.server.Card;
-import main.java.model.server.RoomInfo;
 import main.java.network.client.Client;
-import main.java.network.message.client.CreateRoom;
+import main.java.network.message.Message;
 import main.java.network.message.server.*;
 import main.java.view.LobbyScene;
 import main.java.view.LoginScene;
@@ -14,7 +13,7 @@ import java.util.ArrayList;
 /**
  * Created by Kuba on 28.05.2017.
  */
-public class ClientGameplayVisitor extends BaseClientVisitor implements Client.MessageListener {
+public class ClientGameplayVisitor extends Visitor implements Client.MessageListener {
 
     private final Client mClient;
     private final ClientManager mClientManager;
@@ -70,9 +69,14 @@ public class ClientGameplayVisitor extends BaseClientVisitor implements Client.M
                 player.getPlayerCards().clear();
             }
         });
+       onGameOver(pEnd.getmPlayerNick());
+    }
+
+    private void onGameOver(String pPlayersNick) {
         mRoom.clearCardsOnTable();
         mClientManager.hideTrumpCard();
         mClientManager.updateCardsOnTable(mRoom.getmAttackingCards(), mRoom.getmDefendingCards());
+        mClientManager.showEndGameScreen(pPlayersNick);
     }
 
     public void visit(NextRound pNextRound) {
@@ -181,7 +185,7 @@ public class ClientGameplayVisitor extends BaseClientVisitor implements Client.M
     }
 
 
-    public void onClientMessage(BaseServerMessage pServerMessage) {
+    public void onClientMessage(Message pServerMessage) {
         pServerMessage.accept(this);
     }
 

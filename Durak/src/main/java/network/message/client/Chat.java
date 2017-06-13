@@ -1,17 +1,17 @@
 package main.java.network.message.client;
 
 
-import main.java.controller.server.BaseServerVisitor;
+import main.java.controller.Visitor;
+import main.java.network.message.Message;
 import main.java.network.server.ClientThread;
-import main.java.controller.server.RoomVisitor;
 
-public class Chat extends BaseClientMessage {
+public class Chat extends Message {
 
     public Chat(String chatMessage) {
         this.chatMessage = chatMessage;
     }
 
-    public void accept(ClientThread pClientThread, BaseServerVisitor visitor) { visitor.visit(pClientThread, this);}
+    public void accept(ClientThread pClientThread, Visitor visitor) { visitor.visit(pClientThread, this);}
 
     public String getChatMessage() {
         return chatMessage;

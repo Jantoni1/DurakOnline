@@ -1,12 +1,12 @@
 package main.java.network.message.server;
 
 
-import main.java.controller.client.BaseClientVisitor;
-import main.java.controller.client.ClientConnectionVisitor;
+import main.java.controller.Visitor;
+import main.java.network.message.Message;
 
 import java.util.ArrayList;
 
-public class Next extends BaseServerMessage {
+public class Next extends Message {
 
     private int mPlayerId;
     private ArrayList<Integer> mAvailableCards;
@@ -18,7 +18,7 @@ public class Next extends BaseServerMessage {
         mTrueIfAttackingFalseIfDefending = pTrueIfAttackingFalseIfDefending;
     }
 
-    public void accept(BaseClientVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 

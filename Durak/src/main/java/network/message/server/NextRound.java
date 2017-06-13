@@ -1,17 +1,17 @@
 package main.java.network.message.server;
 
 
-import main.java.controller.client.BaseClientVisitor;
-import main.java.controller.client.ClientConnectionVisitor;
+import main.java.controller.Visitor;
+import main.java.network.message.Message;
 
-public class NextRound extends BaseServerMessage {
+public class NextRound extends Message {
 
     public NextRound(boolean isTaking, int playerId) {
         this.isTaking = isTaking;
         this.playerId = playerId;
     }
 
-    public void accept(BaseClientVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 

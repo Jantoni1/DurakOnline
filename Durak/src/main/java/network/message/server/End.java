@@ -1,15 +1,32 @@
 package main.java.network.message.server;
 
-import main.java.controller.client.BaseClientVisitor;
-import main.java.controller.client.ClientConnectionVisitor;
+import main.java.controller.Visitor;
+import main.java.network.message.Message;
 
 
-public class End extends BaseServerMessage {
+public class End extends Message {
 
+    private String mPlayerNick;
+    private int mPlayerID;
 
-    public void accept(BaseClientVisitor visitor) {
+    public End(int mPlayerID, String pPlayersNick) {
+        mPlayerNick = pPlayersNick;
+        this.mPlayerID = mPlayerID;
+    }
+
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
+
+    public String getmPlayerNick() {
+        return mPlayerNick;
+    }
+
+    public int getPlayerId() {
+        return mPlayerID;
+    }
+
+
 
     private static final long serialVersionUID = 24L;
 
@@ -17,10 +34,6 @@ public class End extends BaseServerMessage {
         return serialVersionUID;
     }
 
-    public End(int playerId) {
+    
 
-        this.playerId = playerId;
-    }
-
-    private int playerId;
 }

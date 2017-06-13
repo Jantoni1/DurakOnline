@@ -1,17 +1,17 @@
 package main.java.network.message.client;
 
 
-import main.java.controller.server.BaseServerVisitor;
+import main.java.controller.Visitor;
+import main.java.network.message.Message;
 import main.java.network.server.ClientThread;
-import main.java.controller.server.RoomVisitor;
 
-public class Ready extends BaseClientMessage {
+public class Ready extends Message {
 
     public Ready(boolean pReadyIfTrueUnreadyOtherwise) {
         this.mReadyIfTrueUnreadyOtherwise = pReadyIfTrueUnreadyOtherwise;
     }
 
-    public void accept(ClientThread pClientThread, BaseServerVisitor visitor) { visitor.visit(pClientThread, this);}
+    public void accept(ClientThread pClientThread, Visitor visitor) { visitor.visit(pClientThread, this);}
 
     private static final long serialVersionUID = 5L;
 

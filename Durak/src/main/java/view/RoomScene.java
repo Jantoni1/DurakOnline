@@ -16,9 +16,11 @@ import main.java.model.client.AnotherPlayer;
 import main.java.model.server.Card;
 import main.java.model.server.RoomInfo;
 import main.java.network.message.server.Chat;
+import sun.plugin.javascript.navig.Anchor;
 
 import java.util.ArrayList;
 import java.util.Observable;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RoomScene {
     private ClientManager mClientManager;
@@ -35,16 +37,34 @@ public class RoomScene {
     private CardsOnTable mCardsOnTable;
     private Button mPass;
     private ImageView mTrumpCard;
+    private GameOverPanel mGameOverPanel;
 
     public RoomScene(int pNumberOfPlayers, ClientManager pClientManager) {
         mMaxNumberOfPlayers = pNumberOfPlayers;
         mClientManager = pClientManager;
         mRoomScene = new Scene(createSceneRoot(), 1200, 800, Color.AZURE);
+        createRoomSceneComponents();
+    }
+
+    private void createRoomSceneComponents() {
         createPassButton();
         createOtherPlayers();
         configurePlayersView();
         createReadyPanel();
         createCardsOnTable();
+        createGameOverPanel();
+    }
+
+    private void createGameOverPanel() {
+        mGameOverPanel = new GameOverPanel();
+        mRoot.getChildren().add(mGameOverPanel);
+        AnchorPane.setLeftAnchor(mGameOverPanel, 200.0);
+        AnchorPane.setTopAnchor(mGameOverPanel, 275.0);
+    }
+
+    public void showEndGamePanel(String pPlayerNick) {
+        mGameOverPanel.createLabelAndButton(pPlayerNick);
+
     }
 
     public void setTrumpCard(Card pCard) {
@@ -104,6 +124,7 @@ public class RoomScene {
         if(pAnotherPlayer.getmPositionOnTable() == 0) {
             showPassButton(pAnotherPlayer.ismIsMyTurn() && !pFirstAttack);
         }
+        setPlayersViewProperty();
     }
 
     private void showPassButton(boolean trueIfMyTurn) {
@@ -116,7 +137,7 @@ public class RoomScene {
 
 
 
-    public void resetPlayersViewProperty(ArrayList<AnotherPlayer> pOtherPlayers, boolean pFirstAttack) {
+    public void resetPlayersViewProperty(CopyOnWriteArrayList<AnotherPlayer> pOtherPlayers, boolean pFirstAttack) {
         mOtherPlayers.forEach(player -> player.updateView(null));
         pOtherPlayers.forEach(player -> updateOtherPlayersViewProperty(player, pFirstAttack));
     }
@@ -124,6 +145,7 @@ public class RoomScene {
 
     public void updateReadyPlayersProperty(boolean pTrueIfReadyFalseIfUnready) {
         mReadyPanel.playerReady(pTrueIfReadyFalseIfUnready);
+        setPlayersViewProperty();
     }
 
     public void hideActivePanel() {
@@ -154,7 +176,7 @@ public class RoomScene {
     private void addPlayersToRoot() {
         mOtherPlayers.forEach(player -> mRoot.getChildren().add(player));
     }
-    
+
     private void setNumberOfPlayersToShow() {
         mOtherPlayers.add(mBottomPlayer);
         if(mMaxNumberOfPlayers != 2) {
@@ -194,7 +216,7 @@ public class RoomScene {
             AnchorPane.setRightAnchor(mRightPlayer, 420.0);
         }
         else {
-            AnchorPane.setRightAnchor(mRightPlayer, (-1)*mRightPlayer.getmSpacing()/2+480.0);
+            AnchorPane.setRightAnchor(mRightPlayer, (-1)*mRightPlayer.getmSpacing()/2 + 500.0);
         }
     }
 
@@ -208,11 +230,11 @@ public class RoomScene {
     }
 
     private void setLeftPlayerSpacing() {
-        if(Math.abs(mRightPlayer.getmSpacing() - 0.0) < epsilon) {
-            AnchorPane.setRightAnchor(mRightPlayer, 20.0);
+        if(Math.abs(mLeftPlayer.getmSpacing() - 0.0) < epsilon) {
+            AnchorPane.setLeftAnchor(mLeftPlayer, 20.0);
         }
         else {
-            AnchorPane.setRightAnchor(mRightPlayer, (-1)*mRightPlayer.getmSpacing()/2+80.0);
+            AnchorPane.setLeftAnchor(mLeftPlayer, (-1)*mLeftPlayer.getmSpacing()/2 + 100.0);
         }
     }
 
@@ -285,8 +307,6 @@ public class RoomScene {
             }
         });
     }
-
-
 
     private void createChatBox() {
         ChatBox chatBox = new ChatBox();

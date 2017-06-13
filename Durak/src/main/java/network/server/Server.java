@@ -1,20 +1,18 @@
 package main.java.network.server;
 
 import main.java.controller.server.ServerVisitor;
-import main.java.network.message.client.BaseClientMessage;
+import main.java.network.message.Message;
 import main.java.network.message.server.Welcome;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
-import java.util.logging.Logger;
 
 /**
  * ServerMain server thread - accepts new connections, and sends them to lobby
  */
 public class Server extends Thread implements ClientThread.ClientMessageListener {
-    private static final Logger LOG = Logger.getLogger(Server.class.getName());
 
     private ServerSocket mServerSocket;
     private LinkedList<ClientThread> mClients;
@@ -77,7 +75,7 @@ public class Server extends Thread implements ClientThread.ClientMessageListener
      * @param pClientMessage message from client to server
      */
     @Override
-    public synchronized void onClientMessage(ClientThread pClientThread, BaseClientMessage pClientMessage) {
+    public synchronized void onClientMessage(ClientThread pClientThread, Message pClientMessage) {
         pClientMessage.accept(pClientThread, mServerVisitor);
     }
 

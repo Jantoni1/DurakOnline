@@ -1,12 +1,23 @@
 package main.java.model.server;
 
 
+import main.java.model.client.AnotherPlayer;
+
 import java.util.ArrayList;
 
 public class Room {
 
+    public Talon mTalon;
+    public ArrayList<Player> mPlayerArrayList;
+    public CardsOnTable mCardsOnTable;
+    public boolean isStarted;
+    private static int mLobbyID = 0;
+    public  final String mLobbyName;
+    public final int mLobbyId;
+    public final int mMaxPlayers;
+    public final ArrayList<Integer> mPlayersReady;
+
     public Room(String pLobbyName, int pMaxPlayers) {
-//        this.state = State.ADDING;
         this.isStarted = false;
         mTalon = new Talon();
         mPlayerArrayList = new ArrayList<>();
@@ -18,17 +29,6 @@ public class Room {
         mLobbyID += 1;
         mPlayersReady = new ArrayList<>();
     }
-//    public enum State {
-//        ADDING, PLAYING
-//    }
-    public Talon mTalon;
-    public ArrayList<Player> mPlayerArrayList;
-    public CardsOnTable mCardsOnTable;
-//    public State state;
-    public boolean isStarted;
-    private static int mLobbyID = 0;
-    public  final String mLobbyName;
-    public final int mLobbyId;
-    public final int mMaxPlayers;
-    public final ArrayList<Integer> mPlayersReady;
+
+
 }

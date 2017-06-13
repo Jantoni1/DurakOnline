@@ -4,13 +4,14 @@ package main.java.model.client;
 import main.java.model.server.Card;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
 public class Room {
 
     private ArrayList<Card> mAttackingCards;
     private ArrayList<Card> mDefendingCards;
-    private ArrayList<AnotherPlayer> mOtherPlayers;
+    private CopyOnWriteArrayList<AnotherPlayer> mOtherPlayers;
     private int mTalonCards;
     private  final  int mPlayerID;
     private Card mTalonBottomCard;
@@ -20,7 +21,7 @@ public class Room {
     ArrayList<Integer> mAvailableCards;
     int mMaxCards;
 
-    public Room(String pRoomName, int pMaxPlayers, ArrayList<AnotherPlayer> pOtherPlayers, int pPlayerID) {
+    public Room(String pRoomName, int pMaxPlayers, CopyOnWriteArrayList<AnotherPlayer> pOtherPlayers, int pPlayerID) {
         mOtherPlayers = pOtherPlayers;
         mRoomName = pRoomName;
         mMaxPlayers = pMaxPlayers;
@@ -133,7 +134,7 @@ public class Room {
         return mDefendingCards;
     }
 
-    public ArrayList<AnotherPlayer> getmOtherPlayers() {
+    public CopyOnWriteArrayList<AnotherPlayer> getmOtherPlayers() {
         return mOtherPlayers;
     }
 

@@ -1,6 +1,7 @@
 package main.java.controller.server;
 
-import main.java.network.message.client.BaseClientMessage;
+import main.java.controller.Visitor;
+import main.java.network.message.Message;
 import main.java.network.message.client.HandShake;
 import main.java.network.server.ClientThread;
 import main.java.network.server.Lobby;
@@ -8,7 +9,7 @@ import main.java.network.server.Lobby;
 /**
  * Class created to process possible Handshake message, used by Server class exclusively
  */
-public class ServerVisitor extends BaseServerVisitor {
+public class ServerVisitor extends Visitor {
 
     /**
      * Create new  ServerVisitor
@@ -21,10 +22,10 @@ public class ServerVisitor extends BaseServerVisitor {
     /** If message is not an instance  of HandShake, ServerVisitor
      *
      * @param pClientThread message's author's thread
-     * @param pBaseClientMessage message to ignore
+     * @param pMessage message to ignore
      */
     @Override
-    public void visit(ClientThread pClientThread, BaseClientMessage pBaseClientMessage) {}
+    public void visit(ClientThread pClientThread, Message pMessage) {}
 
 
 

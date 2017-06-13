@@ -4,6 +4,9 @@ package main.java.model.server;
 import java.util.ArrayList;
 
 public class PlayersDeck {
+
+    public ArrayList<Card> playersDeck;
+
     PlayersDeck() {
         playersDeck = new ArrayList<>();
     }
@@ -56,5 +59,4 @@ public class PlayersDeck {
         }
         return pAvailableCards;
     }
-    public ArrayList<Card> playersDeck;
 }
