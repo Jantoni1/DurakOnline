@@ -31,13 +31,6 @@ public class ClientConnectionVisitor extends Visitor implements Client.MessageLi
 
     public void handshake(String playerNick, int playerId) {
         mLoginScene.sendLogin();
-        try {
-            mClientManager.getPlayerData().setmUserName(mLoginScene.getmUsername());
-            mClient.sendMessage(new HandShake(mClientManager.getPlayerData().getmUserName()));
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

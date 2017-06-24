@@ -106,8 +106,6 @@ public class Client extends Thread {
      * Disconnects fromm the server
      */
     public synchronized void disconnect() {
-        //sendMessage(new Leave(true));
-        //TODO ADD CHATBOX KILL no need?
         mListeners.forEach(l -> l.onClientMessage(new Disconnected()));
         try {
             mSocket.close();

@@ -17,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import main.java.controller.client.ClientManager;
 
 /**
  * Created by Kuba on 31.05.2017.
@@ -26,9 +27,11 @@ public class LoginScene {
     private Scene mLoginScene;
     private Boolean setLogin;
     private String mUsername;
+    private ClientManager mClientManager;
 
-    public  LoginScene() {
+    public  LoginScene(ClientManager pClientManager) {
         createLoginScene();
+        mClientManager = pClientManager;
     }
 
 
@@ -77,22 +80,6 @@ public class LoginScene {
         setLogin = true;
     }
 
-    public void sendNick(String nick) {
-        synchronized(setLogin) {
-            mUsername = nick;
-            setLogin.notify();
-        }
-    }
-
-    public String getmUsername() throws InterruptedException{
-        synchronized (setLogin) {
-            while(mUsername == null) {
-               setLogin.wait();
-            }
-            return mUsername;
-        }
-    }
-
     private Button createLoginButton(TextField pTextField, DropShadow pShadow) {
         Button mButton = new Button();
         mButton.addEventHandler(MouseEvent.MOUSE_ENTERED,
@@ -103,7 +90,8 @@ public class LoginScene {
                 });
         mButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                sendNick(pTextField.getText());
+                mClientManager.getPlayerData().setmUserName(pTextField.getText());
+                mClientManager.sendHandshakeMessage(pTextField.getText());
             }
         });
         mButton.setText("Login");

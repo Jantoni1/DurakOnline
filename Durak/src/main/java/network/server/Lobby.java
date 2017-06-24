@@ -40,7 +40,6 @@ public class Lobby implements ClientThread.ClientMessageListener {
     public ArrayList<RoomInfo> returnExistingRooms() {
         ArrayList<RoomInfo> existingRooms = new ArrayList<>();
         mGameLobbies.forEach(gameRoom -> {
-            System.out.println(gameRoom.getNumberOfPlayers());
             existingRooms.add(new RoomInfo(gameRoom.getLobbyName(), gameRoom.getLobbyId(), gameRoom.getNumberOfPlayers(), gameRoom.getMaxPlayers()));
         });
         return existingRooms;

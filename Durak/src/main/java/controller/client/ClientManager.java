@@ -39,7 +39,7 @@ public class ClientManager {
     public ClientManager(Stage pStage, String pIP, int pPort) throws IOException {
         mStage = pStage;
         mStage.setOnCloseRequest(event -> Platform.exit());
-        mLoginScene = new LoginScene();
+        mLoginScene = new LoginScene(this);
         mLobbyScene = new LobbyScene(this);
         initializeClient(pIP, pPort);
         setClientThreadShutdownWhenWindowIsClosed(pStage);
@@ -137,6 +137,15 @@ public class ClientManager {
             @Override
             public void run() {
                 mRoomScene.showEndGamePanel(pPlayersNick);
+            }
+        });
+    }
+
+    public void sendHandshakeMessage(String pPlayersNick) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                mClient.sendMessage(new HandShake(pPlayersNick));
             }
         });
     }
