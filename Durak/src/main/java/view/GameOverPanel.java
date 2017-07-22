@@ -35,7 +35,7 @@ public class GameOverPanel extends StackPane {
     }
 
     private void setGameOverPanel(String pPlayerNick) {
-        mLabel = new Label("Game over. Player " + pPlayerNick + " lost!");
+        mLabel = new Label("Game over. PlayerData " + pPlayerNick + " lost!");
         mLabel.setFont(Font.font("Roboto", FontWeight.LIGHT, 30));
         mLabel.setTextFill(Color.web("#009933"));
     }

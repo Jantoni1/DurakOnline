@@ -1,34 +1,93 @@
 package main.java.model.client;
 
 
-public class Player {
-    private String mUserName;
+import main.java.model.server.Card;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+public class Player implements Serializable {
+
+    private int mNumberOfCards;
+    private String mNick;
     private int mUserID;
+    private int mPositionOnTable;
+    private CopyOnWriteArrayList<Card> mPlayerCards;
+    private static final long serialVersionUID = 41L;
 
-    public Player() {
-    }
+    //Add jest odpowiedzialne za dodawanie wszystkich z klientem włącznie, dzięki czemu rozwiązuje się problem kolejności dodwania użytkowników do pokoju
+    boolean mIsMyTurn;
 
-    public void setmUserID(int mUserID) {
+    public Player() {}
+
+    public Player(String mNick, int mUserID) {
+        this.mNick = mNick;
         this.mUserID = mUserID;
+        mNumberOfCards = 0;
     }
 
-    public void setmUserName(String mUserName) {
-
-        this.mUserName = mUserName;
+    public CopyOnWriteArrayList<Card> getmPlayerCards() {
+        return mPlayerCards;
     }
 
-    public String getmUserName() {
+    public CopyOnWriteArrayList<Card> getPlayerCards() {
+        return mPlayerCards;
+    }
 
-        return mUserName;
+    public void setPlayerCards(CopyOnWriteArrayList<Card> mPlayerCards) {
+        this.mPlayerCards = mPlayerCards;
+    }
+
+    public void changeNumberOfCards(int pNumberOfCards) {
+        mNumberOfCards += pNumberOfCards;
+    }
+
+    public void addCard(Card pCard) {
+        mPlayerCards.add(pCard);
+    }
+
+    public void addMultipleCards(ArrayList<Card> pCards) {
+        if(mPlayerCards == null) {
+            mPlayerCards = new CopyOnWriteArrayList<>();
+        }
+        mPlayerCards.addAll(pCards);
+    }
+
+    public String getmNick() {
+        return mNick;
+    }
+
+    public int getmPositionOnTable() {
+        return mPositionOnTable;
+    }
+
+    public void setmPositionOnTable(int mPositionOnTable) {
+        this.mPositionOnTable = mPositionOnTable;
     }
 
     public int getmUserID() {
         return mUserID;
     }
 
-    public Player(String mUserName, int mUserID) {
+    public int getmNumberOfCards() {
 
-        this.mUserName = mUserName;
-        this.mUserID = mUserID;
+        return mNumberOfCards;
+    }
+
+    public void clearDeck() {
+        mPlayerCards.clear();
+    }
+
+    public void setNumberOfCards(int mNumberOfCards) {
+        this.mNumberOfCards = mNumberOfCards;
+    }
+
+    public boolean ismIsMyTurn() {
+        return mIsMyTurn;
+    }
+
+    public void setmIsMyTurn(boolean mIsMyTurn) {
+        this.mIsMyTurn = mIsMyTurn;
     }
 }

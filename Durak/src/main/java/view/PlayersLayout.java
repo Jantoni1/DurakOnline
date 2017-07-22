@@ -1,8 +1,6 @@
 package main.java.view;
 
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.effect.Glow;
@@ -13,9 +11,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import main.java.controller.client.ClientManager;
-import main.java.model.client.AnotherPlayer;
+import main.java.model.client.Player;
 import main.java.model.server.Card;
+import main.java.network.client.MessageBox;
+import main.java.network.message.client.Play;
 
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -25,6 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class PlayersLayout extends VBox {
 
+    private RoomScene.Model mModel;
     private HBox mCards;
     private Label mNick;
     private double mSpacing;
@@ -32,7 +32,8 @@ public class PlayersLayout extends VBox {
     private static int MAX_CARDS_DISPLAY = 15;
     private int firstDisplayed;
     private int lastDisplayed;
-    private ClientManager mClientManager;
+    private MessageBox mMessageBox;
+    private ArrayList<Integer> mAvailableCards;
 
     public boolean isUsed() {
         return isUsed;
@@ -42,7 +43,9 @@ public class PlayersLayout extends VBox {
         isUsed = used;
     }
 
-    public PlayersLayout(double pRotation, ClientManager pClientManager) {
+    public PlayersLayout(double pRotation, MessageBox pMessageBox, RoomScene.Model pModel) {
+        mModel = pModel;
+        mAvailableCards = new ArrayList<>();
         mCards = new HBox();
         mNick = new Label("");
         setDefaultProperties();
@@ -51,7 +54,18 @@ public class PlayersLayout extends VBox {
         setStyle("-fx-rotate: " + pRotation + ";");
         firstDisplayed = 0;
         lastDisplayed = 14;
-        mClientManager = pClientManager;
+        mMessageBox = pMessageBox;
+    }
+
+    public void setAvailableCards(ArrayList<Integer> pAvailableCards) {
+        synchronized(mAvailableCards) {
+            if(pAvailableCards != null) {
+                mAvailableCards = pAvailableCards;
+            }
+            else {
+                mAvailableCards.clear();
+            }
+        }
     }
 
     private void setNickProperties() {
@@ -68,13 +82,13 @@ public class PlayersLayout extends VBox {
 //        mCards.setStyle("-fx-rotate: 180;");
     }
 
-    public void updateView(AnotherPlayer pAnotherPlayer) {
-        if(pAnotherPlayer == null) {
+    public void updateView(Player pPlayer) {
+        if(pPlayer == null) {
             mCards.getChildren().clear();
             mNick.setVisible(false);
             return;
         }
-        changeView(pAnotherPlayer);
+        changeView(pPlayer);
     }
 
     private void fillDeckWithCardBacks(int numberOfCards) {
@@ -90,7 +104,7 @@ public class PlayersLayout extends VBox {
             mCards = new HBox();
             mCards.setSpacing(-75.0 + (400.0 / (double) pPlayersCard.size() - 1));
             for(Card card : pPlayersCard) {
-                mCards.getChildren().add(createCardBackImage(card, pIsMyTurn));
+                mCards.getChildren().add(createCardBackImage(pPlayersCard.indexOf(card), card, pIsMyTurn));
             }
             getChildren().add(mCards);
         }
@@ -98,25 +112,25 @@ public class PlayersLayout extends VBox {
 //        pPlayersCard.forEach(card -> mCards.getChildren().add(createCardBackImage(card, pIsMyTurn)));
     }
 
-    private void createDeck(AnotherPlayer pAnotherPlayer) {
-        if(pAnotherPlayer.getPlayerCards() != null) {
-            createPlayersDeck(pAnotherPlayer.getPlayerCards(), pAnotherPlayer.ismIsMyTurn());
+    private void createDeck(Player pPlayer) {
+        if(pPlayer.getPlayerCards() != null) {
+            createPlayersDeck(pPlayer.getPlayerCards(), pPlayer.ismIsMyTurn());
         }
         else {
-            fillDeckWithCardBacks(pAnotherPlayer.getmNumberOfCards());
+            fillDeckWithCardBacks(pPlayer.getmNumberOfCards());
         }
     }
 
-    private void changeView(AnotherPlayer pAnotherPlayer) {
-        createDeck(pAnotherPlayer);
-        if(!mNick.getText().equals(pAnotherPlayer.getmNick())) {
-            mNick.setText(pAnotherPlayer.getmNick());
+    private void changeView(Player pPlayer) {
+        createDeck(pPlayer);
+        if(!mNick.getText().equals(pPlayer.getmNick())) {
+            mNick.setText(pPlayer.getmNick());
         }
-        setNickEffect(pAnotherPlayer);
+        setNickEffect(pPlayer);
     }
 
-    private void setNickEffect(AnotherPlayer pAnotherPlayer) {
-        if(pAnotherPlayer.ismIsMyTurn()) {
+    private void setNickEffect(Player pPlayer) {
+        if(pPlayer.ismIsMyTurn()) {
             mNick.setEffect(new Glow(1));
             mNick.setFont(Font.font("Roboto", FontWeight.EXTRA_BOLD, 26));
             mNick.setStyle("-fx-stroke: black; -fx-stroke-width: 2;");
@@ -137,7 +151,7 @@ public class PlayersLayout extends VBox {
         mCards.setSpacing(-75.0 + (400.0 / (double) numberOfCards - 1));
         setOtherPlayersStackLength(numberOfCards);
         for(int i=0; i<numberOfCards; ++i) {
-            mCards.getChildren().add(createCardBackImage(null, false));
+            mCards.getChildren().add(createCardBackImage(-1, null, false));
         }
     }
 
@@ -157,20 +171,22 @@ public class PlayersLayout extends VBox {
         return new ImageView("main/resources/images/"+ pCard.mFigure.getFigure() + "_" + pCard.mSuit.getColor() + ".png");
     }
 
-    private void setCardOnClickEvent(ImageView pCardBack, Card pCard, boolean pIsItMe) {
-        if(pCard != null && pIsItMe) {
-            pCardBack.setOnMouseClicked((MouseEvent event) -> {
-                mClientManager.playACard(pCard);
-            });
+    private void setCardOnClickEvent(ImageView pCardBack, int pCardIndex, boolean pIsItMe) {
+        if(pCardIndex != -1 && pIsItMe) {
+            pCardBack.setOnMouseClicked((MouseEvent event) -> playACard(pCardIndex));
         }
-        else {
-            pCardBack.setDisable(true);
-        }
+        pCardBack.setPickOnBounds(pCardIndex != -1 && pIsItMe);
     }
 
-    private ImageView createCardBackImage(Card pCard, boolean pIsItMe) {
+    private void playACard(int pCardIndex) {
+            if(mModel.getAvailableCards().contains(pCardIndex)) {
+                mMessageBox.sendMessage(new Play(pCardIndex));
+            }
+    }
+
+    private ImageView createCardBackImage(int pCardIndex, Card pCard, boolean pIsItMe) {
         ImageView cardBack = pickProperCardImage(pCard);
-        setCardOnClickEvent(cardBack, pCard, pIsItMe);
+        setCardOnClickEvent(cardBack, pCardIndex, pIsItMe);
         return cardBack;
     }
 

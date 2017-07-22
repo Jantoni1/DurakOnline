@@ -1,5 +1,10 @@
 package main.java.controller.server;
 
+//uzupełnianie kart jest źle
+//zrobić porządny playerlayout
+//chat
+//algorytm gry
+//wygląd
 
 import main.java.model.server.Card;
 import main.java.model.server.CardsOnTable;

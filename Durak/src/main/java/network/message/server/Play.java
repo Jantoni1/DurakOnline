@@ -14,7 +14,7 @@ public class Play extends Message {
          mPlayerId = pPlayerId;
     }
 
-    public int getmPlayerId() {
+    public int getPlayerID() {
         return mPlayerId;
     }
 

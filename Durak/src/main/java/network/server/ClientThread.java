@@ -37,7 +37,7 @@ public class ClientThread extends Thread implements RoomVisitor.Client {
         mUID = UID;
         UID += 1;
         mListeners = new CopyOnWriteArrayList<>();
-        mUserName = "Player " + mUID;
+        mUserName = "PlayerData " + mUID;
         mObjectOutputStream = new ObjectOutputStream(mSocket.getOutputStream());
         mObjectInputStream = new ObjectInputStream(mSocket.getInputStream());
     }

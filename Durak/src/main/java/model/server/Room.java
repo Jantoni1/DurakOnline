@@ -1,7 +1,6 @@
 package main.java.model.server;
 
 
-import main.java.model.client.AnotherPlayer;
 
 import java.util.ArrayList;
 

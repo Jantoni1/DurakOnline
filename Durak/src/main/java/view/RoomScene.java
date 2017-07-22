@@ -1,47 +1,44 @@
 package main.java.view;
 
 
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import main.java.controller.client.ClientManager;
-import main.java.model.client.AnotherPlayer;
+import main.java.model.client.Player;
 import main.java.model.server.Card;
-import main.java.model.server.RoomInfo;
-import main.java.network.message.server.Chat;
-import sun.plugin.javascript.navig.Anchor;
+import main.java.network.client.MessageBox;
+import main.java.network.message.client.Leave;
+import main.java.network.message.client.Play;
 
 import java.util.ArrayList;
-import java.util.Observable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RoomScene {
-    private ClientManager mClientManager;
+    private MessageBox mMessageBox;
     private Scene mRoomScene;
     private AnchorPane mRoot;
     private PlayersLayout mLeftPlayer;
     private PlayersLayout mRightPlayer;
     private PlayersLayout mTopPlayer;
     private PlayersLayout mBottomPlayer;
+    private double epsilon = 0.0001;
     private ArrayList<PlayersLayout> mOtherPlayers;
-    private static double epsilon = 0.0001;
     private ReadyPanel mReadyPanel;
     private final int mMaxNumberOfPlayers;
     private CardsOnTable mCardsOnTable;
     private Button mPass;
     private ImageView mTrumpCard;
     private GameOverPanel mGameOverPanel;
+    private Model mModel;
 
-    public RoomScene(int pNumberOfPlayers, ClientManager pClientManager) {
+    public RoomScene(Model pModel, int pNumberOfPlayers, MessageBox pMessageBox) {
+        mModel = pModel;
         mMaxNumberOfPlayers = pNumberOfPlayers;
-        mClientManager = pClientManager;
+        mMessageBox = pMessageBox;
         mRoomScene = new Scene(createSceneRoot(), 1200, 800, Color.AZURE);
         createRoomSceneComponents();
     }
@@ -107,7 +104,7 @@ public class RoomScene {
     private void setPasButtonAction() {
         mPass.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                mClientManager.pass();
+                mMessageBox.sendMessage(new Play(-1));
             }
         });
     }
@@ -119,10 +116,10 @@ public class RoomScene {
         AnchorPane.setLeftAnchor(mCardsOnTable, 180.0);
     }
 
-    public synchronized void updateOtherPlayersViewProperty(AnotherPlayer pAnotherPlayer, boolean pFirstAttack) {
-        mOtherPlayers.get(pAnotherPlayer.getmPositionOnTable()).updateView(pAnotherPlayer);
-        if(pAnotherPlayer.getmPositionOnTable() == 0) {
-            showPassButton(pAnotherPlayer.ismIsMyTurn() && !pFirstAttack);
+    public synchronized void updateOtherPlayersViewProperty(Player pPlayer, boolean pFirstAttack) {
+        mOtherPlayers.get(pPlayer.getmPositionOnTable()).updateView(pPlayer);
+        if(pPlayer.getmPositionOnTable() == 0) {
+            showPassButton(pPlayer.ismIsMyTurn() && !pFirstAttack);
         }
         setPlayersViewProperty();
     }
@@ -137,7 +134,7 @@ public class RoomScene {
 
 
 
-    public void resetPlayersViewProperty(CopyOnWriteArrayList<AnotherPlayer> pOtherPlayers, boolean pFirstAttack) {
+    public void resetPlayersViewProperty(CopyOnWriteArrayList<Player> pOtherPlayers, boolean pFirstAttack) {
         mOtherPlayers.forEach(player -> player.updateView(null));
         pOtherPlayers.forEach(player -> updateOtherPlayersViewProperty(player, pFirstAttack));
     }
@@ -254,10 +251,10 @@ public class RoomScene {
 
     private void createOtherPlayers() {
         mOtherPlayers = new ArrayList<>();
-        mLeftPlayer = new PlayersLayout(-90.0, mClientManager);
-        mRightPlayer = new PlayersLayout(90.0, mClientManager);
-        mTopPlayer = new PlayersLayout(0.0, mClientManager);
-        mBottomPlayer = new PlayersLayout(0.0, mClientManager);
+        mLeftPlayer = new PlayersLayout(-90.0, mMessageBox, mModel);
+        mRightPlayer = new PlayersLayout(90.0, mMessageBox, mModel);
+        mTopPlayer = new PlayersLayout(0.0, mMessageBox, mModel);
+        mBottomPlayer = new PlayersLayout(0.0, mMessageBox, mModel);
 //        mRoot.getChildren().addAll(mLeftPlayer, mRightPlayer, mTopPlayer);
     }
 
@@ -270,7 +267,7 @@ public class RoomScene {
         return mRoot;
     }
     private void createReadyPanel() {
-        mReadyPanel = new ReadyPanel(mClientManager, mOtherPlayers.size());
+        mReadyPanel = new ReadyPanel(mMessageBox, mOtherPlayers.size());
         mRoot.getChildren().add(mReadyPanel);
         setReadyPanelProperties();
     }
@@ -303,7 +300,7 @@ public class RoomScene {
     private void setButtonAction(Button pButton) {
         pButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                mClientManager.leaveGame();
+                mMessageBox.sendMessage(new Leave(false));
             }
         });
     }
@@ -332,4 +329,7 @@ public class RoomScene {
         return mRoomScene;
     }
 
+    public interface Model {
+        ArrayList<Integer> getAvailableCards();
+    }
 }

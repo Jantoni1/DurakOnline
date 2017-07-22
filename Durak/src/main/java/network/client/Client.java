@@ -17,7 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Running thread for interacting wt server-side va Socket connection
  */
-public class Client extends Thread {
+public class Client extends Thread implements ClientConnection {
     private Socket mSocket;
     private final ObjectOutputStream mObjectOutputStream;
     private final ObjectInputStream mObjectInputStream;

@@ -1,7 +1,7 @@
 package main.java.network.message.server;
 
 import main.java.controller.Visitor;
-import main.java.model.client.AnotherPlayer;
+import main.java.model.client.Player;
 import main.java.network.message.Message;
 
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -18,7 +18,7 @@ public class Enter extends Message {
         visitor.visit(this);
     }
 
-    public void setmPlayers(CopyOnWriteArrayList<AnotherPlayer> mPlayers) {
+    public void setmPlayers(CopyOnWriteArrayList<Player> mPlayers) {
         this.mPlayers = mPlayers;
     }
 
@@ -35,7 +35,7 @@ public class Enter extends Message {
         return mIfFailed;
     }
 
-    public CopyOnWriteArrayList<AnotherPlayer> getmPlayers() {
+    public CopyOnWriteArrayList<Player> getmPlayers() {
         return mPlayers;
     }
 
@@ -44,5 +44,5 @@ public class Enter extends Message {
     private final int mMaxPlyaers;
     private final String mRoomName;
     private boolean mIfFailed;
-    private CopyOnWriteArrayList<AnotherPlayer> mPlayers;
+    private CopyOnWriteArrayList<Player> mPlayers;
 }

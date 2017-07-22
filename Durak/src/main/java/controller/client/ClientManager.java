@@ -2,16 +2,12 @@ package main.java.controller.client;
 
 import javafx.application.Platform;
 import javafx.event.EventHandler;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import main.java.controller.client.ClientConnectionVisitor;
-import main.java.controller.client.ClientGameplayVisitor;
-import main.java.model.client.AnotherPlayer;
-import main.java.model.client.Player;
-import main.java.model.server.Card;
-import main.java.network.client.Client;
+import main.java.model.client.PlayerData;
+import main.java.network.client.ClientConnection;
 import main.java.network.message.client.*;
-import main.java.network.message.server.Enter;
 import main.java.network.message.server.ExistingRooms;
 import main.java.network.message.server.RoomUpdate;
 import main.java.view.LobbyScene;
@@ -19,48 +15,28 @@ import main.java.view.LoginScene;
 import main.java.view.RoomScene;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Kuba on 30.05.2017.
  */
 public class ClientManager {
 
-    private Client mClient;
+    private ClientConnection mClient;
     private Stage mStage;
     private LobbyScene mLobbyScene;
     private LoginScene mLoginScene;
     private RoomScene mRoomScene;
     private ClientConnectionVisitor mClientConnectionVisitor;
     private ClientGameplayVisitor mClientGameplayVisitor;
-    private Player mPlayerData;
+    private PlayerData mPlayerDataData;
 
-    public ClientManager(Stage pStage, String pIP, int pPort) throws IOException {
+    public ClientManager(Stage pStage, ClientConnection pClient) throws IOException {
         mStage = pStage;
         mStage.setOnCloseRequest(event -> Platform.exit());
         mLoginScene = new LoginScene(this);
         mLobbyScene = new LobbyScene(this);
-        initializeClient(pIP, pPort);
+        initializeClient(pClient);
         setClientThreadShutdownWhenWindowIsClosed(pStage);
-    }
-
-    public void setTrumpCard(Card pCard) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                mRoomScene.setTrumpCard(pCard);
-            }
-        });
-    }
-
-    public void hideTrumpCard() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                mRoomScene.hideTrumpCard();
-            }
-        });
     }
 
     private void setClientThreadShutdownWhenWindowIsClosed(Stage stage) {
@@ -73,8 +49,8 @@ public class ClientManager {
         });
     }
 
-    private void initializeClient(String pIP, int pPort) throws IOException {
-            mClient = new Client(pIP, pPort);
+    private void initializeClient(ClientConnection pClient) throws IOException {
+            mClient = pClient;
             mClientConnectionVisitor = new ClientConnectionVisitor(mClient, this, mLobbyScene, mLoginScene);
             mClientGameplayVisitor = new ClientGameplayVisitor(mClient, this, mLobbyScene, mLoginScene);
             mClient.registerListener(mClientConnectionVisitor);
@@ -83,12 +59,12 @@ public class ClientManager {
             showloginScene();
     }
 
-    public void setPlayerData(Player pPlayerData) {
-        mPlayerData = pPlayerData;
+    public void setPlayerData(PlayerData pPlayerDataData) {
+        mPlayerDataData = pPlayerDataData;
     }
 
-    public Player getPlayerData() {
-        return mPlayerData;
+    public PlayerData getPlayerData() {
+        return mPlayerDataData;
     }
 
 //    public void setManager(Stage pStage) {
@@ -107,39 +83,11 @@ public class ClientManager {
             }
         });
     }
-    public void createRoomScene(int pNumberOfPlayers) {
-        mRoomScene = new RoomScene(pNumberOfPlayers, this);
-    }
-
-    public void leaveGame() {
-        mClient.sendMessage(new Leave(false));
-    }
-
-    public void getReady(boolean trueIfReadyFalseIfUnready) {
-        mClient.sendMessage(new Ready(trueIfReadyFalseIfUnready));
-    }
 
     public void sendChatMessage(String pChatMessage) {
         mClient.sendMessage(new Chat(pChatMessage));
     }
 
-    public void updateRoomScene(AnotherPlayer pAnotherPlayer, boolean pTrueIfFirstAttack) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                mRoomScene.updateOtherPlayersViewProperty(pAnotherPlayer, pTrueIfFirstAttack);
-            }
-        });
-    }
-
-    public void showEndGameScreen(String pPlayersNick) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                mRoomScene.showEndGamePanel(pPlayersNick);
-            }
-        });
-    }
 
     public void sendHandshakeMessage(String pPlayersNick) {
         Platform.runLater(new Runnable() {
@@ -158,48 +106,6 @@ public class ClientManager {
         mClient.sendMessage(new Add(pRoomID));
     }
 
-    public void pass() {
-        mClient.sendMessage(new Play(-1));
-    }
-
-    public void playACard(Card pCard) {
-        int cardsIndex = mClientGameplayVisitor.getmRoom().getCardsIndex(pCard);
-        if(cardsIndex != -1) {
-            mClient.sendMessage(new Play(cardsIndex));
-            mClientGameplayVisitor.getmRoom().removeCard(cardsIndex);
-            mRoomScene.resetPlayersViewProperty(mClientGameplayVisitor.getmRoom().getmOtherPlayers(), false);
-        }
-    }
-
-    public void updateCardsOnTable(ArrayList<Card> pAttackingCards, ArrayList<Card> pDefendingCards) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                mRoomScene.updateCardsOnTable(pAttackingCards, pDefendingCards);
-            }
-        });
-    }
-
-    public void updateMultiplePlayersView(CopyOnWriteArrayList<AnotherPlayer> pOtherPlayers, boolean pFirstAttack) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                mRoomScene.resetPlayersViewProperty(pOtherPlayers, pFirstAttack);
-//                mStage.show();
-            }
-        });
-    }
-
-    public void setReadyPanelVisible(int pNumberOfPlayers) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                mRoomScene.activateReadyPanel(pNumberOfPlayers);
-//                mStage.show();
-            }
-        });
-    }
-
     public void showLobbyScene(ExistingRooms pExistingRooms) {
         Platform.runLater(new Runnable() {
             @Override
@@ -211,11 +117,11 @@ public class ClientManager {
         });
     }
 
-    public void showRoomScene() {
+    public void showScene(Scene pScene) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                mStage.setScene(mRoomScene.getRoomScene());
+                mStage.setScene(pScene);
                 mStage.show();
             }
         });
@@ -232,19 +138,10 @@ public class ClientManager {
             }
         });
     }
-
-    public void setReady(boolean pTrueForReadyFalseForUnready) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                mRoomScene.updateReadyPlayersProperty(pTrueForReadyFalseForUnready);
-            }
-        });
-    }
 //    public void gameScene() {
 ////        mMainStage.setScene(new RoomScene(pGame).getScene());
 //    }
-//    public interface Player {
+//    public interface PlayerData {
 //        public int getmPositionOnTable()
 //    }
 
