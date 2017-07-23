@@ -27,7 +27,7 @@ public class ClientManager {
     private LoginScene mLoginScene;
     private RoomScene mRoomScene;
     private ClientConnectionVisitor mClientConnectionVisitor;
-    private ClientGameplayVisitor mClientGameplayVisitor;
+    private ClientRoomVisitor mClientRoomVisitor;
     private PlayerData mPlayerDataData;
 
     public ClientManager(Stage pStage, ClientConnection pClient) throws IOException {
@@ -52,9 +52,9 @@ public class ClientManager {
     private void initializeClient(ClientConnection pClient) throws IOException {
             mClient = pClient;
             mClientConnectionVisitor = new ClientConnectionVisitor(mClient, this, mLobbyScene, mLoginScene);
-            mClientGameplayVisitor = new ClientGameplayVisitor(mClient, this, mLobbyScene, mLoginScene);
+            mClientRoomVisitor = new ClientRoomVisitor(mClient, this, mLobbyScene, mLoginScene);
             mClient.registerListener(mClientConnectionVisitor);
-            mClient.registerListener(mClientGameplayVisitor);
+            mClient.registerListener(mClientRoomVisitor);
             mClient.start();
             showloginScene();
     }

@@ -38,10 +38,19 @@ public class PlayersCollectionController {
         if(pIsTaking) {
             shift = 2;
         }
-        defenderIndex += shift;
-        defenderIndex %= mMaxPlayers;
-        attackerIndex += defenderIndex;
-        getNextAttacker(1);
+        while(shift != 0) {
+            ++defenderIndex;
+            defenderIndex %= mMaxPlayers;
+            if(mPlayerArrayList.get(defenderIndex).isPlaying()) {
+                --shift;
+            }
+        }
+        attackerIndex = (defenderIndex + mMaxPlayers - 1) % mMaxPlayers;
+
+        while(!mPlayerArrayList.get(attackerIndex).isPlaying()) {
+            attackerIndex += mMaxPlayers - 1;
+            attackerIndex %= mMaxPlayers;
+        }
         return mPlayerArrayList.get(defenderIndex).id;
     }
 

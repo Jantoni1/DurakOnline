@@ -27,6 +27,9 @@ public class Room {
         mLobbyId = mLobbyID;
         mLobbyID += 1;
         mPlayersReady = new ArrayList<>();
+        for(int i = 0; i<mMaxPlayers; ++i) {
+            mPlayersReady.add(-1);
+        }
     }
 
 

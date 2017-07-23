@@ -18,16 +18,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Created by Kuba on 28.05.2017.
  */
-public class ClientGameplayVisitor extends Visitor implements Client.MessageListener {
+public class ClientRoomVisitor extends Visitor implements Client.MessageListener {
 
     private final ClientConnection mClient;
     private final ClientManager mClientManager;
     private final LobbyScene mLobbyScene;
     private RoomScene mRoomScene;
     private Room mRoom;
-    private static final int STANDARD_NUMBER_OF_PLAYER_CARDS = 5;
 
-    public ClientGameplayVisitor(ClientConnection pClient, ClientManager pClientManager, LobbyScene pLobbyScene, LoginScene pLoginScene) {
+    public ClientRoomVisitor(ClientConnection pClient, ClientManager pClientManager, LobbyScene pLobbyScene, LoginScene pLoginScene) {
         mClient = pClient;
         mClientManager = pClientManager;
         mLobbyScene = pLobbyScene;
@@ -63,7 +62,6 @@ public class ClientGameplayVisitor extends Visitor implements Client.MessageList
 
     public void visit(Start pStart) {
         setReadyPanelVisible(0);
-        giveOtherPlayersStartingCards();
         setTrumpCard(pStart.getCard());
         updateMultiplePlayersView(mRoom.getPlayers(), true);
     }
@@ -116,14 +114,6 @@ public class ClientGameplayVisitor extends Visitor implements Client.MessageList
         return pPositionOnTable == 0;
     }
 
-    private void giveOtherPlayersStartingCards() {
-        for(Player player : mRoom.getPlayers()) {
-            if(player.getmPositionOnTable() != 0) {
-                player.setNumberOfCards(STANDARD_NUMBER_OF_PLAYER_CARDS);
-            }
-        }
-    }
-
     private int findMe() {
         Player me = null;
         for(Player player : mRoom.getPlayers()) {
@@ -135,17 +125,8 @@ public class ClientGameplayVisitor extends Visitor implements Client.MessageList
     }
 
     public void visit(Get pGet) {
-        mRoom.getPlayers().get(findMe()).addMultipleCards(pGet.getCardArrayList());
-        addMissingCardsToPlayers();
+        mRoom.addCards(pGet.getPlayerID(), pGet.getCardArrayList(), pGet.getNumberOfCards());
         updateRoomScene(mRoom.getPlayers().get(findMe()), mRoom.isTurnBeginning());
-    }
-
-    private void addMissingCardsToPlayers() {
-        mRoom.getPlayers().forEach(player -> {
-            if(player.getmNumberOfCards() < STANDARD_NUMBER_OF_PLAYER_CARDS) {
-                player.setNumberOfCards(STANDARD_NUMBER_OF_PLAYER_CARDS);
-            }
-        });
     }
 
     private void getCardOnTable(boolean isAttacking, Card pCard) {

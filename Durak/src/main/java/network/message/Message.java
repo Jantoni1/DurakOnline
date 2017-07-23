@@ -2,8 +2,6 @@ package main.java.network.message;
 
 
 import main.java.controller.Visitor;
-import main.java.controller.client.ClientConnectionVisitor;
-import main.java.controller.client.ClientGameplayVisitor;
 import main.java.network.server.ClientThread;
 
 import java.io.Serializable;

@@ -38,29 +38,30 @@ public class RoomVisitor extends Visitor {
 
     public void visit(ClientThread pClientThread, Ready pReady) {
         if(!mRoomController.mRoom.isStarted) {
-            acceptReadyStatement(pClientThread.getID(), pReady.ismReadyIfTrueUnreadyOtherwise());
+            acceptReadyStatement(mClients.indexOf(pClientThread), pClientThread.getID(), pReady.ismReadyIfTrueUnreadyOtherwise());
         }
     }
 
-    private void acceptReadyStatement(int pClientID, boolean pReadyOrUnready) {
+    private void acceptReadyStatement(int pIndex, int pClientID, boolean pReadyOrUnready) {
         if(pReadyOrUnready) {
-            addReadyPlayer(pClientID);
+            addReadyPlayer(pIndex, pClientID);
         }
         else {
-            removeUnreadyPlayer(pClientID);
+            removeUnreadyPlayer(pIndex);
         }
     }
 
-    private void addReadyPlayer(int pClientID) {
-        mRoomController.mRoom.mPlayersReady.add(pClientID);
+    private void addReadyPlayer(int pIndex, int pClientID) {
+        mRoomController.mRoom.mPlayersReady.set(pIndex, pClientID);
         mClients.forEach(client -> client.sendMessage(new main.java.network.message.server.Ready(true)));
-        if(mRoomController.mRoom.mPlayersReady.size() == mRoomController.getMaxPlayers()) {
+        mRoomController.mRoom.mPlayersReady.forEach(player -> System.out.println(player));
+        if(!mRoomController.mRoom.mPlayersReady.contains(-1)) {
             mRoomController.startGame();
         }
     }
 
-    private void removeUnreadyPlayer(int pClientID) {
-        mRoomController.mRoom.mPlayersReady.remove(pClientID);
+    private void removeUnreadyPlayer(int pIndex) {
+        mRoomController.mRoom.mPlayersReady.set(pIndex, -1);
         mClients.forEach(client -> client.sendMessage(new main.java.network.message.server.Ready(false)));
     }
 
@@ -71,6 +72,9 @@ public class RoomVisitor extends Visitor {
     public void visit(ClientThread pClientThread, Leave leave) {
         if(leave.isFinal()) {
             mClients.remove(pClientThread);
+        }
+        for(int i = 0; i < mGameRoom.getMaxPlayers(); ++i) {
+            mRoomController.mRoom.mPlayersReady.set(i, -1);
         }
         if(mRoomController.mRoom.isStarted) {
             mRoomController.resetRoom();

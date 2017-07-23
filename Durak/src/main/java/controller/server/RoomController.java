@@ -1,10 +1,9 @@
 package main.java.controller.server;
 
-//uzupełnianie kart jest źle
 //zrobić porządny playerlayout
 //chat
-//algorytm gry
 //wygląd
+//kniec gierki pewnie dalej nie działa no bo nie działał jeszcze za starych dobrych czasów
 
 import main.java.model.server.Card;
 import main.java.model.server.CardsOnTable;
@@ -98,7 +97,7 @@ public class RoomController {
     private void sendGameInitialMessages() {
         mClients.forEach(player -> {
             player.sendMessage(new Start(mTalonController.mTalon.get(0)));
-            player.sendMessage(new Get(mTalonController.dealCards(mPCController.findPlayer(player.getID()))));
+            sendNewCardsMessages(player);
             player.sendMessage(new Next(attacker(0).id, getInitialAvailableCardsIndices(), true));
         });
     }
@@ -112,7 +111,6 @@ public class RoomController {
     public void updateGameStatus(int pPlayerID, Play pPlay) {
         if(defender().id == pPlayerID) {
             playDefenderSide(pPlayerID, pPlay);
-
         }
         else if(attacker(0).id == pPlayerID) {
             playAttackerSide(pPlayerID, pPlay);
@@ -240,7 +238,6 @@ public class RoomController {
     private void clearTableAndGetNextAttacker(boolean pTrueIfTakesFalseOtherwise) {
         mPassedAttackers = mPCController.playersInGame - 1;
         mRoom.mCardsOnTable.endTurn();
-        mPCController.getNextDefender(pTrueIfTakesFalseOtherwise);
     }
 
     /**
@@ -249,10 +246,15 @@ public class RoomController {
     private void sendNextRoundMessages(boolean pTrueIfTakesFalseOtherwise) {
         mClients.forEach(player -> {
             player.sendMessage(new NextRound(pTrueIfTakesFalseOtherwise, defender().id));
-            player.sendMessage(new Get(mTalonController.dealCards(mPCController.findPlayer(player.getID()))));
+            sendNewCardsMessages(player);
         });
+        mPCController.getNextDefender(pTrueIfTakesFalseOtherwise);
     }
 
+    private void sendNewCardsMessages(ClientThread pPlayer) {
+        ArrayList<Card> cards = mTalonController.dealCards(mPCController.findPlayer(pPlayer.getID()));
+        mClients.forEach(player -> player.sendMessage(new Get(pPlayer.getID(), cards.size(), player.getID() == pPlayer.getID() ? cards : null)));
+    }
     /**
      * @brief checks if all attackers have gave up this round
      *
@@ -382,7 +384,8 @@ public class RoomController {
                 conductNextRound(false);
             }
             else {
-                sendNextAttackerInfo(attacker(1).id);
+                sendNextAttackerInfo(attacker(0).id);
+                mPassedAttackers = mPCController.playersInGame - 1;
             }
         }
     }

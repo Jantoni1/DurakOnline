@@ -52,12 +52,22 @@ public class Room implements RoomScene.Model{
     public void removeCard(int pCardIndex) {
         getMe().getPlayerCards().remove(pCardIndex);
     }
+
+    public void addCards(int pPlayerID, ArrayList<Card> pCards, int pNumberOfCards) {
+        if(pCards != null) {
+            getMe().addMultipleCards(pCards);
+        }
+        else {
+            findPlayer(pPlayerID).changeNumberOfCards(pNumberOfCards);
+        }
+    }
+
     public void removeCard(int pPlayerID, Card pCard) {
         if(getMe() == findPlayer(pPlayerID)) {
             getMe().getmPlayerCards().removeIf(card -> card.equals(pCard));
         }
         else {
-            findPlayer(pPlayerID).playOneCard();
+            findPlayer(pPlayerID).changeNumberOfCards(-1);
         }
     }
 
