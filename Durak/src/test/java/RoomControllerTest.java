@@ -26,7 +26,7 @@
 //        for (int i = 0; i < 3; ++i) {
 //            mRoom.mPlayerArrayList.add(new PlayerData(i));
 //            mRoom.mPlayersReady.add(i);
-//            mRoom.mPlayerArrayList.get(i).mPlayersDeck.playersDeck.add(new Card(Figures.ACE, Suit.DIAMONDS));
+//            mRoom.mPlayerArrayList.get(i).mPlayersDeck.playersDeck.add(new CardLayout(Figures.ACE, Suit.DIAMONDS));
 //        }
 //        mRoom.mPlayerArrayList.add(new PlayerData(3));
 //        mRoomController = new RoomController(mRoom, clients);

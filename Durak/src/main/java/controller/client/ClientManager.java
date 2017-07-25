@@ -142,7 +142,7 @@ public class ClientManager {
 ////        mMainStage.setScene(new RoomScene(pGame).getScene());
 //    }
 //    public interface PlayerData {
-//        public int getmPositionOnTable()
+//        public int getPositionOnTable()
 //    }
 
 }

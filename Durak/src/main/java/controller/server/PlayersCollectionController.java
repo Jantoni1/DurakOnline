@@ -91,8 +91,8 @@ public class PlayersCollectionController {
         return attackerIndex;
     }
 
-//    public ArrayList<Card> playCard(int pPlayerId, ArrayList<Integer> pCardNumbers, boolean isAttacking) {
-//        ArrayList<Card> cardArrayList = new ArrayList<>();
+//    public ArrayList<CardLayout> playCard(int pPlayerId, ArrayList<Integer> pCardNumbers, boolean isAttacking) {
+//        ArrayList<CardLayout> cardArrayList = new ArrayList<>();
 //        for(int cardId : pCardNumbers) {
 //            cardArrayList.add(playCard(findPlayer(pPlayerId), cardId, isAttacking));
 //        }

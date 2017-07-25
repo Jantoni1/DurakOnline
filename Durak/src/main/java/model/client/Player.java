@@ -27,10 +27,6 @@ public class Player implements Serializable {
         mNumberOfCards = 0;
     }
 
-    public CopyOnWriteArrayList<Card> getmPlayerCards() {
-        return mPlayerCards;
-    }
-
     public CopyOnWriteArrayList<Card> getPlayerCards() {
         return mPlayerCards;
     }
@@ -58,7 +54,7 @@ public class Player implements Serializable {
         return mNick;
     }
 
-    public int getmPositionOnTable() {
+    public int getPositionOnTable() {
         return mPositionOnTable;
     }
 
@@ -66,11 +62,11 @@ public class Player implements Serializable {
         this.mPositionOnTable = mPositionOnTable;
     }
 
-    public int getmUserID() {
+    public int getUserID() {
         return mUserID;
     }
 
-    public int getmNumberOfCards() {
+    public int getNumberOfCards() {
 
         return mNumberOfCards;
     }

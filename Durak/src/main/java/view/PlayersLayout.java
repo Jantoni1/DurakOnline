@@ -24,7 +24,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class PlayersLayout extends VBox {
 
-    private RoomScene.Model mModel;
+    private Model mModel;
+
     private HBox mCards;
     private Label mNick;
     private double mSpacing;
@@ -43,7 +44,7 @@ public class PlayersLayout extends VBox {
         isUsed = used;
     }
 
-    public PlayersLayout(double pRotation, MessageBox pMessageBox, RoomScene.Model pModel) {
+    public PlayersLayout(double pRotation, MessageBox pMessageBox, Model pModel) {
         mModel = pModel;
         mAvailableCards = new ArrayList<>();
         mCards = new HBox();
@@ -117,7 +118,7 @@ public class PlayersLayout extends VBox {
             createPlayersDeck(pPlayer.getPlayerCards(), pPlayer.ismIsMyTurn());
         }
         else {
-            fillDeckWithCardBacks(pPlayer.getmNumberOfCards());
+            fillDeckWithCardBacks(pPlayer.getNumberOfCards());
         }
     }
 

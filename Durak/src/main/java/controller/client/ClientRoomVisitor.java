@@ -34,7 +34,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
 
     public void visit(Enter pEnter) {
         if(!pEnter.ismIfFailed()) {
-            mRoom = new Room(pEnter.getmRoomName(), pEnter.getmMaxplyaers(), pEnter.getmPlayers(), mClientManager.getPlayerData().getmUserID());
+            mRoom = new Room(pEnter.getmRoomName(), pEnter.getmMaxplyaers(), pEnter.getmPlayers(), mClientManager.getPlayerData().getUserID());
             mRoomScene = new RoomScene(mRoom, pEnter.getmMaxplyaers(), mClient);
             updateMultiplePlayersView(mRoom.getPlayers(), true);
             setReadyPanelVisible(mRoom.getPlayers().size());
@@ -43,7 +43,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
     }
 
     public void visit(Add pAdd) {
-        if(pAdd.getmPlayer().getmUserID() != mClientManager.getPlayerData().getmUserID()) {
+        if(pAdd.getmPlayer().getUserID() != mClientManager.getPlayerData().getUserID()) {
             mRoom.addPlayer(pAdd.getmPlayer());
             updateRoomScene(pAdd.getmPlayer(), true);
             setReadyPanelVisible(mRoom.getPlayers().size());
@@ -79,7 +79,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
     private void onGameOver(String pPlayersNick) {
         mRoom.clearCardsOnTable();
         hideTrumpCard();
-        updateCardsOnTable(mRoom.getmAttackingCards(), mRoom.getmDefendingCards());
+        updateCardsOnTable(mRoom.getAttackingCards(), mRoom.getDefendingCards());
         showEndGameScreen(pPlayersNick);
     }
 
@@ -89,24 +89,24 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
             updateMultiplePlayersView(mRoom.getPlayers(), true);
         }
         mRoom.clearCardsOnTable();
-        updateCardsOnTable(mRoom.getmAttackingCards(), mRoom.getmDefendingCards());
+        updateCardsOnTable(mRoom.getAttackingCards(), mRoom.getDefendingCards());
     }
 
     private void addCardsToPlayer(int pPlayerID) {
         mRoom.getPlayers().forEach(player -> {
-            if(player.getmUserID() == pPlayerID) {
+            if(player.getUserID() == pPlayerID) {
                 checkWhoGetsCards(player);
             }
         });
     }
 
     void checkWhoGetsCards(Player pPlayer) {
-        if(thisIsMe(pPlayer.getmPositionOnTable())) {
-            pPlayer.addMultipleCards(mRoom.getmAttackingCards());
-            pPlayer.addMultipleCards(mRoom.getmDefendingCards());
+        if(thisIsMe(pPlayer.getPositionOnTable())) {
+            pPlayer.addMultipleCards(mRoom.getAttackingCards());
+            pPlayer.addMultipleCards(mRoom.getDefendingCards());
         }
         else {
-            pPlayer.setNumberOfCards(pPlayer.getmNumberOfCards() + mRoom.getmAttackingCards().size() + mRoom.getmDefendingCards().size() );
+            pPlayer.setNumberOfCards(pPlayer.getNumberOfCards() + mRoom.getAttackingCards().size() + mRoom.getDefendingCards().size() );
         }
     }
 
@@ -117,7 +117,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
     private int findMe() {
         Player me = null;
         for(Player player : mRoom.getPlayers()) {
-            if(player.getmPositionOnTable() == 0) {
+            if(player.getPositionOnTable() == 0) {
                 me = player;
             }
         }
@@ -131,16 +131,16 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
 
     private void getCardOnTable(boolean isAttacking, Card pCard) {
         if(isAttacking) {
-            mRoom.getmAttackingCards().add(pCard);
+            mRoom.getAttackingCards().add(pCard);
         }
         else {
-            mRoom.getmDefendingCards().add(pCard);
+            mRoom.getDefendingCards().add(pCard);
         }
     }
     public void visit(Play pPlay) {
         getCardOnTable(pPlay.ismIfAttacking(), pPlay.getmCard());
         mRoom.removeCard(pPlay.getPlayerID(), pPlay.getmCard());
-        updateCardsOnTable(mRoom.getmAttackingCards(), mRoom.getmDefendingCards());
+        updateCardsOnTable(mRoom.getAttackingCards(), mRoom.getDefendingCards());
     }
 
     public void visit(Next pNext) {
@@ -151,7 +151,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
 
     private void lightPlayersNick(int playersID) {
         mRoom.getPlayers().forEach(player -> {
-            if(player.getmUserID() == playersID) {
+            if(player.getUserID() == playersID) {
                 player.setmIsMyTurn(true);
             }
             else {
@@ -161,7 +161,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
     }
 
     private boolean isMyID(int givenID) {
-        return givenID == mClientManager.getPlayerData().getmUserID();
+        return givenID == mClientManager.getPlayerData().getUserID();
     }
 
     public void visit(Chat pChat) {
@@ -170,7 +170,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
 
 
     private void setUpMyTurn(ArrayList<Integer> pAvailableCards) {
-        mRoom.setmAvailableCards(pAvailableCards);
+        mRoom.setAvailableCards(pAvailableCards);
     }
 
     private void updateMultiplePlayersView(CopyOnWriteArrayList<Player> pOtherPlayers, boolean pFirstAttack) {

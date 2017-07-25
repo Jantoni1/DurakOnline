@@ -1,6 +1,7 @@
 package main.java.view;
 
-
+// co sie dzieje jak ktos wyjdzie? tutaj tez trzeba bedzie usuwac ziomka
+// dodaj karty na stole do playerscards
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RoomScene {
+    PlayersCards mPlayersCards;
     private MessageBox mMessageBox;
     private Scene mRoomScene;
     private AnchorPane mRoot;
@@ -39,6 +41,7 @@ public class RoomScene {
         mModel = pModel;
         mMaxNumberOfPlayers = pNumberOfPlayers;
         mMessageBox = pMessageBox;
+        mPlayersCards = new PlayersCards(mModel, mMaxNumberOfPlayers, mMessageBox);
         mRoomScene = new Scene(createSceneRoot(), 1200, 800, Color.AZURE);
         createRoomSceneComponents();
     }
@@ -117,8 +120,8 @@ public class RoomScene {
     }
 
     public synchronized void updateOtherPlayersViewProperty(Player pPlayer, boolean pFirstAttack) {
-        mOtherPlayers.get(pPlayer.getmPositionOnTable()).updateView(pPlayer);
-        if(pPlayer.getmPositionOnTable() == 0) {
+        mOtherPlayers.get(pPlayer.getPositionOnTable()).updateView(pPlayer);
+        if(pPlayer.getPositionOnTable() == 0) {
             showPassButton(pPlayer.ismIsMyTurn() && !pFirstAttack);
         }
         setPlayersViewProperty();
@@ -329,7 +332,5 @@ public class RoomScene {
         return mRoomScene;
     }
 
-    public interface Model {
-        ArrayList<Integer> getAvailableCards();
-    }
+
 }

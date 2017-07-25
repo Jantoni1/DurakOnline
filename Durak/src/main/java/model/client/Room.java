@@ -2,13 +2,14 @@ package main.java.model.client;
 
 
 import main.java.model.server.Card;
+import main.java.view.Model;
 import main.java.view.RoomScene;
 
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
-public class Room implements RoomScene.Model{
+public class Room implements Model {
 
     private ArrayList<Card> mAttackingCards;
     private ArrayList<Card> mDefendingCards;
@@ -32,7 +33,7 @@ public class Room implements RoomScene.Model{
         mAvailableCards = new ArrayList<>();
     }
 
-    public synchronized  void setmAvailableCards(ArrayList<Integer> mAvailableCards) {
+    public synchronized  void setAvailableCards(ArrayList<Integer> mAvailableCards) {
         this.mAvailableCards = mAvailableCards;
     }
 
@@ -42,7 +43,7 @@ public class Room implements RoomScene.Model{
 
     private Player getMe() {
         for(Player player : mPlayers) {
-            if(player.getmPositionOnTable() == 0) {
+            if(player.getPositionOnTable() == 0) {
                 return player;
             }
         }
@@ -64,7 +65,7 @@ public class Room implements RoomScene.Model{
 
     public void removeCard(int pPlayerID, Card pCard) {
         if(getMe() == findPlayer(pPlayerID)) {
-            getMe().getmPlayerCards().removeIf(card -> card.equals(pCard));
+            getMe().getPlayerCards().removeIf(card -> card.equals(pCard));
         }
         else {
             findPlayer(pPlayerID).changeNumberOfCards(-1);
@@ -85,8 +86,8 @@ public class Room implements RoomScene.Model{
     }
 
     public void clearCardsOnTable() {
-        getmAttackingCards().clear();
-        getmDefendingCards().clear();
+        getAttackingCards().clear();
+        getDefendingCards().clear();
     }
 
     public void setmMaxCards(int mMaxCards) {
@@ -104,7 +105,7 @@ public class Room implements RoomScene.Model{
     }
 
     public synchronized void removePlayer(int pPlayerID) {
-        Predicate<Player> playerToRemove = p-> p.getmUserID() == pPlayerID;
+        Predicate<Player> playerToRemove = p-> p.getUserID() == pPlayerID;
         mPlayers.removeIf(playerToRemove);
         removeAllPlayersCards();
     }
@@ -120,7 +121,7 @@ public class Room implements RoomScene.Model{
     private Player findPlayer(int pPlayerID) {
         Player foundPlayer = null;
         for(Player player : mPlayers) {
-            if(player.getmUserID() == pPlayerID) {
+            if(player.getUserID() == pPlayerID) {
                 foundPlayer =  player;
             }
         }
@@ -156,14 +157,14 @@ public class Room implements RoomScene.Model{
     }
 
     private synchronized boolean isItMe(Player pPlayer, int pMyID) {
-        return pPlayer.getmUserID() == pMyID;
+        return pPlayer.getUserID() == pMyID;
     }
 
-    public ArrayList<Card> getmAttackingCards() {
+    public ArrayList<Card> getAttackingCards() {
         return mAttackingCards;
     }
 
-    public ArrayList<Card> getmDefendingCards() {
+    public ArrayList<Card> getDefendingCards() {
         return mDefendingCards;
     }
 
