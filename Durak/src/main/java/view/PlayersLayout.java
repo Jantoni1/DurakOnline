@@ -132,7 +132,7 @@ public class PlayersLayout extends VBox {
 
     private void setNickEffect(Player pPlayer) {
         if(pPlayer.ismIsMyTurn()) {
-            mNick.setEffect(new Glow(1));
+            mNick.setEffect(new Glow(1.0));
             mNick.setFont(Font.font("Roboto", FontWeight.EXTRA_BOLD, 26));
             mNick.setStyle("-fx-stroke: black; -fx-stroke-width: 2;");
         }

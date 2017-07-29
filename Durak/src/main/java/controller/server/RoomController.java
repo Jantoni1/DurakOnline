@@ -497,6 +497,9 @@ public class RoomController {
         mRoom.mPlayerArrayList.clear();
         mRoom.mTalon.deck.clear();
         mRoom.mPlayersReady.clear();
+        for(int i = 0; i < mRoom.mPlayersReady.size(); ++i) {
+            mRoom.mPlayersReady.set(i, -1);
+        }
         mPassedAttackers = 0;
         mRoom.mCardsOnTable.defendingCards.clear();
         mRoom.mCardsOnTable.attackingCards.clear();

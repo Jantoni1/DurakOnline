@@ -14,4 +14,6 @@ public interface Model {
     CopyOnWriteArrayList<Player> getPlayers();
     ArrayList<Card> getAttackingCards();
     ArrayList<Card> getDefendingCards();
+    Player getMe();
+//    boolean getFirstAttack();
 }

@@ -20,7 +20,6 @@ public class CardLayout extends ImageView {
     public CardLayout(MessageBox pMessageBox, ArrayList<Integer> pAvailableCards) {
         mAvailableCards = pAvailableCards;
         mMessageBox = pMessageBox;
-        setVisible(false);
     }
 
     public void updateCardView(boolean isVisible, int pCardIndex, Card pCard) {
@@ -28,7 +27,7 @@ public class CardLayout extends ImageView {
             loadImage(pCard);
             setAction(pCardIndex, pCard != null);
         }
-        setVisible(isVisible);
+        setVisible(true);
     }
 
     private void loadImage(Card pCard) {

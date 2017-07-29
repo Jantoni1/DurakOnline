@@ -54,7 +54,6 @@ public class RoomVisitor extends Visitor {
     private void addReadyPlayer(int pIndex, int pClientID) {
         mRoomController.mRoom.mPlayersReady.set(pIndex, pClientID);
         mClients.forEach(client -> client.sendMessage(new main.java.network.message.server.Ready(true)));
-        mRoomController.mRoom.mPlayersReady.forEach(player -> System.out.println(player));
         if(!mRoomController.mRoom.mPlayersReady.contains(-1)) {
             mRoomController.startGame();
         }
@@ -72,9 +71,6 @@ public class RoomVisitor extends Visitor {
     public void visit(ClientThread pClientThread, Leave leave) {
         if(leave.isFinal()) {
             mClients.remove(pClientThread);
-        }
-        for(int i = 0; i < mGameRoom.getMaxPlayers(); ++i) {
-            mRoomController.mRoom.mPlayersReady.set(i, -1);
         }
         if(mRoomController.mRoom.isStarted) {
             mRoomController.resetRoom();

@@ -1,14 +1,17 @@
 package main.java.view;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.effect.Glow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import main.java.model.client.Player;
 import main.java.network.client.MessageBox;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -22,28 +25,49 @@ public class PlayersPropertyDisplay extends StackPane {
     private PlayersDeck mPlayersDeck;
     private Label mNick;
     private boolean mIsMe;
+    private Player mPlayer;
 
-    public PlayersPropertyDisplay(double rotation, ArrayList<Integer> pAvailableCards, MessageBox pMessageBox, boolean pIsMe) {
-        createComponents(pAvailableCards, pMessageBox, pIsMe);
+    public PlayersPropertyDisplay(double rotation, ArrayList<Integer> pAvailableCards, MessageBox pMessageBox, boolean pIsMe, double width, double height) {
+        setPickOnBounds(false);
+        createComponents(pAvailableCards, pMessageBox, pIsMe, width, height);
         addComponents();
         setRotate(rotation);
     }
 
     public void setPlayer(Player pPlayer) {
+        mPlayer = pPlayer;
         mPlayersDeck.setPlayer(pPlayer);
         mNick.setText(pPlayer.getmNick());
     }
 
     public void updatePlayersCards() {
-        mPlayersDeck.updatePlayersCards();
+        if(mPlayer != null) {
+            mPlayersDeck.updatePlayersCards();
+            setNickEffect();
+        }
     }
 
-    private void createComponents(ArrayList<Integer> pAvailableCards, MessageBox pMessageBox, boolean pIsMe) {
+    private void createComponents(ArrayList<Integer> pAvailableCards, MessageBox pMessageBox, boolean pIsMe, double width, double height) {
         mIsMe = pIsMe;
-        mBackgroundShape = new Rectangle(800, 150, Color.TRANSPARENT);
-        mCardsAndNick = new VBox(5.0);
+        mBackgroundShape = new Rectangle(width, height, Color.TRANSPARENT);
+        mBackgroundShape.setPickOnBounds(false);
+        mBackgroundShape.setVisible(false);
+        mCardsAndNick = new VBox(0.0);
+        mCardsAndNick.setPickOnBounds(false);
+        mCardsAndNick.setAlignment(Pos.CENTER);
         mNick = new Label("");
+        mNick.setPickOnBounds(false);
+        setNickProperties();
         mPlayersDeck = new PlayersDeck(pMessageBox, pAvailableCards, mIsMe);
+        mPlayersDeck.setPickOnBounds(false);
+        setAlignment(Pos.CENTER);
+    }
+
+    private void setNickProperties() {
+        mNick.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
+        mNick.setFont(Font.font("Roboto", FontWeight.LIGHT, 26));
+        mNick.setTextFill(Color.web("#ffcc66")); //#ffcc66
+//        mNick.setAlignment(Pos.CENTER);
     }
 
     private void addComponents() {
@@ -54,6 +78,22 @@ public class PlayersPropertyDisplay extends StackPane {
             mCardsAndNick.getChildren().addAll(mNick, mPlayersDeck);
         }
         getChildren().addAll(mBackgroundShape, mCardsAndNick);
-        mBackgroundShape.setPickOnBounds(false);
+        setAlignment(mCardsAndNick, Pos.TOP_CENTER);
+//        setAlignment(mBackgroundShape, Pos.TOP_CENTER);
+    }
+
+    private void setNickEffect() {
+        if(mPlayer != null && mPlayer.ismIsMyTurn()) {
+            mNick.setEffect(new Glow(1.0));
+            mNick.setFont(Font.font("Roboto", FontWeight.EXTRA_BOLD, 26));
+            mNick.setStyle("-fx-stroke: black; -fx-stroke-width: 2;");
+        }
+        else
+        {
+            mNick.setEffect(null);
+            mNick.setFont(Font.font("Roboto", FontWeight.LIGHT, 26));
+            mNick.setStyle("-fx-strike-width: 0;");
+        }
+        mNick.setVisible(true);
     }
 }

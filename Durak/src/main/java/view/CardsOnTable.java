@@ -24,6 +24,8 @@ class CardsOnTable extends VBox {
         mAttackingCards = new HBox();
         mDefendingCards = new HBox();
         setVBoxProperties();
+        setPrefHeight(540.0);
+        setPickOnBounds(false);
     }
 
     private void setVBoxProperties() {

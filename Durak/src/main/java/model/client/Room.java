@@ -20,10 +20,12 @@ public class Room implements Model {
     private final int mMaxPlayers;
     private final String mRoomName;
     private boolean isGameStarting;
+    private boolean isFirstAttack;
     ArrayList<Integer> mAvailableCards;
     int mMaxCards;
 
     public Room(String pRoomName, int pMaxPlayers, CopyOnWriteArrayList<Player> pOtherPlayers, int pPlayerID) {
+        isFirstAttack = false;
         mPlayers = pOtherPlayers;
         mRoomName = pRoomName;
         mMaxPlayers = pMaxPlayers;
@@ -33,15 +35,26 @@ public class Room implements Model {
         mAvailableCards = new ArrayList<>();
     }
 
-    public synchronized  void setAvailableCards(ArrayList<Integer> mAvailableCards) {
-        this.mAvailableCards = mAvailableCards;
+    public synchronized  void setAvailableCards(ArrayList<Integer> pAvailableCards) {
+        if(pAvailableCards != null) {
+            mAvailableCards.clear();
+            mAvailableCards.addAll(pAvailableCards);
+        }
     }
 
     public synchronized int getCardsIndex(Card pCard) {
         return findCorrectCard(pCard, getMe());
     }
 
-    private Player getMe() {
+//    public boolean getFirstAttack() {
+//        return isFirstAttack;
+//    }
+//
+//    public void setFirstAttack(boolean isFirstAttack) {
+//        this.isFirstAttack = isFirstAttack;
+//    }
+
+    public Player getMe() {
         for(Player player : mPlayers) {
             if(player.getPositionOnTable() == 0) {
                 return player;
@@ -118,7 +131,7 @@ public class Room implements Model {
 
     }
     
-    private Player findPlayer(int pPlayerID) {
+    public Player findPlayer(int pPlayerID) {
         Player foundPlayer = null;
         for(Player player : mPlayers) {
             if(player.getUserID() == pPlayerID) {

@@ -22,6 +22,7 @@ public class Player implements Serializable {
     public Player() {}
 
     public Player(String mNick, int mUserID) {
+        mPlayerCards = new CopyOnWriteArrayList<>();
         this.mNick = mNick;
         this.mUserID = mUserID;
         mNumberOfCards = 0;
