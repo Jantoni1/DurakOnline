@@ -33,7 +33,7 @@ public class RoomVisitor extends Visitor {
     public void onClientMessage(ClientThread pClientThread, Message pMessage) {}
 
     public void visit(ClientThread pClientThread, main.java.network.message.client.Chat pChat) {
-        mClients.forEach(client -> client.sendMessage(new main.java.network.message.server.Chat(pChat.getChatMessage())));
+        mClients.forEach(client -> client.sendMessage(new main.java.network.message.server.Chat(pClientThread.getUsername(), pChat.getChatMessage())));
     }
 
     public void visit(ClientThread pClientThread, Ready pReady) {

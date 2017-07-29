@@ -6,7 +6,8 @@ import main.java.network.message.Message;
 
 public class Chat extends Message {
 
-    public Chat(String chatMessage) {
+    public Chat(String pAuthor, String chatMessage) {
+        playerName = pAuthor;
         this.chatMessage = chatMessage;
     }
 

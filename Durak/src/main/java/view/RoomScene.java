@@ -1,5 +1,11 @@
 package main.java.view;
 
+//TODO zakonczenie gierki
+//TODO wyglad
+//TODO wyjscie z gierki dobry reset roomu
+//TODO odstep w kartach przeciwnikow
+
+
 // co sie dzieje jak ktos wyjdzie? tutaj tez trzeba bedzie usuwac ziomka
 // dodaj karty na stole do playerscards
 import javafx.event.ActionEvent;
@@ -29,8 +35,8 @@ public class RoomScene {
     private AnchorPane mRoot;
     private ReadyPanel mReadyPanel;
     private final int mMaxNumberOfPlayers;
-    private ImageView mTrumpCard;
     private GameOverPanel mGameOverPanel;
+    private RightSidePanel mRightSidePanel;
     private Model mModel;
     private final double width = 652.0;
     private final double height = 130.0;
@@ -39,12 +45,14 @@ public class RoomScene {
         mModel = pModel;
         mMaxNumberOfPlayers = pNumberOfPlayers;
         mMessageBox = pMessageBox;
+        mRightSidePanel = new RightSidePanel(mMessageBox);
         mPlayersCards = new PlayersCards(mModel, mMaxNumberOfPlayers, mMessageBox, width, height);
         mRoomScene = new Scene(createSceneRoot(), 1200, 800, Color.AZURE);
-        mRoot.getChildren().add(mPlayersCards);
+        mRoot.getChildren().addAll(mPlayersCards, mRightSidePanel);
         AnchorPane.setTopAnchor(mPlayersCards, -9.0);
-
         AnchorPane.setLeftAnchor(mPlayersCards, (-9.0 -  width + height)/2 );
+        AnchorPane.setRightAnchor(mRightSidePanel, 20.0);
+        AnchorPane.setTopAnchor(mRightSidePanel, 50.0);
 //        AnchorPane.setRightAnchor(mPlayersCards, 0.0);
 //        AnchorPane.setRightAnchor(mPlayersCards, 400.0);
         createRoomSceneComponents();
@@ -78,25 +86,23 @@ public class RoomScene {
     }
 
     public void setTrumpCard(Card pCard) {
-        mTrumpCard = new ImageView("main/resources/images/"+ pCard.mFigure.getFigure() + "_" + pCard.mSuit.getColor() + ".png");
-        mRoot.getChildren().add(mTrumpCard);
-        createTrumpCard();
+        mRightSidePanel.setTrumpCard(pCard);
     }
 
     public void hideTrumpCard() {
-        mTrumpCard.setVisible(false);
+        mRightSidePanel.hideTrumpCard();
     }
 
     public void addPlayer(int pPlayerID) {
         mPlayersCards.setPlayer(pPlayerID);
     }
 
-    private void createTrumpCard() {
-        AnchorPane.setBottomAnchor(mTrumpCard, 20.0);
-        AnchorPane.setRightAnchor(mTrumpCard, 120.0);
-        mTrumpCard.setVisible(true);
-
-    }
+//    private void createTrumpCard() {
+//        AnchorPane.setBottomAnchor(mTrumpCard, 20.0);
+//        AnchorPane.setRightAnchor(mTrumpCard, 120.0);
+//        mTrumpCard.setVisible(true);
+//
+//    }
 //
 //    private void setPassButtonProperties() {
 //        AnchorPane.setBottomAnchor(mPass, 220.0);
@@ -115,6 +121,10 @@ public class RoomScene {
 //        AnchorPane.setTopAnchor(mCardsOnTable, 300.0);
 //        AnchorPane.setLeftAnchor(mCardsOnTable, 180.0);
 //    }
+
+    public void addChatMessage(String pAuthor, String pContent) {
+        mRightSidePanel.addChatMessage(pAuthor, pContent);
+    }
 
     public synchronized void updateOtherPlayersViewProperty(int playerID) {
         mPlayersCards.updateOnePlayerCards(playerID);
@@ -260,8 +270,6 @@ public class RoomScene {
         mRoot = new AnchorPane();
         mRoot.getChildren().addAll(createBackgroundImage());
         mRoot.setStyle("-fx-background-color: rgba(0, 255, 0, 0.3);");
-        createChatBox();
-        createLeaveButton();
         return mRoot;
     }
     private void createReadyPanel() {
@@ -275,47 +283,34 @@ public class RoomScene {
         AnchorPane.setLeftAnchor(mReadyPanel, 250.0);
     }
 
-    private void createLeaveButton() {
-        Button leaveButton = new Button("LEAVE");
-        leaveButton.setStyle("-fx-background-radius: 16px; -fx-font: 16 Roboto; -fx-base: #f2f2f2; -fx-font-size: 30px;");
-        setButtonAction(leaveButton);
-        setLeaveButtonSize(leaveButton);
-        addLeaveButtonToAnchorPane(leaveButton);
-    }
-
-    private void addLeaveButtonToAnchorPane(Button pButton) {
-        mRoot.getChildren().add(pButton);
-        AnchorPane.setTopAnchor(pButton, 20.0);
-        AnchorPane.setRightAnchor(pButton, 50.0);
-    }
-
-    private void setLeaveButtonSize(Button pButton) {
-        pButton.setMaxWidth(200);
-        pButton.setPrefWidth(200);
-//        pButton.setPrefHeight();
-    }
-
-    private void setButtonAction(Button pButton) {
-        pButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                mMessageBox.sendMessage(new Leave(false));
-            }
-        });
-    }
-
-    private void createChatBox() {
-        ChatBox chatBox = new ChatBox();
-//        chatBox.setSendListener( new ChatBox.MessageSendListener() {
-//                @Override
-//                public void onMessageSend(String pMessage) {
-//                    mClientManager.sendChatMessage(pMessage);
-//                }
+//    private void createLeaveButton() {
+//        Button leaveButton = new Button("LEAVE");
+//        leaveButton.setStyle("-fx-background-radius: 16px; -fx-font: 16 Roboto; -fx-base: #f2f2f2; -fx-font-size: 30px;");
+//        setButtonAction(leaveButton);
+//        setLeaveButtonSize(leaveButton);
+//        addLeaveButtonToAnchorPane(leaveButton);
+//    }
+//
+//    private void addLeaveButtonToAnchorPane(Button pButton) {
+//        mRoot.getChildren().add(pButton);
+//        AnchorPane.setTopAnchor(pButton, 20.0);
+//        AnchorPane.setRightAnchor(pButton, 50.0);
+//    }
+//
+//    private void setLeaveButtonSize(Button pButton) {
+//        pButton.setMaxWidth(200);
+//        pButton.setPrefWidth(200);
+////        pButton.setPrefHeight();
+//    }
+//
+//    private void setButtonAction(Button pButton) {
+//        pButton.setOnAction(new EventHandler<ActionEvent>() {
+//            @Override public void handle(ActionEvent e) {
+//                mMessageBox.sendMessage(new Leave(false));
+//            }
 //        });
+//    }
 
-//        mRoot.getChildren().add(chatBox);
-//        AnchorPane.setRightAnchor(chatBox, 10.0);
-//        AnchorPane.setTopAnchor(chatBox, 50.0);
-    }
 
     private ImageView createBackgroundImage() {
         ImageView backgroundImage = new ImageView("main/resources/background.jpg");

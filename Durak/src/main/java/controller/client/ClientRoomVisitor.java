@@ -166,7 +166,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
     }
 
     public void visit(Chat pChat) {
-        //TODO SHOW CHAT MESSAGES
+        addChatMessage(pChat.getPlayerName(), pChat.getChatMessage());
     }
 
     private void setPassButton(int pPlayerID) {
@@ -261,6 +261,15 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
             @Override
             public void run() {
                 mRoomScene.addPlayer(pPlayerID);
+            }
+        });
+    }
+
+    private void addChatMessage(String pAuthor, String pContent) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                mRoomScene.addChatMessage(pAuthor, pContent);
             }
         });
     }
