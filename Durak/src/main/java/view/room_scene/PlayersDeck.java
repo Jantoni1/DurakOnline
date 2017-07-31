@@ -1,4 +1,4 @@
-package main.java.view;
+package main.java.view.room_scene;
 
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;

@@ -1,4 +1,4 @@
-package main.java.view;
+package main.java.view.room_scene;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

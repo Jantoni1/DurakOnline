@@ -12,7 +12,7 @@ import main.java.network.message.server.ExistingRooms;
 import main.java.network.message.server.RoomUpdate;
 import main.java.view.LobbyScene;
 import main.java.view.LoginScene;
-import main.java.view.RoomScene;
+import main.java.view.room_scene.RoomScene;
 
 import java.io.IOException;
 

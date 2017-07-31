@@ -1,22 +1,16 @@
 package main.java;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.stage.Stage;
-import main.java.controller.client.ClientManager;
 import main.java.model.client.Player;
 import main.java.model.client.Room;
 import main.java.model.server.Card;
 import main.java.model.server.Figures;
 import main.java.model.server.Suit;
-import main.java.network.client.Client;
-import main.java.network.client.ClientConnection;
 import main.java.network.client.MessageBox;
 import main.java.network.message.Message;
-import main.java.view.RoomScene;
+import main.java.view.room_scene.RoomScene;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TestClient extends Application {

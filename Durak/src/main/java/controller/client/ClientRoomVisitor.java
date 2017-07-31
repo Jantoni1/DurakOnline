@@ -10,7 +10,7 @@ import main.java.network.message.Message;
 import main.java.network.message.server.*;
 import main.java.view.LobbyScene;
 import main.java.view.LoginScene;
-import main.java.view.RoomScene;
+import main.java.view.room_scene.RoomScene;
 
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;

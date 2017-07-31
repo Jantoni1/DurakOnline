@@ -1,4 +1,4 @@
-package main.java.view;
+package main.java.view.room_scene;
 
 
 import javafx.geometry.Pos;
@@ -15,6 +15,7 @@ import main.java.model.client.Player;
 import main.java.model.server.Card;
 import main.java.network.client.MessageBox;
 import main.java.network.message.client.Play;
+import main.java.view.Model;
 
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;

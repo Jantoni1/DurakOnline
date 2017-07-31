@@ -1,16 +1,15 @@
-package main.java.view;
+package main.java.view.room_scene;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import main.java.model.server.Card;
 import main.java.network.client.MessageBox;
 import main.java.network.message.client.Leave;
-import main.java.view.chat.ChatBox;
+import main.java.view.room_scene.chat.ChatBox;
 
 /**
  * Created by Kuba on 29.07.2017.
@@ -51,7 +50,8 @@ public class RightSidePanel extends VBox {
     
     private void createLeaveButton(MessageBox pMessageBox) {
         mLeaveButton = new Button("LEAVE");
-        mLeaveButton.setStyle("-fx-background-radius: 16px; -fx-font: 16 Roboto; -fx-base: #f2f2f2; -fx-font-size: 30px;");
+        mLeaveButton.setStyle("-fx-font: 16 Roboto; -fx-font-size: 30px;");
+        mLeaveButton.setFocusTraversable(false);
         setButtonAction(pMessageBox);
         setLeaveButtonSize(mLeaveButton);
     }
@@ -64,10 +64,6 @@ public class RightSidePanel extends VBox {
     }
 
     private void setButtonAction(MessageBox pMessageBox) {
-        mLeaveButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                pMessageBox.sendMessage(new Leave(false));
-            }
-        });
+        mLeaveButton.setOnMouseReleased((event) -> pMessageBox.sendMessage(new Leave(false)));
     }
 }

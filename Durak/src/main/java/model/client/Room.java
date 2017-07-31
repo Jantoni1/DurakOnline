@@ -3,7 +3,6 @@ package main.java.model.client;
 
 import main.java.model.server.Card;
 import main.java.view.Model;
-import main.java.view.RoomScene;
 
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;

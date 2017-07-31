@@ -1,8 +1,8 @@
-package main.java.view.chat;
+package main.java.view.room_scene.chat;
 
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import main.java.view.RightSidePanel;
+import main.java.view.room_scene.RightSidePanel;
 
 /**
  * Created by Kuba on 29.07.2017.
