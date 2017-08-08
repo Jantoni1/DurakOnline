@@ -19,6 +19,7 @@ public class PassButton extends Button {
 //        setVisible(false);
         setPasButtonAction(pMessageBox);
         setVisible(false);
+        setFocusTraversable(false);
     }
 
     private void setPasButtonAction(MessageBox pMessageBox) {

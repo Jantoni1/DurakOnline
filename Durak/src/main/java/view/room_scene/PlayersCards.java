@@ -3,6 +3,7 @@ package main.java.view.room_scene;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import main.java.model.client.Player;
 import main.java.network.client.MessageBox;
 import main.java.view.Model;
@@ -25,6 +26,8 @@ public class PlayersCards extends BorderPane {
     private PassButton mPass;
     private MessageBox mMessageBox;
     private int mNumberOfPlayers;
+    private ReadyPanel mReadyPanel;
+
 
 
     public PlayersCards(Model pModel, int pNumberOfPlayers, MessageBox pMessageBox, double width, double height) {
@@ -32,6 +35,7 @@ public class PlayersCards extends BorderPane {
         mModel = pModel;
         mNumberOfPlayers = pNumberOfPlayers;
         setPickOnBounds(false);
+        createReadyPanel();
         mPass = new PassButton(mMessageBox);
         createPlayersDisplay(pModel, pMessageBox, width, height);
         addPlayers();
@@ -55,12 +59,11 @@ public class PlayersCards extends BorderPane {
         setRight(mRightPlayer);
 //        setCenter(mCardsOnTable);
         BorderPane borderPane = new BorderPane(mCardsOnTable, null, null, mPass, null);
-        setMargin(borderPane, new Insets(160, -170, 10, -170));
-        setCenter(borderPane);
-//        setCenter(mPass);
+        StackPane stackPane = new StackPane(borderPane, mReadyPanel);
+        mReadyPanel.setAlignment(Pos.TOP_CENTER);
+        setMargin(stackPane, new Insets(160, -170, 10, -170));
+        setCenter(stackPane);
         setAlignment(mPass, Pos.BOTTOM_CENTER);
-//        setMargin(mPass, new Insets(0, 0, 0, 0));
-//        setAlignment(mCardsOnTable, Pos.CENTER_LEFT);
     }
 
     private void nodesSettings(double width, double height) {
@@ -70,8 +73,13 @@ public class PlayersCards extends BorderPane {
 //        setMargin(mCardsOnTable, new Insets(160, -170, 0, -170));
     }
 
+    private void createReadyPanel() {
+        mReadyPanel = new ReadyPanel(mMessageBox, mNumberOfPlayers);
+    }
+
     public void updateCardsOnTable() {
         mCardsOnTable.updateCardsOnTable();
+        mPlayers.forEach(player -> player.updatePlayersCards());
     }
 
     public void resetPlayersViewProperty(CopyOnWriteArrayList<Player> pOtherPlayers, boolean pFirstAttack) {
@@ -128,5 +136,37 @@ public class PlayersCards extends BorderPane {
             mPlayers.set(3, mRightPlayer);
         }
         updatePlayers();
+    }
+
+    public void updateReadyPlayersProperty(boolean pTrueIfReadyFalseIfUnready) {
+        mReadyPanel.playerReady(pTrueIfReadyFalseIfUnready);
+//        setPlayersViewProperty();
+    }
+
+    public void hideActivePanel() {
+        mReadyPanel.reset();
+
+    }
+
+    public void activateReadyPanel(int pCurrentNumberOfPlayers) {
+        if(pCurrentNumberOfPlayers == mNumberOfPlayers) {
+            mReadyPanel.activate();
+        }
+        else {
+            mReadyPanel.reset();
+        }
+    }
+
+    public void resetView() {
+        mModel.reset();
+        mPlayers.forEach(player -> {
+            player.updatePlayersCards();
+        });
+        mCardsOnTable.updateCardsOnTable();
+        mPass.setVisible(false);
+        if(mModel.getNumberOfPlayersInRoom() == mNumberOfPlayers) {
+            mReadyPanel.reset();
+            mReadyPanel.setVisible(true);
+        }
     }
 }

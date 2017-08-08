@@ -15,12 +15,10 @@ public class PlayersCollectionController {
         mCardsOnTable = pCardsOnTable;
         this.attackerIndex = 0;
         this.defenderIndex = 1;
-        playersInGame = 0;
     }
 
-    void addPlayer(int player_id) {
-        mPlayerArrayList.add(new Player(player_id));
-        ++playersInGame;
+    void addPlayer(int playerId, String playersNick) {
+        mPlayerArrayList.add(new Player(playerId, playersNick));
     }
 
     public boolean removePlayer(int player_id) {
@@ -123,6 +121,7 @@ public class PlayersCollectionController {
         this.defenderIndex = defenderIndex;
     }
 
+
     public Player getDefender() {
         return mPlayerArrayList.get(defenderIndex);
     }
@@ -130,10 +129,6 @@ public class PlayersCollectionController {
     public void resetPlayersIndices() {
         attackerIndex = 0;
         defenderIndex = 1;
-    }
-
-    public int numberOfPlayers() {
-        return playersInGame;
     }
 
     public int getmMaxPlayers() {
@@ -145,5 +140,5 @@ public class PlayersCollectionController {
     private int attackerIndex;
     private int defenderIndex;
     private  int mMaxPlayers;
-    public int playersInGame;
+
 }

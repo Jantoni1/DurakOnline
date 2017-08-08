@@ -66,7 +66,7 @@ public class PlayersPropertyDisplay extends StackPane {
     private void setNickProperties() {
         mNick.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
         mNick.setFont(Font.font("Roboto", FontWeight.LIGHT, 26));
-        mNick.setTextFill(Color.web("#ffcc66")); //#ffcc66
+        mNick.setTextFill(Color.web("#809fff")); //#ffcc66
 //        mNick.setAlignment(Pos.CENTER);
     }
 
@@ -95,5 +95,12 @@ public class PlayersPropertyDisplay extends StackPane {
             mNick.setStyle("-fx-strike-width: 0;");
         }
         mNick.setVisible(true);
+    }
+
+    public void resetPlayersCards() {
+        mPlayersDeck.resetCards();
+        mNick.setEffect(null);
+        mNick.setFont(Font.font("Roboto", FontWeight.LIGHT, 26));
+        mNick.setStyle("-fx-strike-width: 0;");
     }
 }

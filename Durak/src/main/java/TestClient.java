@@ -9,6 +9,7 @@ import main.java.model.server.Figures;
 import main.java.model.server.Suit;
 import main.java.network.client.MessageBox;
 import main.java.network.message.Message;
+import main.java.network.message.client.Chat;
 import main.java.view.room_scene.RoomScene;
 
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -41,7 +42,11 @@ public class TestClient extends Application {
         int maxPlayers = 4;
         MessageBox messageBox = new MessageBox() {
             @Override
-            public void sendMessage(Message pMesssage) {}
+            public void sendMessage(Message pMessage) {
+                if(pMessage.getClass().equals(Chat.class)) {
+                    mRoomScene.addChatMessage("player1", ((Chat)pMessage).getChatMessage());
+                }
+            }
         };
         CopyOnWriteArrayList<Player> players = new CopyOnWriteArrayList<>();
         for(int i = 0; i < maxPlayers; ++i) {
@@ -59,12 +64,17 @@ public class TestClient extends Application {
         room.getAttackingCards().add(new Card(Figures.FIVE, Suit.DIAMONDS));
         room.getAttackingCards().add(new Card(Figures.ACE, Suit.CLUBS));
         room.getDefendingCards().add(new Card(Figures.SIX, Suit.DIAMONDS));
-        RoomScene roomScene = new RoomScene(room, maxPlayers, messageBox);
-        roomScene.resetPlayersViewProperty();
-        roomScene.activateReadyPanel(0);
-        roomScene.updateCardsOnTable();
-        primaryStage.setScene(roomScene.getRoomScene());
+        mRoomScene = new RoomScene(room, maxPlayers, messageBox);
+        mRoomScene.resetPlayersViewProperty();
+        mRoomScene.activateReadyPanel(0);
+        mRoomScene.updateCardsOnTable();
+        for(int i = 0; i<30; ++i) {
+            mRoomScene.addChatMessage("player1", "elko xDD");
+        }
+        primaryStage.setScene(mRoomScene.getRoomScene());
         primaryStage.show();
     }
+
+    private RoomScene mRoomScene;
 }
 

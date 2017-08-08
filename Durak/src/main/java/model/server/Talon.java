@@ -15,7 +15,9 @@ public class Talon {
         for(Suit color : allSuits) {
             if(color != Suit.NONE) {
                 for(Figures figure: allFigures) {
-                    deck.add(new Card(figure, color));
+                    if(deck.size() < 3) {
+                        deck.add(new Card(figure, color));
+                    }
                 }
             }
 

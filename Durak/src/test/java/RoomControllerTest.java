@@ -1,23 +1,22 @@
-//package test.java;
-//
-//import main.java.controller.server.RoomController;
-//        import main.java.model.server.*;
-//        import main.java.network.message.Message;
-//        import main.java.network.server.ClientThread;
-//        import org.junit.Before;
-//        import org.junit.Test;
-//
-//        import java.util.LinkedList;
-//        import java.util.concurrent.CopyOnWriteArrayList;
-//
-//        import static org.junit.Assert.assertEquals;
-//
-//public class RoomControllerTest {
-//    RoomController mRoomController;
-//    LinkedList<ClientThread> clients;
-//    Room mRoom;
-//    CopyOnWriteArrayList<Message> mMessages;
-//
+package test.java;
+
+import main.java.controller.server.RoomController;
+        import main.java.model.server.*;
+        import main.java.network.message.Message;
+        import main.java.network.server.ClientThread;
+import org.testng.annotations.Test;
+
+import java.util.LinkedList;
+        import java.util.concurrent.CopyOnWriteArrayList;
+
+import static com.sun.xml.internal.ws.dump.LoggingDumpTube.Position.Before;
+import static org.testng.AssertJUnit.assertEquals;
+
+public class RoomControllerTest {
+    LinkedList<ClientThread> clients;
+    Room mRoom;
+    CopyOnWriteArrayList<Message> mMessages;
+
 //    @Before
 //    public void setUp() {
 //        mMessages = new CopyOnWriteArrayList<>();
@@ -31,11 +30,19 @@
 //        mRoom.mPlayerArrayList.add(new PlayerData(3));
 //        mRoomController = new RoomController(mRoom, clients);
 //    }
-//
-//    @Test
-//    public void checkIfGameEnds() {
-//        assertEquals(false, mRoomController.checkIfGameEnds());
-//    }
+
+    @Test
+    public void checkIfGameEnds() {
+        Room room = new Room("test", 4);
+        for(int i = 0; i < 4; ++i) {
+            room.mPlayerArrayList.add(new Player(i, "test"));
+            room.mPlayerArrayList.get(0).mPlayersDeck.playersDeck.add(new Card(Figures.ACE, Suit.CLUBS));
+        }
+        RoomController roomController = new RoomController(room, new LinkedList<>());
+        room.setNumberOfPlayersInGame(2);
+        System.out.println(room.getNumberOfPlayersInGame());
+        assertEquals(true, roomController.checkIfGameEnds());
+    }
 //
 //    @Test
 //    public void checkMaxNumberOfPlayers() {
@@ -46,4 +53,4 @@
 //    public void checkRoomName() {
 //        assertEquals(mRoomController.getRoomName(), "test");
 //    }
-//}
+}

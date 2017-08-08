@@ -1,5 +1,8 @@
 package main.java.view.room_scene.chat;
 
+import com.sun.javafx.scene.control.skin.ComboBoxPopupControl;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -8,6 +11,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import main.java.network.client.MessageBox;
 import main.java.network.message.client.Chat;
+
+import java.awt.*;
 
 
 /**
@@ -42,13 +47,16 @@ public class InputPanel extends HBox {
 
     private void setButtonAction() {
         mSendButton.setOnMousePressed((event) -> {
-            if(mMessageInput.getText() != "" ){
+            if(!mMessageInput.getText().trim().isEmpty()){
                 mMessageInput.setId("test");
+                mSendButton.requestFocus();
+//                mSendButton.setId("test");
             }
         });
         mSendButton.setOnMouseReleased((event) -> {
-            if(mMessageInput.getText() != "") {
-                mMessageInput.setId("send");
+            if(!mMessageInput.getText().trim().isEmpty()) {
+                mSendButton.setId("send");
+                mMessageInput.setId(null);
                 sendMessage();
             }
         });
@@ -59,12 +67,17 @@ public class InputPanel extends HBox {
         mMessageInput.setStyle("-fx-focus-color: transparent; -fx-faint-focus-color: transparent");
         mMessageInput.setPromptText("Press TAB to write...");
         mMessageInput.setPrefSize(width * mLengthDivisionRatio, height);
+        mMessageInput.focusedProperty().addListener(        new ChangeListener<Boolean>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
+            {
+                mSendButton.setId(newPropertyValue ? "test" : "send");
+            }
+        });
         mMessageInput.setOnKeyPressed((event) -> {
             if(event.getCode() == KeyCode.ENTER && !mMessageInput.getText().trim().isEmpty()) {
                 mSendButton.requestFocus(); mMessageInput.setId("test");
-            }
-            else if(event.getCode() == KeyCode.ENTER) {
-                this.requestFocus();
             }
         });
     }
@@ -73,6 +86,7 @@ public class InputPanel extends HBox {
         mMessageBox.sendMessage(new Chat(mMessageInput.getText()));
         mMessageInput.clear();
         mMessageInput.requestFocus();
+
     }
 
 }

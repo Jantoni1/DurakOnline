@@ -22,8 +22,10 @@ public class Room implements Model {
     private boolean isFirstAttack;
     ArrayList<Integer> mAvailableCards;
     int mMaxCards;
+    private int mCurrentNumberOfPlayers;
 
     public Room(String pRoomName, int pMaxPlayers, CopyOnWriteArrayList<Player> pOtherPlayers, int pPlayerID) {
+        mCurrentNumberOfPlayers = 0;
         isFirstAttack = false;
         mPlayers = pOtherPlayers;
         mRoomName = pRoomName;
@@ -140,6 +142,10 @@ public class Room implements Model {
         return foundPlayer;
     }
 
+    public int getNumberOfPlayersInRoom() {
+        return mCurrentNumberOfPlayers;
+    }
+
     public synchronized void addPlayer(Player player) {
         mPlayers.add(player);
         setPositionsOnTable();
@@ -182,6 +188,23 @@ public class Room implements Model {
 
     public CopyOnWriteArrayList<Player> getPlayers() {
         return mPlayers;
+    }
+
+    public int getmCurrentNumberOfPlayers() {
+        return mCurrentNumberOfPlayers;
+    }
+
+    public void setmCurrentNumberOfPlayers(int mCurrentNumberOfPlayers) {
+        this.mCurrentNumberOfPlayers = mCurrentNumberOfPlayers;
+    }
+
+    public synchronized void reset() {
+        mAttackingCards.clear();
+        mDefendingCards.clear();
+        for(Player player : mPlayers) {
+            player.clearDeck();
+            player.setNumberOfCards(0);
+        }
     }
 
     public int getmMaxPlayers() {

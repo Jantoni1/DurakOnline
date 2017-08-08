@@ -48,6 +48,7 @@ public class ReadyPanel extends VBox {
         mReadyButton.setVisible(true);
         mUnreadyButton.setVisible(false);
         mReadyPlayersCounter = 0;
+        setLabelText();
         setVisible(false);
     }
 
@@ -95,6 +96,7 @@ public class ReadyPanel extends VBox {
         mReadyButton.setStyle("-fx-background-radius: 16px; -fx-font: 16 Roboto; -fx-base: #768aa5; -fx-font-size: 30px; -fx-text-fill: #f2f2f2;"); //330033
         setButtonSize(mReadyButton);
         mReadyButton.setVisible(true);
+        mReadyButton.setFocusTraversable(false);
     }
 
     private void setReadyButtonAction(Button pActiveButton, Button pHiddenButton, boolean trueIfReadyFalseIfUnready) {
@@ -118,5 +120,6 @@ public class ReadyPanel extends VBox {
         mUnreadyButton.setStyle("-fx-background-radius: 16px; -fx-font: 16 Roboto; -fx-base: #f2f2f2; -fx-font-size: 30px; -fx-text-fill: #768aa5;");
         setButtonSize(mUnreadyButton);
         mUnreadyButton.setVisible(false);
+        mUnreadyButton.setFocusTraversable(false);
     }
 }

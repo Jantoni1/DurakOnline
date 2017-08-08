@@ -35,6 +35,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
     public void visit(Enter pEnter) {
         if(!pEnter.ismIfFailed()) {
             mRoom = new Room(pEnter.getmRoomName(), pEnter.getmMaxplyaers(), pEnter.getmPlayers(), mClientManager.getPlayerData().getUserID());
+            mRoom.setmCurrentNumberOfPlayers(mRoom.getmCurrentNumberOfPlayers() + 1);
             mRoomScene = new RoomScene(mRoom, pEnter.getmMaxplyaers(), mClient);
             updateMultiplePlayersView(mRoom.getPlayers(), true);
             setReadyPanelVisible(mRoom.getPlayers().size());
@@ -43,6 +44,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
     }
 
     public void visit(Add pAdd) {
+        mRoom.setmCurrentNumberOfPlayers(mRoom.getmCurrentNumberOfPlayers() + 1);
         if(pAdd.getmPlayer().getUserID() != mClientManager.getPlayerData().getUserID()) {
             mRoom.addPlayer(pAdd.getmPlayer());
             addPlayer(pAdd.getmPlayer().getUserID());
@@ -55,31 +57,34 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
     }
 
     public void visit(Leave pLeave) {
+        mRoom.setmCurrentNumberOfPlayers(mRoom.getmCurrentNumberOfPlayers() - 1);
         mRoom.removePlayer(pLeave.playerId);
         updateMultiplePlayersView(mRoom.getPlayers(), true);
         setReadyPanelVisible(mRoom.getPlayers().size());
     }
 
     public void visit(Start pStart) {
+        mRoom.setmCurrentNumberOfPlayers(mRoom.getmMaxPlayers());
         setReadyPanelVisible(0);
         setTrumpCard(pStart.getCard());
+        mRoom.setGameStarting(true);
         updateMultiplePlayersView(mRoom.getPlayers(), true);
     }
 
     public void visit(End pEnd) {
-        mRoom.getPlayers().forEach(player -> {
-            player.setNumberOfCards(0);
-            if(player.getPlayerCards() != null) {
-                player.getPlayerCards().clear();
-            }
-        });
+//        mRoom.getPlayers().forEach(player -> {
+//            player.setNumberOfCards(0);
+//            if(player.getPlayerCards() != null) {
+//                player.getPlayerCards().clear();
+//            }
+//        });
+        mRoom.setGameStarting(false);
        onGameOver(pEnd.getmPlayerNick());
     }
 
     private void onGameOver(String pPlayersNick) {
-        mRoom.clearCardsOnTable();
-        hideTrumpCard();
-        updateCardsOnTable(mRoom.getAttackingCards(), mRoom.getDefendingCards());
+//        mRoom.clearCardsOnTable();
+//        hideTrumpCard();
         showEndGameScreen(pPlayersNick);
     }
 
@@ -89,7 +94,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
             updateMultiplePlayersView(mRoom.getPlayers(), true);
         }
         mRoom.clearCardsOnTable();
-        updateCardsOnTable(mRoom.getAttackingCards(), mRoom.getDefendingCards());
+        updateCardsOnTable();
     }
 
     private void addCardsToPlayer(int pPlayerID) {
@@ -140,7 +145,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
     public void visit(Play pPlay) {
         getCardOnTable(pPlay.ismIfAttacking(), pPlay.getmCard());
         mRoom.removeCard(pPlay.getPlayerID(), pPlay.getmCard());
-        updateCardsOnTable(mRoom.getAttackingCards(), mRoom.getDefendingCards());
+        updateCardsOnTable();
     }
 
     public void visit(Next pNext) {
@@ -229,7 +234,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
         });
     }
 
-    private void updateCardsOnTable(ArrayList<Card> pAttackingCards, ArrayList<Card> pDefendingCards) {
+    private void updateCardsOnTable() {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {

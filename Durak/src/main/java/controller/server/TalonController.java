@@ -39,8 +39,8 @@ class TalonController {
     private final static int FULL_DECK;
 
     static {
-        MAX_CARDS = 5;
-        FULL_DECK = 52;
+        MAX_CARDS = 1;
+        FULL_DECK = 2;
     }
 }
 

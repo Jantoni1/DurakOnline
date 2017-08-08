@@ -15,5 +15,7 @@ public interface Model {
     ArrayList<Card> getAttackingCards();
     ArrayList<Card> getDefendingCards();
     Player getMe();
+    int getNumberOfPlayersInRoom();
+    void reset();
 //    boolean getFirstAttack();
 }

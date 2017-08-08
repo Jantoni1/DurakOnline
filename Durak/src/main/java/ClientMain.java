@@ -8,6 +8,7 @@ package main.java;
         import main.java.network.client.Client;
 
         import java.io.IOException;
+        import java.util.Scanner;
 
 public class ClientMain extends Application {
     public static void main(String[] args) {
@@ -34,6 +35,8 @@ public class ClientMain extends Application {
     }
 
     private void initializeClient(Stage primaryStage) {
+//        Scanner scanner = new Scanner(System.in);
+//        String ip = scanner.next();
         try {
             Client client = new Client("127.0.0.1", 3000);
             ClientManager mClientManager = new ClientManager(primaryStage,client );

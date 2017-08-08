@@ -17,6 +17,7 @@ public class ChatBox extends VBox {
         mInputPanel = new InputPanel(pMessageBox, pWidth, pHeight * (1.0 - heightProportion));
         mMessageWindow.setFocusTraversable(false);
         getChildren().addAll(mMessageWindow, mInputPanel);
+        setSpacing(5.0);
     }
 
     public void addChatMessage(String pAuthor, String pContent) {

@@ -37,6 +37,10 @@ public class PlayersDeck extends HBox {
         setAlignment(Pos.CENTER);
     }
 
+    public void resetCards() {
+        mCardsContainer.getChildren().clear();
+    }
+
     private void addComponents() {
         ImageView fakeCard = new ImageView("main/resources/images/back.png");
         fakeCard.setVisible(false);

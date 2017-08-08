@@ -1,8 +1,7 @@
 package main.java.view.room_scene;
 
-//TODO zakonczenie gierki
-//TODO wyglad
-//TODO wyjscie z gierki dobry reset roomu
+//TODO gameover panel zmień styl żeby pasował do reszty
+//TODO styl dwóch pozostałych scen żeby był taki sam
 //TODO odstep w kartach przeciwnikow
 
 
@@ -17,12 +16,12 @@ import main.java.model.server.Card;
 import main.java.network.client.MessageBox;
 import main.java.view.Model;
 
-public class RoomScene {
+public class RoomScene implements GameScene {
     private PlayersCards mPlayersCards;
     private MessageBox mMessageBox;
     private Scene mRoomScene;
     private AnchorPane mRoot;
-    private ReadyPanel mReadyPanel;
+//    private ReadyPanel mReadyPanel;
     private final int mMaxNumberOfPlayers;
     private GameOverPanel mGameOverPanel;
     private RightSidePanel mRightSidePanel;
@@ -49,12 +48,12 @@ public class RoomScene {
     }
 
     private void createRoomSceneComponents() {
-        createReadyPanel();
+//        createReadyPanel();
         createGameOverPanel();
     }
 
     private void createGameOverPanel() {
-        mGameOverPanel = new GameOverPanel();
+        mGameOverPanel = new GameOverPanel(this);
         mRoot.getChildren().add(mGameOverPanel);
         AnchorPane.setLeftAnchor(mGameOverPanel, 200.0);
         AnchorPane.setTopAnchor(mGameOverPanel, 275.0);
@@ -97,22 +96,15 @@ public class RoomScene {
 
 
     public void updateReadyPlayersProperty(boolean pTrueIfReadyFalseIfUnready) {
-        mReadyPanel.playerReady(pTrueIfReadyFalseIfUnready);
-//        setPlayersViewProperty();
+        mPlayersCards.updateReadyPlayersProperty(pTrueIfReadyFalseIfUnready);
     }
 
     public void hideActivePanel() {
-        mReadyPanel.reset();
-
+        mPlayersCards.hideActivePanel();
     }
 
     public void activateReadyPanel(int pCurrentNumberOfPlayers) {
-        if(pCurrentNumberOfPlayers == mMaxNumberOfPlayers) {
-            mReadyPanel.activate();
-        }
-        else {
-            mReadyPanel.reset();
-        }
+        mPlayersCards.activateReadyPanel(pCurrentNumberOfPlayers);
     }
 
     public void updateCardsOnTable() {
@@ -126,25 +118,22 @@ public class RoomScene {
         mRoot.setStyle("-fx-background-color: rgba(0, 255, 0, 0.3);");
         return mRoot;
     }
-    private void createReadyPanel() {
-        mReadyPanel = new ReadyPanel(mMessageBox, mMaxNumberOfPlayers);
-        mRoot.getChildren().add(mReadyPanel);
-        setReadyPanelProperties();
-    }
 
-    private void setReadyPanelProperties() {
-        AnchorPane.setTopAnchor(mReadyPanel, 200.0);
-        AnchorPane.setLeftAnchor(mReadyPanel, 250.0);
-    }
     private ImageView createBackgroundImage() {
         ImageView backgroundImage = new ImageView("main/resources/background.jpg");
         backgroundImage.setVisible(true);
         return backgroundImage;
     }
 
+
     public Scene getRoomScene() {
         return mRoomScene;
     }
 
+    public void resetView() {
+        mModel.reset();
+        mPlayersCards.resetView();
+        mRightSidePanel.hideTrumpCard();
+    }
 
 }

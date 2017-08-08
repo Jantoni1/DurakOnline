@@ -1,6 +1,6 @@
 .scroll-pane > .viewport {
     -fx-background-color: transparent;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+    /*-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);*/
 }
 
 .scroll-pane {
@@ -10,6 +10,10 @@
     /*-fx-background-radius: 5px;*/
     -fx-border-radius: 3%;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 1, 2, 0, 0);
+}
+
+.text-area > .scroll-bar:horizontal {
+    -fx-opacity: 0;
 }
 
 .button {
@@ -26,23 +30,25 @@
 }
 
 .button:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.7);
-    -fx-border-color: #809fff;
-    /*-fx-padding: 3 30 3 30;*/
-    -fx-font-family: "Roboto";
-    -fx-text-fill: #809fff;
-}
 
-.button:focused {
     -fx-background-color: rgba(128, 159, 255, 0.3);
     -fx-text-fill: #ffffff;
     -fx-border-color: #ffffff;
+    /*-fx-padding: 3 30 3 30;*/
     -fx-font-family: "Roboto";
+
+}
+
+.button:focused {
+    -fx-font-family: "Roboto";
+    -fx-text-fill: #ffffff;
+    -fx-background-color: rgba(128, 159, 255, 0.3);
+    -fx-border-color: #ffffff;
 }
 
 .button:pressed {
+    -fx-background-color: rgba(51, 102, 255, 0.3);
     -fx-text-fill: #ffffff;
-    -fx-background-color: rgba(128, 159, 255, 0.3);
     -fx-border-color: #ffffff;
 }
 
@@ -70,17 +76,20 @@
 }
 
 #send:hover {
-    -fx-text-fill: #809fff;
+    -fx-text-fill: #ffffff;
+    -fx-background-color: rgba(51, 102, 255, 0.3);
 }
 
 #send:pressed {
     -fx-text-fill: #ffffff;
-    -fx-background-color: rgba(128, 159, 255, 0.3);
+    -fx-background-color: rgba(51, 102, 255, 0.3);
     -fx-border-color: #ffffff;
 }
 
 #send:focused {
     -fx-text-fill: #ffffff;
+    -fx-background-color: rgba(51, 102, 255, 0.3);
+
 }
 
 #leave {
@@ -92,4 +101,30 @@
     -fx-background-color: rgba(128, 159, 255, 0.3);
     -fx-text-fill: #ffffff;
     -fx-border-color: #ffffff;
+}
+
+#pressed {
+    -fx-background-color: rgba(77, 121, 255, 0.3);
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #ffffff;
+}
+
+#text-author {
+    -fx-font: 14 Roboto;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-background-color: transparent;
+}
+
+#text-content {
+    -fx-background-color: transparent;
+    -fx-font: 14 Roboto ;
+    /*-fx-text-fill: #ffffff;*/
+}
+
+#text-flow {
+    -fx-background-color: rgba(128, 159, 255, 0.3);
+    -fx-background-radius: 10%;
+    -fx-font: 16 Roboto;
+    -fx-text-fill: #ffffff;
 }

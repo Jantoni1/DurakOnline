@@ -15,17 +15,18 @@ import javafx.scene.text.FontWeight;
 
 public class GameOverPanel extends StackPane {
 
-    public GameOverPanel() {
+    public GameOverPanel(GameScene pGameScene) {
         createPanelBackground();
-        createAcceptButton();
+        createAcceptButton(pGameScene);
 //        setStyle("-fx-background-color: #f2f2f2");
     }
 
-    private void createAcceptButton() {
+    private void createAcceptButton(GameScene pGameScene) {
         mButton = new Button();
         mButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                pGameScene.resetView();
                 setVisible(false);
             }
         });
@@ -35,7 +36,7 @@ public class GameOverPanel extends StackPane {
     }
 
     private void setGameOverPanel(String pPlayerNick) {
-        mLabel = new Label("Game over. PlayerData " + pPlayerNick + " lost!");
+        mLabel = new Label("Game over. Player " + pPlayerNick + " lost!");
         mLabel.setFont(Font.font("Roboto", FontWeight.LIGHT, 30));
         mLabel.setTextFill(Color.web("#009933"));
     }

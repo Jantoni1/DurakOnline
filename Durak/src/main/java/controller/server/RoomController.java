@@ -36,7 +36,7 @@ public class RoomController {
         mRoom = new Room("Name", 4);
         mTalonController = new TalonController(mRoom.mTalon);
         mPCController = new PlayersCollectionController(mRoom.mPlayerArrayList, mRoom.mCardsOnTable, mRoom.mMaxPlayers);
-        mPassedAttackers = mPCController.playersInGame - 1;
+        mPassedAttackers = mRoom.getNumberOfPlayersInGame() - 1;
     }
 
     /**
@@ -49,14 +49,14 @@ public class RoomController {
         mTalonController = new TalonController(mRoom.mTalon);
         mPCController = new PlayersCollectionController(mRoom.mPlayerArrayList, mRoom.mCardsOnTable, mRoom.mMaxPlayers);
         mClients = pClients;
-        mPassedAttackers = mPCController.playersInGame - 1;
+        mPassedAttackers = mRoom.getNumberOfPlayersInGame() - 1;
     }
 
     /**
      * @return true if there is max number of players in the room
      */
     public boolean isFull() {
-        return mPCController.numberOfPlayers() == mRoom.mMaxPlayers;
+        return mClients.size() == mRoom.mMaxPlayers;
     }
 
     /**
@@ -73,9 +73,19 @@ public class RoomController {
     public void startGame() {
         mRoom.isStarted = true;
         mTalonController.shuffle();
+        mRoom.setNumberOfPlayersInGame(mRoom.mMaxPlayers);
         Card.setTrump(mTalonController.mTalon.get(0).mSuit);
-        mRoom.mPlayersReady.forEach(playerId -> mPCController.addPlayer(playerId));
+        mRoom.mPlayersReady.forEach(playerId -> mPCController.addPlayer(playerId, findClient(playerId)));
         sendGameInitialMessages();
+    }
+
+    private String findClient(int pClientID) {
+        for(ClientThread clientThread : mClients) {
+            if(clientThread.getID() == pClientID) {
+                return clientThread.getUsername();
+            }
+        }
+        return null;
     }
 
     /**
@@ -236,7 +246,7 @@ public class RoomController {
      * @brief removes all cards from the table, sets number of players that passed to the standard number, and sets new defender
      */
     private void clearTableAndGetNextAttacker(boolean pTrueIfTakesFalseOtherwise) {
-        mPassedAttackers = mPCController.playersInGame - 1;
+        mPassedAttackers = mRoom.mPlayerArrayList.size() - 1;
         mRoom.mCardsOnTable.endTurn();
     }
 
@@ -307,7 +317,7 @@ public class RoomController {
      * @return true if game is over
      */
     private boolean playAttackerCardAndCheckIfGameIsOver(int pCardNumber) {
-        mPassedAttackers = mPCController.playersInGame - 1;
+        mPassedAttackers = mRoom.mPlayerArrayList.size() - 1;
         sendPlayMessage(attacker(0).id, pCardNumber, true);
         return checkIfPlayerHasFinished(attacker(0).id);
     }
@@ -385,7 +395,7 @@ public class RoomController {
             }
             else {
                 sendNextAttackerInfo(attacker(0).id);
-                mPassedAttackers = mPCController.playersInGame - 1;
+                mPassedAttackers = mRoom.mPlayerArrayList.size() - 1;
             }
         }
     }
@@ -412,17 +422,15 @@ public class RoomController {
      * @return true if game is over
      */
     public boolean checkIfGameEnds() {
-        --mPCController.playersInGame;
-        if(mPCController.playersInGame == 1) {
-            for(ClientThread clientThread : mClients) {
-                if(mPCController.findPlayer(clientThread.getID()).isPlaying()) {
-                    final int durakId = clientThread.getID();
-                    mClients.forEach(client -> client.sendMessage(new End(durakId, clientThread.getUsername())));
+        mRoom.setNumberOfPlayersInGame(mRoom.getNumberOfPlayersInGame() - 1);
+        if(mRoom.getNumberOfPlayersInGame() == 1) {
+            for(Player player : mRoom.mPlayerArrayList) {
+                if (player.isPlaying()) {
+                    mClients.forEach(client -> client.sendMessage(new End(player.id, player.nick)));
                     mRoom.isStarted = false;
                     return true;
                 }
             }
-
         }
         return false;
     }
@@ -493,10 +501,8 @@ public class RoomController {
      * @brief clears room's data
      */
     public void resetRoom() {
-        mTalonController.shuffle();
         mRoom.mPlayerArrayList.clear();
         mRoom.mTalon.deck.clear();
-        mRoom.mPlayersReady.clear();
         for(int i = 0; i < mRoom.mPlayersReady.size(); ++i) {
             mRoom.mPlayersReady.set(i, -1);
         }
