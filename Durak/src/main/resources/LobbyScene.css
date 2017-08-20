@@ -1,0 +1,116 @@
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+
+.button {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-color: rgba(128, 159, 255, 0.3);
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1px;
+    /*-fx-text-fill: #98a8bd;*/
+    -fx-text-fill: #f2f2f2;
+    -fx-font-family: "Roboto";
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+.button:hover {
+
+    -fx-background-color: rgba(128, 159, 255, 0.5);
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #ffffff;
+    /*-fx-padding: 3 30 3 30;*/
+    -fx-font-family: "Roboto";
+
+}
+
+.button:focused {
+    -fx-font-family: "Roboto";
+    -fx-text-fill: #ffffff;
+    -fx-background-color: rgba(128, 159, 255, 0.3);
+    -fx-border-color: #ffffff;
+}
+
+.button:pressed {
+    -fx-background-color: rgba(51, 102, 255, 0.3);
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #ffffff;
+}
+
+.text-field {
+    -fx-font: 30 Roboto;
+    -fx-text-fill: white;
+    /*-fx-font-weight: bold;*/
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-prompt-text-fill: #ffffff;
+    -fx-border-color: #ffffff;
+    /*-fx-border-color: #ffffff;*/
+    -fx-border-width: 1px;
+    -fx-border-radius: 3%;
+}
+
+.text-field:focused{
+    -fx-prompt-text-fill: transparent;
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+    /*-fx-border-color: #809fff;*/
+    -fx-background-radius: 15.5%;
+}
+
+
+.button Text {
+    -fx-effect: dropShadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , -1 );
+}
+
+#newgame:hover {
+    -fx-background-insets: 0,1,2;
+    -fx-padding: 3 30 3 30;
+    -fx-font-family: "Roboto";
+    -fx-text-fill: #ffffff; /*#15552a;*/
+    -fx-font-size: 30px;
+}
+
+#newgame-toolbar {
+    -fx-background-color: linear-gradient(#98a8bd 0%, #8195af 25%, #6d86a4 100%);
+}
+#newgame {
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-background-color: rgba(128, 159, 255, 0.3);
+    -fx-background-insets: 0 0 -1 0,0,1;
+    -fx-padding: 7 30 7 30;
+    -fx-font-family: "Roboto";
+    -fx-font-size: 30px;
+    -fx-text-fill: white;
+}
+#newgame Text {
+    -fx-effect: dropShadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , -1 );
+}
+
+#player_label {
+    -fx-font: 20 Roboto;
+    -fx-fill: white;
+}
+
+.check-box > .box {
+    -fx-padding: 7px;
+}
+
+.check-box > .box > .mark {
+    -fx-padding: 7px;
+}
+
+#seats {
+    -fx-font: 26 Roboto;
+    -fx-fill: white;
+}
