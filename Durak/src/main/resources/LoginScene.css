@@ -1,7 +1,75 @@
+/*.text-field {*/
+    /*-fx-text-box-border: transparent;*/
+/*}*/
+
+/*.text-field:focused {*/
+    /*-fx-focus-color: transparent;*/
+/*}*/
+
+.rectangle {
+    -fx-background-color: rgba(128, 159, 255, 0.3);
+}
 .text-field {
-    -fx-text-box-border: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-prompt-text-fill: #809fff;
+    -fx-border-color: #ffffff;
+    /*-fx-border-color: #ffffff;*/
+    -fx-border-width: 1px;
+    -fx-border-radius: 3%;
 }
 
-.text-field:focused {
+.text-field:focused{
+    -fx-prompt-text-fill: transparent;
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+    /*-fx-border-color: #809fff;*/
+    -fx-background-radius: 15.5%;
+}
+
+
+.button {
     -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-color: rgba(128, 159, 255, 0.3);
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1px;
+    /*-fx-text-fill: #98a8bd;*/
+    -fx-text-fill: #f2f2f2;
+    -fx-font-family: "Roboto";
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+.button:hover {
+
+    -fx-background-color: rgba(128, 159, 255, 0.5);
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #ffffff;
+    /*-fx-padding: 3 30 3 30;*/
+    -fx-font-family: "Roboto";
+
+}
+
+.button:focused {
+    -fx-font-family: "Roboto";
+    -fx-text-fill: #ffffff;
+    -fx-background-color: rgba(128, 159, 255, 0.3);
+    -fx-border-color: #ffffff;
+}
+
+.button:pressed {
+    -fx-background-color: rgba(51, 102, 255, 0.3);
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #ffffff;
+}
+
+#bgroundlabel {
+    -fx-background-color: rgba(128, 159, 255, 0.3);
+    -fx-stroke: #ffffff;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-border-color: #ffffff;
+
 }

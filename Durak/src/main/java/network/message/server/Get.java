@@ -10,7 +10,9 @@ import java.util.ArrayList;
 public class Get extends Message {
 
 
-    public Get(ArrayList<Card> cardArrayList) {
+    public Get(int pPlayerID, int pNumberOfCards, ArrayList<Card> cardArrayList) {
+        mPlayerID = pPlayerID;
+        mNumberOfCards = pNumberOfCards;
         this.cardArrayList = cardArrayList;
     }
 
@@ -24,5 +26,15 @@ public class Get extends Message {
         return cardArrayList;
     }
 
+    public int getPlayerID() {
+        return mPlayerID;
+    }
+
+    public int getNumberOfCards() {
+        return mNumberOfCards;
+    }
+
     private ArrayList<Card> cardArrayList;
+    private int mPlayerID;
+    private int mNumberOfCards;
 }

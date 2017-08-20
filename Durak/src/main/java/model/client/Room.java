@@ -2,27 +2,33 @@ package main.java.model.client;
 
 
 import main.java.model.server.Card;
+import main.java.view.Model;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
-public class Room {
+public class Room implements Model {
 
     private ArrayList<Card> mAttackingCards;
     private ArrayList<Card> mDefendingCards;
-    private CopyOnWriteArrayList<AnotherPlayer> mOtherPlayers;
+    private CopyOnWriteArrayList<Player> mPlayers;
     private int mTalonCards;
     private  final  int mPlayerID;
     private Card mTalonBottomCard;
     private final int mMaxPlayers;
     private final String mRoomName;
     private boolean isGameStarting;
+    private boolean isFirstAttack;
     ArrayList<Integer> mAvailableCards;
     int mMaxCards;
+    private int mCurrentNumberOfPlayers;
 
-    public Room(String pRoomName, int pMaxPlayers, CopyOnWriteArrayList<AnotherPlayer> pOtherPlayers, int pPlayerID) {
-        mOtherPlayers = pOtherPlayers;
+    public Room(String pRoomName, int pMaxPlayers, CopyOnWriteArrayList<Player> pOtherPlayers, int pPlayerID) {
+        mCurrentNumberOfPlayers = 0;
+        isFirstAttack = false;
+        mPlayers = pOtherPlayers;
         mRoomName = pRoomName;
         mMaxPlayers = pMaxPlayers;
         mPlayerID = pPlayerID;
@@ -31,17 +37,28 @@ public class Room {
         mAvailableCards = new ArrayList<>();
     }
 
-    public void setmAvailableCards(ArrayList<Integer> mAvailableCards) {
-        this.mAvailableCards = mAvailableCards;
+    public synchronized  void setAvailableCards(ArrayList<Integer> pAvailableCards) {
+        if(pAvailableCards != null) {
+            mAvailableCards.clear();
+            mAvailableCards.addAll(pAvailableCards);
+        }
     }
 
     public synchronized int getCardsIndex(Card pCard) {
         return findCorrectCard(pCard, getMe());
     }
 
-    private AnotherPlayer getMe() {
-        for(AnotherPlayer player : mOtherPlayers) {
-            if(player.getmPositionOnTable() == 0) {
+//    public boolean getFirstAttack() {
+//        return isFirstAttack;
+//    }
+//
+//    public void setFirstAttack(boolean isFirstAttack) {
+//        this.isFirstAttack = isFirstAttack;
+//    }
+
+    public Player getMe() {
+        for(Player player : mPlayers) {
+            if(player.getPositionOnTable() == 0) {
                 return player;
             }
         }
@@ -52,7 +69,29 @@ public class Room {
         getMe().getPlayerCards().remove(pCardIndex);
     }
 
-    private int findCorrectCard(Card pCard, AnotherPlayer pPlayer) {
+    public void addCards(int pPlayerID, ArrayList<Card> pCards, int pNumberOfCards) {
+        if(pCards != null) {
+            getMe().addMultipleCards(pCards);
+        }
+        else {
+            findPlayer(pPlayerID).changeNumberOfCards(pNumberOfCards);
+        }
+    }
+
+    public void removeCard(int pPlayerID, Card pCard) {
+        if(getMe() == findPlayer(pPlayerID)) {
+            getMe().getPlayerCards().removeIf(card -> card.equals(pCard));
+        }
+        else {
+            findPlayer(pPlayerID).changeNumberOfCards(-1);
+        }
+    }
+
+    public ArrayList<Integer> getAvailableCards() {
+        return mAvailableCards;
+    }
+
+    private int findCorrectCard(Card pCard, Player pPlayer) {
         for(Integer index : mAvailableCards) {
             if(pPlayer.getPlayerCards().get(index).equals(pCard)) {
                 return index;
@@ -62,8 +101,8 @@ public class Room {
     }
 
     public void clearCardsOnTable() {
-        getmAttackingCards().clear();
-        getmDefendingCards().clear();
+        getAttackingCards().clear();
+        getDefendingCards().clear();
     }
 
     public void setmMaxCards(int mMaxCards) {
@@ -81,21 +120,37 @@ public class Room {
     }
 
     public synchronized void removePlayer(int pPlayerID) {
-        Predicate<AnotherPlayer> playerToRemove = p-> p.getmUserID() == pPlayerID;
-        mOtherPlayers.removeIf(playerToRemove);
+        Predicate<Player> playerToRemove = p-> p.getUserID() == pPlayerID;
+        mPlayers.removeIf(playerToRemove);
         removeAllPlayersCards();
     }
 
     private synchronized void removeAllPlayersCards() {
         setPositionsOnTable();
-        mOtherPlayers.forEach(player -> {
-            player.setmNumberOfCards(0);
+        mPlayers.forEach(player -> {
+            player.setNumberOfCards(0);
         });
 
     }
+    
+    public Player findPlayer(int pPlayerID) {
+        Player foundPlayer = null;
+        for(Player player : mPlayers) {
+            if(player.getUserID() == pPlayerID) {
+                foundPlayer =  player;
+            }
+        }
+        return foundPlayer;
+    }
 
-    public synchronized void addPlayer(AnotherPlayer player) {
-        mOtherPlayers.add(player);
+    public int getNumberOfPlayersInRoom() {
+        return mCurrentNumberOfPlayers;
+    }
+
+    public synchronized void addPlayer(Player pPlayer) {
+        Optional<Player> emptyPlayer = mPlayers.stream().filter(player -> player.getUserID() == -1).findFirst();
+        emptyPlayer.ifPresent(player -> mPlayers.remove(player));
+        mPlayers.add(pPlayer);
         setPositionsOnTable();
         if(isRoomFull()) {
             isGameStarting = true;
@@ -103,39 +158,56 @@ public class Room {
     }
 
     private synchronized boolean isRoomFull() {
-        return mOtherPlayers.size() == mMaxPlayers;
+        return mPlayers.size() == mMaxPlayers;
     }
 
     private synchronized void setPositionsOnTable() {
         int myIndex = findMyIndex();
-        for(AnotherPlayer player : mOtherPlayers) {
-            player.setmPositionOnTable((mOtherPlayers.indexOf(player) - myIndex + mMaxPlayers) % mMaxPlayers);
+        for(Player player : mPlayers) {
+            player.setmPositionOnTable((mPlayers.indexOf(player) - myIndex + mMaxPlayers) % mMaxPlayers);
         }
     }
 
     private int findMyIndex() {
-        for(AnotherPlayer player : mOtherPlayers) {
+        for(Player player : mPlayers) {
             if(isItMe(player, mPlayerID)) {
-                return mOtherPlayers.indexOf(player);
+                return mPlayers.indexOf(player);
             }
         }
         return -1;
     }
 
-    private synchronized boolean isItMe(AnotherPlayer pAnotherPlayer, int pMyID) {
-        return pAnotherPlayer.getmUserID() == pMyID;
+    private synchronized boolean isItMe(Player pPlayer, int pMyID) {
+        return pPlayer.getUserID() == pMyID;
     }
 
-    public ArrayList<Card> getmAttackingCards() {
+    public ArrayList<Card> getAttackingCards() {
         return mAttackingCards;
     }
 
-    public ArrayList<Card> getmDefendingCards() {
+    public ArrayList<Card> getDefendingCards() {
         return mDefendingCards;
     }
 
-    public CopyOnWriteArrayList<AnotherPlayer> getmOtherPlayers() {
-        return mOtherPlayers;
+    public CopyOnWriteArrayList<Player> getPlayers() {
+        return mPlayers;
+    }
+
+    public int getmCurrentNumberOfPlayers() {
+        return mCurrentNumberOfPlayers;
+    }
+
+    public void setmCurrentNumberOfPlayers(int mCurrentNumberOfPlayers) {
+        this.mCurrentNumberOfPlayers = mCurrentNumberOfPlayers;
+    }
+
+    public synchronized void reset() {
+        mAttackingCards.clear();
+        mDefendingCards.clear();
+        for(Player player : mPlayers) {
+            player.clearDeck();
+            player.setNumberOfCards(0);
+        }
     }
 
     public int getmMaxPlayers() {

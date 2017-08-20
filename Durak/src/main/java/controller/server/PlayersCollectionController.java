@@ -15,12 +15,10 @@ public class PlayersCollectionController {
         mCardsOnTable = pCardsOnTable;
         this.attackerIndex = 0;
         this.defenderIndex = 1;
-        playersInGame = 0;
     }
 
-    void addPlayer(int player_id) {
-        mPlayerArrayList.add(new Player(player_id));
-        ++playersInGame;
+    void addPlayer(int playerId, String playersNick) {
+        mPlayerArrayList.add(new Player(playerId, playersNick));
     }
 
     public boolean removePlayer(int player_id) {
@@ -38,10 +36,19 @@ public class PlayersCollectionController {
         if(pIsTaking) {
             shift = 2;
         }
-        defenderIndex += shift;
-        defenderIndex %= mMaxPlayers;
-        attackerIndex += defenderIndex;
-        getNextAttacker(1);
+        while(shift != 0) {
+            ++defenderIndex;
+            defenderIndex %= mMaxPlayers;
+            if(mPlayerArrayList.get(defenderIndex).isPlaying()) {
+                --shift;
+            }
+        }
+        attackerIndex = (defenderIndex + mMaxPlayers - 1) % mMaxPlayers;
+
+        while(!mPlayerArrayList.get(attackerIndex).isPlaying()) {
+            attackerIndex += mMaxPlayers - 1;
+            attackerIndex %= mMaxPlayers;
+        }
         return mPlayerArrayList.get(defenderIndex).id;
     }
 
@@ -82,8 +89,8 @@ public class PlayersCollectionController {
         return attackerIndex;
     }
 
-//    public ArrayList<Card> playCard(int pPlayerId, ArrayList<Integer> pCardNumbers, boolean isAttacking) {
-//        ArrayList<Card> cardArrayList = new ArrayList<>();
+//    public ArrayList<CardLayout> playCard(int pPlayerId, ArrayList<Integer> pCardNumbers, boolean isAttacking) {
+//        ArrayList<CardLayout> cardArrayList = new ArrayList<>();
 //        for(int cardId : pCardNumbers) {
 //            cardArrayList.add(playCard(findPlayer(pPlayerId), cardId, isAttacking));
 //        }
@@ -114,6 +121,7 @@ public class PlayersCollectionController {
         this.defenderIndex = defenderIndex;
     }
 
+
     public Player getDefender() {
         return mPlayerArrayList.get(defenderIndex);
     }
@@ -121,10 +129,6 @@ public class PlayersCollectionController {
     public void resetPlayersIndices() {
         attackerIndex = 0;
         defenderIndex = 1;
-    }
-
-    public int numberOfPlayers() {
-        return playersInGame;
     }
 
     public int getmMaxPlayers() {
@@ -136,5 +140,5 @@ public class PlayersCollectionController {
     private int attackerIndex;
     private int defenderIndex;
     private  int mMaxPlayers;
-    public int playersInGame;
+
 }

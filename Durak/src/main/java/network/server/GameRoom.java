@@ -3,7 +3,7 @@ package main.java.network.server;
 
 import main.java.controller.server.RoomController;
 import main.java.controller.server.RoomVisitor;
-import main.java.model.client.AnotherPlayer;
+import main.java.model.client.Player;
 import main.java.model.server.Room;
 import main.java.network.message.server.Add;
 import main.java.network.message.server.Enter;
@@ -88,9 +88,9 @@ public class GameRoom implements ClientThread.ClientMessageListener {
 
     private Enter createEnterMessage() {
         Enter enterMessage = new Enter(mRoom.mLobbyName, mRoom.mMaxPlayers, false);
-        CopyOnWriteArrayList<AnotherPlayer> playersToAdd = new CopyOnWriteArrayList<>();
+        CopyOnWriteArrayList<Player> playersToAdd = new CopyOnWriteArrayList<>();
         for(ClientThread client : mClients) {
-            playersToAdd.add(new AnotherPlayer(client.getUsername(), client.getID()));
+            playersToAdd.add(new Player(client.getUsername(), client.getID()));
         }
         enterMessage.setmPlayers(playersToAdd);
         return enterMessage;

@@ -1,7 +1,6 @@
 package main.java.model.server;
 
 
-import main.java.model.client.AnotherPlayer;
 
 import java.util.ArrayList;
 
@@ -16,6 +15,7 @@ public class Room {
     public final int mLobbyId;
     public final int mMaxPlayers;
     public final ArrayList<Integer> mPlayersReady;
+    private int mPlayersInGame;
 
     public Room(String pLobbyName, int pMaxPlayers) {
         this.isStarted = false;
@@ -28,7 +28,17 @@ public class Room {
         mLobbyId = mLobbyID;
         mLobbyID += 1;
         mPlayersReady = new ArrayList<>();
+        for(int i = 0; i<mMaxPlayers; ++i) {
+            mPlayersReady.add(-1);
+        }
+        this.mPlayersInGame = mMaxPlayers;
     }
 
+    public int getNumberOfPlayersInGame() {
+        return mPlayersInGame;
+    }
 
+    public void setNumberOfPlayersInGame(int pNumber) {
+        mPlayersInGame = pNumber;
+    }
 }

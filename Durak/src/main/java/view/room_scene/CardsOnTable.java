@@ -1,4 +1,4 @@
-package main.java.view;
+package main.java.view.room_scene;
 
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
@@ -15,11 +15,17 @@ class CardsOnTable extends VBox {
 
     private HBox mAttackingCards;
     private HBox mDefendingCards;
+    ArrayList<Card> mModelAttackingCards;
+    ArrayList<Card> mModelDefendingCards;
 
-    public CardsOnTable() {
+    public CardsOnTable(ArrayList<Card> pAttackingCards, ArrayList<Card> pDefendingCards) {
+        mModelAttackingCards = pAttackingCards;
+        mModelDefendingCards = pDefendingCards;
         mAttackingCards = new HBox();
         mDefendingCards = new HBox();
         setVBoxProperties();
+        setPrefHeight(540.0);
+        setPickOnBounds(false);
     }
 
     private void setVBoxProperties() {
@@ -30,11 +36,11 @@ class CardsOnTable extends VBox {
 //        setAlignment(Pos.CENTER);
     }
 
-    public void updateCardsOnTable(ArrayList<Card> pAttackingCards, ArrayList<Card> pDefendingCards) {
+    public void updateCardsOnTable() {
         mAttackingCards.getChildren().clear();
         mDefendingCards.getChildren().clear();
-        updateCardsRow(mAttackingCards, pAttackingCards);
-        updateCardsRow(mDefendingCards, pDefendingCards);
+        updateCardsRow(mAttackingCards, mModelAttackingCards);
+        updateCardsRow(mDefendingCards, mModelDefendingCards);
     }
 
     private ImageView addCardImage(Card pCard) {

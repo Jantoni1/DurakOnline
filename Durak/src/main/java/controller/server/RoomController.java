@@ -1,14 +1,15 @@
 package main.java.controller.server;
 
+//zrobić porządny playerlayout
+//chat
+//wygląd
+//kniec gierki pewnie dalej nie działa no bo nie działał jeszcze za starych dobrych czasów
 
-import main.java.model.server.Card;
-import main.java.model.server.CardsOnTable;
-import main.java.model.server.Room;
+import main.java.model.server.*;
 import main.java.network.client.Client;
 import main.java.network.message.client.Play;
 import main.java.network.message.server.*;
 import main.java.network.server.ClientThread;
-import main.java.model.server.Player;
 import main.java.network.message.server.End;
 import main.java.network.message.server.Get;
 import main.java.network.message.server.Next;
@@ -32,7 +33,7 @@ public class RoomController {
         mRoom = new Room("Name", 4);
         mTalonController = new TalonController(mRoom.mTalon);
         mPCController = new PlayersCollectionController(mRoom.mPlayerArrayList, mRoom.mCardsOnTable, mRoom.mMaxPlayers);
-        mPassedAttackers = mPCController.playersInGame - 1;
+        mPassedAttackers = mRoom.getNumberOfPlayersInGame() - 1;
     }
 
     /**
@@ -45,14 +46,14 @@ public class RoomController {
         mTalonController = new TalonController(mRoom.mTalon);
         mPCController = new PlayersCollectionController(mRoom.mPlayerArrayList, mRoom.mCardsOnTable, mRoom.mMaxPlayers);
         mClients = pClients;
-        mPassedAttackers = mPCController.playersInGame - 1;
+        mPassedAttackers = mRoom.getNumberOfPlayersInGame() - 1;
     }
 
     /**
      * @return true if there is max number of players in the room
      */
     public boolean isFull() {
-        return mPCController.numberOfPlayers() == mRoom.mMaxPlayers;
+        return mClients.size() == mRoom.mMaxPlayers;
     }
 
     /**
@@ -69,9 +70,19 @@ public class RoomController {
     public void startGame() {
         mRoom.isStarted = true;
         mTalonController.shuffle();
+        mRoom.setNumberOfPlayersInGame(mRoom.mMaxPlayers);
         Card.setTrump(mTalonController.mTalon.get(0).mSuit);
-        mRoom.mPlayersReady.forEach(playerId -> mPCController.addPlayer(playerId));
+        mRoom.mPlayersReady.forEach(playerId -> mPCController.addPlayer(playerId, findClient(playerId)));
         sendGameInitialMessages();
+    }
+
+    private String findClient(int pClientID) {
+        for(ClientThread clientThread : mClients) {
+            if(clientThread.getID() == pClientID) {
+                return clientThread.getUsername();
+            }
+        }
+        return null;
     }
 
     /**
@@ -93,7 +104,10 @@ public class RoomController {
     private void sendGameInitialMessages() {
         mClients.forEach(player -> {
             player.sendMessage(new Start(mTalonController.mTalon.get(0)));
-            player.sendMessage(new Get(mTalonController.dealCards(mPCController.findPlayer(player.getID()))));
+            sendNewCardsMessages(player);
+        });
+        mClients.forEach(player -> {
+            player.sendMessage(new NextRound(false, attacker(0).id, mRoom.mTalon.deck.size()));
             player.sendMessage(new Next(attacker(0).id, getInitialAvailableCardsIndices(), true));
         });
     }
@@ -107,7 +121,6 @@ public class RoomController {
     public void updateGameStatus(int pPlayerID, Play pPlay) {
         if(defender().id == pPlayerID) {
             playDefenderSide(pPlayerID, pPlay);
-
         }
         else if(attacker(0).id == pPlayerID) {
             playAttackerSide(pPlayerID, pPlay);
@@ -233,9 +246,8 @@ public class RoomController {
      * @brief removes all cards from the table, sets number of players that passed to the standard number, and sets new defender
      */
     private void clearTableAndGetNextAttacker(boolean pTrueIfTakesFalseOtherwise) {
-        mPassedAttackers = mPCController.playersInGame - 1;
+        mPassedAttackers = mRoom.mPlayerArrayList.size() - 1;
         mRoom.mCardsOnTable.endTurn();
-        mPCController.getNextDefender(pTrueIfTakesFalseOtherwise);
     }
 
     /**
@@ -243,11 +255,16 @@ public class RoomController {
      */
     private void sendNextRoundMessages(boolean pTrueIfTakesFalseOtherwise) {
         mClients.forEach(player -> {
-            player.sendMessage(new NextRound(pTrueIfTakesFalseOtherwise, defender().id));
-            player.sendMessage(new Get(mTalonController.dealCards(mPCController.findPlayer(player.getID()))));
+            player.sendMessage(new NextRound(pTrueIfTakesFalseOtherwise, defender().id, mRoom.mTalon.deck.size()));
+            sendNewCardsMessages(player);
         });
+        mPCController.getNextDefender(pTrueIfTakesFalseOtherwise);
     }
 
+    private void sendNewCardsMessages(ClientThread pPlayer) {
+        ArrayList<Card> cards = mTalonController.dealCards(mPCController.findPlayer(pPlayer.getID()));
+        mClients.forEach(player -> player.sendMessage(new Get(pPlayer.getID(), cards.size(), player.getID() == pPlayer.getID() ? cards : null)));
+    }
     /**
      * @brief checks if all attackers have gave up this round
      *
@@ -300,7 +317,7 @@ public class RoomController {
      * @return true if game is over
      */
     private boolean playAttackerCardAndCheckIfGameIsOver(int pCardNumber) {
-        mPassedAttackers = mPCController.playersInGame - 1;
+        mPassedAttackers = mRoom.mPlayerArrayList.size() - 1;
         sendPlayMessage(attacker(0).id, pCardNumber, true);
         return checkIfPlayerHasFinished(attacker(0).id);
     }
@@ -377,7 +394,8 @@ public class RoomController {
                 conductNextRound(false);
             }
             else {
-                sendNextAttackerInfo(attacker(1).id);
+                sendNextAttackerInfo(attacker(0).id);
+                mPassedAttackers = mRoom.mPlayerArrayList.size() - 1;
             }
         }
     }
@@ -404,17 +422,15 @@ public class RoomController {
      * @return true if game is over
      */
     public boolean checkIfGameEnds() {
-        --mPCController.playersInGame;
-        if(mPCController.playersInGame == 1) {
-            for(ClientThread clientThread : mClients) {
-                if(mPCController.findPlayer(clientThread.getID()).isPlaying()) {
-                    final int durakId = clientThread.getID();
-                    mClients.forEach(client -> client.sendMessage(new End(durakId, clientThread.getUsername())));
+        mRoom.setNumberOfPlayersInGame(mRoom.getNumberOfPlayersInGame() - 1);
+        if(mRoom.getNumberOfPlayersInGame() == 1) {
+            for(Player player : mRoom.mPlayerArrayList) {
+                if (player.isPlaying()) {
+                    mClients.forEach(client -> client.sendMessage(new End(player.id, player.nick)));
                     mRoom.isStarted = false;
                     return true;
                 }
             }
-
         }
         return false;
     }
@@ -485,10 +501,11 @@ public class RoomController {
      * @brief clears room's data
      */
     public void resetRoom() {
-        mTalonController.shuffle();
         mRoom.mPlayerArrayList.clear();
-        mRoom.mTalon.deck.clear();
-        mRoom.mPlayersReady.clear();
+        mTalonController.resetDeck();
+        for(int i = 0; i < mRoom.mPlayersReady.size(); ++i) {
+            mRoom.mPlayersReady.set(i, -1);
+        }
         mPassedAttackers = 0;
         mRoom.mCardsOnTable.defendingCards.clear();
         mRoom.mCardsOnTable.attackingCards.clear();

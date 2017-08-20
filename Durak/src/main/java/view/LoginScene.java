@@ -22,11 +22,9 @@ import main.java.controller.client.ClientManager;
 /**
  * Created by Kuba on 31.05.2017.
  */
-public class LoginScene {
+public class    LoginScene {
 
     private Scene mLoginScene;
-    private Boolean setLogin;
-    private String mUsername;
     private ClientManager mClientManager;
 
     public  LoginScene(ClientManager pClientManager) {
@@ -46,21 +44,20 @@ public class LoginScene {
         root.getChildren().addAll(backgroundImage, createLoginFormBackground(),createLoginBox());
         mLoginScene = new Scene(root, 1200, 800, Color.AZURE);
         mLoginScene.getStylesheets().add("main/resources/LoginScene.css");
-        setLogin = true;
     }
 
-    private Rectangle createLoginFormBackground() {
-        Rectangle rectangle = new Rectangle(600, 300);
-        rectangle.setFill(Color.LIGHTGREY);
-        rectangle.setStroke(Color.web("#768aa5"));
-        return rectangle;
+    private Label createLoginFormBackground() {
+        Label label = new Label("");
+        label.setId("bgroundlabel");
+        label.setPrefSize(600, 300);
+        return label;
     }
 
 
     private Label createLoginLabel() {
         Label label = new Label("CHOOSE YOUR NAME");
         label.setFont(Font.font("Roboto", FontWeight.LIGHT, 24));
-        label.setTextFill(Color.web("#768aa5"));
+        label.setTextFill(Color.web("#ffffff"));
         return label;
     }
 
@@ -76,24 +73,20 @@ public class LoginScene {
         return textField;
     }
 
-    public synchronized void sendLogin() {
-        setLogin = true;
-    }
 
-    private Button createLoginButton(TextField pTextField, DropShadow pShadow) {
+
+    private Button createLoginButton(TextField pTextField) {
         Button mButton = new Button();
-        mButton.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                new EventHandler<MouseEvent>() {
-                    @Override public void handle(MouseEvent e) {
-                        mButton.setEffect(pShadow);
-                    }
-                });
         mButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                mClientManager.getPlayerData().setmUserName(pTextField.getText());
-                mClientManager.sendHandshakeMessage(pTextField.getText());
+            @Override
+            public void handle(ActionEvent e) {
+                if(!pTextField.getText().isEmpty()) {
+                    mClientManager.getPlayerData().setmUserName(pTextField.getText());
+                    mClientManager.sendHandshakeMessage(pTextField.getText());
+                }
             }
         });
+        mButton.setEffect(new DropShadow());
         mButton.setText("Login");
         mButton.setMaxWidth(400);
         mButton.setStyle("-fx-font: 30 Roboto; -fx-text-fill: white; -fx-base: #768aa5;");
@@ -113,9 +106,8 @@ public class LoginScene {
 
     private VBox createLoginBox() {
         VBox vBox = new VBox();
-        DropShadow shadow = new DropShadow();
         TextField textField = createLoginTextField();
-        vBox.getChildren().addAll(createLoginLabel() , textField, createLoginButton(textField, shadow));
+        vBox.getChildren().addAll(createLoginLabel() , textField, createLoginButton(textField));
         vBox.setSpacing(10);
         vBox.setAlignment(Pos.CENTER);
         return vBox;

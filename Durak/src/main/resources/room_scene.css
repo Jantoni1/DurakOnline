@@ -1,0 +1,130 @@
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+    /*-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);*/
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1px;
+    /*-fx-background-radius: 5px;*/
+    -fx-border-radius: 3%;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 1, 2, 0, 0);
+}
+
+.text-area > .scroll-bar:horizontal {
+    -fx-opacity: 0;
+}
+
+.button {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1px;
+    /*-fx-text-fill: #98a8bd;*/
+    -fx-text-fill: #f2f2f2;
+    -fx-font-family: "Roboto";
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+.button:hover {
+
+    -fx-background-color: rgba(128, 159, 255, 0.3);
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #ffffff;
+    /*-fx-padding: 3 30 3 30;*/
+    -fx-font-family: "Roboto";
+
+}
+
+.button:focused {
+    -fx-font-family: "Roboto";
+    -fx-text-fill: #ffffff;
+    -fx-background-color: rgba(128, 159, 255, 0.3);
+    -fx-border-color: #ffffff;
+}
+
+.button:pressed {
+    -fx-background-color: rgba(51, 102, 255, 0.3);
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #ffffff;
+}
+
+.text-field {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-prompt-text-fill: #809fff;
+    -fx-border-color: #ffffff;
+    /*-fx-border-color: #ffffff;*/
+    -fx-border-width: 1px;
+    -fx-border-radius: 3%;
+}
+
+.text-field:focused{
+    -fx-prompt-text-fill: transparent;
+    -fx-background-color: rgba(128, 159, 255, 0.3);
+    -fx-text-fill: #ffffff;
+    /*-fx-border-color: #809fff;*/
+    -fx-background-radius: 15.5%;
+}
+
+#send {
+    -fx-text-fill: #809fff;
+}
+
+#send:hover {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: rgba(51, 102, 255, 0.3);
+}
+
+#send:pressed {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: rgba(51, 102, 255, 0.3);
+    -fx-border-color: #ffffff;
+}
+
+#send:focused {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: rgba(51, 102, 255, 0.3);
+
+}
+
+#leave {
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+}
+
+#test {
+    -fx-background-color: rgba(128, 159, 255, 0.3);
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #ffffff;
+}
+
+#pressed {
+    -fx-background-color: rgba(77, 121, 255, 0.3);
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #ffffff;
+}
+
+#text-author {
+    -fx-font: 14 Roboto;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-background-color: transparent;
+}
+
+#text-content {
+    -fx-background-color: transparent;
+    -fx-font: 14 Roboto ;
+    /*-fx-text-fill: #ffffff;*/
+}
+
+#text-flow {
+    -fx-background-color: rgba(128, 159, 255, 0.3);
+    -fx-background-radius: 10%;
+    -fx-font: 16 Roboto;
+    -fx-text-fill: #ffffff;
+}

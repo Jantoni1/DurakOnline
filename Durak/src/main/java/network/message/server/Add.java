@@ -1,14 +1,14 @@
 package main.java.network.message.server;
 
 import main.java.controller.Visitor;
-import main.java.model.client.AnotherPlayer;
+import main.java.model.client.Player;
 import main.java.network.message.Message;
 
 
 public class Add extends Message {
 
     public Add(String pUserName, int pUserId) {
-        mAnotherPlayer = new AnotherPlayer(pUserName, pUserId);
+        mPlayer = new Player(pUserName, pUserId);
     }
 
     @Override
@@ -18,9 +18,9 @@ public class Add extends Message {
 
     private static final long serialVersionUID = 20L;
 
-    public AnotherPlayer getmAnotherPlayer() {
-        return mAnotherPlayer;
+    public Player getmPlayer() {
+        return mPlayer;
     }
 
-    private final AnotherPlayer mAnotherPlayer;
+    private final Player mPlayer;
 }

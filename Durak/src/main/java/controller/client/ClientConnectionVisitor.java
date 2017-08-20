@@ -1,14 +1,14 @@
 package main.java.controller.client;
 
 import main.java.controller.Visitor;
-import main.java.model.client.Player;
+import main.java.model.client.PlayerData;
 import main.java.network.client.Client;
-import main.java.network.message.client.HandShake;
+import main.java.network.client.ClientConnection;
 import main.java.network.message.server.ExistingRooms;
 import main.java.network.message.Message;
 import main.java.network.message.server.RoomUpdate;
 import main.java.network.message.server.Welcome;
-import main.java.view.LobbyScene;
+import main.java.view.lobby_scene.LobbyScene;
 import main.java.view.LoginScene;
 
 
@@ -21,16 +21,11 @@ public class ClientConnectionVisitor extends Visitor implements Client.MessageLi
     }
 
     public void visit(Welcome pWelcome) {
-        mClientManager.setPlayerData(new Player("Player" + pWelcome.getPlayerId(), pWelcome.getPlayerId()));
-        handshake("Player" + pWelcome.getPlayerId(), pWelcome.getPlayerId() );
+        mClientManager.setPlayerData(new PlayerData("PlayerData" + pWelcome.getPlayerId(), pWelcome.getPlayerId()));
     }
 
     public void visit(RoomUpdate pRoomUpdate) {
         mClientManager.updateView(pRoomUpdate);
-    }
-
-    public void handshake(String playerNick, int playerId) {
-        mLoginScene.sendLogin();
     }
 
     @Override
@@ -38,15 +33,15 @@ public class ClientConnectionVisitor extends Visitor implements Client.MessageLi
         pServerMessage.accept(this);
     }
 
-    public ClientConnectionVisitor(Client pClient, ClientManager pClientManager, LobbyScene pLobbyScene, LoginScene pLoginScene) {
+    public ClientConnectionVisitor(ClientConnection pClient, ClientManager pClientManager, LobbyScene pLobbyScene, LoginScene pLoginScene) {
         mClient = pClient;
         mClientManager = pClientManager;
         mLobbyScene = pLobbyScene;
         mLoginScene = pLoginScene;
     }
 
-    private Player mPlayerInfo;
-    private final Client mClient;
+    private PlayerData mPlayerDataInfo;
+    private final ClientConnection mClient;
     private final ClientManager mClientManager;
     private final LobbyScene mLobbyScene;
     private final LoginScene mLoginScene;

@@ -1,4 +1,4 @@
-package main.java.view;
+package main.java.view.room_scene;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,10 +11,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import main.java.controller.client.ClientManager;
+import main.java.network.client.MessageBox;
+import main.java.network.message.client.Ready;
 
 public class ReadyPanel extends VBox {
 
-    private ClientManager mClientManager;
+    private MessageBox mMessageBox;
     private Button mReadyButton;
     private Button mUnreadyButton;
     private StackPane mStackPane;
@@ -22,10 +24,10 @@ public class ReadyPanel extends VBox {
     private int mMaxPlayers;
     private int mReadyPlayersCounter;
 
-    public ReadyPanel(ClientManager pClientManager, int pMaxPlayers) {
+    public ReadyPanel(MessageBox pMessageBox, int pMaxPlayers) {
         mMaxPlayers = pMaxPlayers;
         mReadyPlayersCounter = 0;
-        mClientManager = pClientManager;
+        mMessageBox = pMessageBox;
         createNodes();
         setVBoxProperties();
     }
@@ -46,6 +48,7 @@ public class ReadyPanel extends VBox {
         mReadyButton.setVisible(true);
         mUnreadyButton.setVisible(false);
         mReadyPlayersCounter = 0;
+        setLabelText();
         setVisible(false);
     }
 
@@ -93,12 +96,13 @@ public class ReadyPanel extends VBox {
         mReadyButton.setStyle("-fx-background-radius: 16px; -fx-font: 16 Roboto; -fx-base: #768aa5; -fx-font-size: 30px; -fx-text-fill: #f2f2f2;"); //330033
         setButtonSize(mReadyButton);
         mReadyButton.setVisible(true);
+        mReadyButton.setFocusTraversable(false);
     }
 
     private void setReadyButtonAction(Button pActiveButton, Button pHiddenButton, boolean trueIfReadyFalseIfUnready) {
         pActiveButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                mClientManager.getReady(trueIfReadyFalseIfUnready);
+                mMessageBox.sendMessage(new Ready(trueIfReadyFalseIfUnready));
                 pActiveButton.setVisible(false);
                 pHiddenButton.setVisible(true);
             }
@@ -116,5 +120,6 @@ public class ReadyPanel extends VBox {
         mUnreadyButton.setStyle("-fx-background-radius: 16px; -fx-font: 16 Roboto; -fx-base: #f2f2f2; -fx-font-size: 30px; -fx-text-fill: #768aa5;");
         setButtonSize(mUnreadyButton);
         mUnreadyButton.setVisible(false);
+        mUnreadyButton.setFocusTraversable(false);
     }
 }

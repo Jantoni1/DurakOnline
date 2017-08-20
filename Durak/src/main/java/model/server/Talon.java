@@ -10,6 +10,10 @@ public class Talon {
 
     public Talon() {
         deck = new ArrayList<>();
+        addCardsToDeck();
+    }
+
+    public void addCardsToDeck() {
         List<Figures> allFigures = Arrays.asList(Figures.values());
         List<Suit> allSuits = Arrays.asList(Suit.values());
         for(Suit color : allSuits) {
