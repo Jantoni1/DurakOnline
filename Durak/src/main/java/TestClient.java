@@ -66,11 +66,12 @@ public class TestClient extends Application {
         room.getDefendingCards().add(new Card(Figures.SIX, Suit.DIAMONDS));
         mRoomScene = new RoomScene(room, maxPlayers, messageBox);
         mRoomScene.resetPlayersViewProperty();
-        mRoomScene.activateReadyPanel(0);
+        mRoomScene.activateReadyPanel();
         mRoomScene.updateCardsOnTable();
         for(int i = 0; i<30; ++i) {
             mRoomScene.addChatMessage("player1", "elko xDD");
         }
+        mRoomScene.showEndGamePanel("TROLL1234");
         primaryStage.setScene(mRoomScene.getRoomScene());
         primaryStage.show();
     }

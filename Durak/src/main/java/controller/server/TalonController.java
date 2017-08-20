@@ -24,13 +24,19 @@ class TalonController {
         return newCards;
     }
 
+    public void setTalon(Talon pTalon) {
+        mTalon = pTalon;
+    }
+
     public Suit shuffle() {
-        if(mTalon.size() != FULL_DECK) {
-            mTalon = new Talon();
-        }
         Collections.shuffle(mTalon.deck);
         Card.trump = mTalon.get(0).mSuit;
         return Card.trump;
+    }
+
+    public void resetDeck() {
+        mTalon.deck.clear();
+        mTalon.addCardsToDeck();
     }
 
 
@@ -39,8 +45,8 @@ class TalonController {
     private final static int FULL_DECK;
 
     static {
-        MAX_CARDS = 1;
-        FULL_DECK = 2;
+        MAX_CARDS = 5;
+        FULL_DECK = 52;
     }
 }
 

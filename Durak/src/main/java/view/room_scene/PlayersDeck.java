@@ -98,14 +98,14 @@ public class PlayersDeck extends HBox {
     }
 
     private void setCardsSpacing() {
-        int numberOfCards;
+        double numberOfCards;
         if(mPlayer != null) {
-            numberOfCards = (mPlayer.getPlayerCards() != null ? mPlayer.getPlayerCards().size() : mPlayer.getNumberOfCards());
+            numberOfCards = (mPlayer.getPositionOnTable() == 0 ? mPlayer.getPlayerCards().size() : mPlayer.getNumberOfCards() / 1.5);
         }
         else {
             numberOfCards = maxCardsDisplayed;
         }
-        mCardsContainer.setSpacing(-78.0 + (410.0 / (double) (Math.max(numberOfCards, maxCardsDisplayed) - 1)));
+        mCardsContainer.setSpacing(-74.0 + (410.0 / (double) (Math.max(numberOfCards, maxCardsDisplayed / 2) - 1)));
     }
 
     public void setPlayer(Player pPlayer) {

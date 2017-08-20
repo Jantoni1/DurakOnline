@@ -6,9 +6,10 @@ import main.java.network.message.Message;
 
 public class NextRound extends Message {
 
-    public NextRound(boolean isTaking, int playerId) {
+    public NextRound(boolean isTaking, int playerId, int pNumberOfCardsLeft) {
         this.isTaking = isTaking;
         this.playerId = playerId;
+        mNumberOfCardsLeft = pNumberOfCardsLeft;
     }
 
     public void accept(Visitor visitor) {
@@ -25,9 +26,16 @@ public class NextRound extends Message {
         return playerId;
     }
 
-    boolean isTaking;
+    public int getmNumberOfCardsLeft() {
+        return mNumberOfCardsLeft;
+    }
+
+    private boolean isTaking;
     /**
-     * @param used to describe who is potentially taking cards
+     * @param used to describe who is taking cards if so
      */
-    int playerId;
+    private int playerId;
+    private int mNumberOfCardsLeft;
+
+
 }

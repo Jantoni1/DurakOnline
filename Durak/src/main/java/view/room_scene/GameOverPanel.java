@@ -18,6 +18,8 @@ public class GameOverPanel extends StackPane {
     public GameOverPanel(GameScene pGameScene) {
         createPanelBackground();
         createAcceptButton(pGameScene);
+        createLabelAndButton();
+        setVisible(false);
 //        setStyle("-fx-background-color: #f2f2f2");
     }
 
@@ -31,33 +33,37 @@ public class GameOverPanel extends StackPane {
             }
         });
         mButton.setText("OK");
-        mButton.setStyle("-fx-background-radius: 8px; -fx-font: 30 Roboto; -fx-base: #009933; -fx-font-size: 30px;");
-        mButton.setPrefWidth(300.0);
+        mButton.setStyle("-fx-background-radius: 3%; -fx-font: 30 Roboto; -fx-base: #009933; -fx-font-size: 30px;");
+        mButton.setPrefWidth(400.0);
     }
 
     private void setGameOverPanel(String pPlayerNick) {
         mLabel = new Label("Game over. Player " + pPlayerNick + " lost!");
         mLabel.setFont(Font.font("Roboto", FontWeight.LIGHT, 30));
-        mLabel.setTextFill(Color.web("#009933"));
+        mLabel.setStyle(" -fx-text-fill: #ffffff;");
+        setVisible(true);
     }
 
     private void createPanelBackground() {
-        mBackground = new Rectangle(400, 150);
-        mBackground.setFill(Color.web("#f2f2f2"));
-        mBackground.setStroke(Color.web("#768aa5"));
-        mBackground.setArcWidth(64.0);
-        mBackground.setArcHeight(64.0);
+        mBackground = new Rectangle(580, 150);
+        mBackground.setFill(Color.TRANSPARENT);//web("#f2f2f2")
+//        mBackground.setStroke(Color.web("#768aa5"));
+//        mBackground.setStyle("-fx-background-color: rgba(128, 159, 255, 0.3); -fx-border-radius: 10%");
     }
 
-    public void createLabelAndButton(String pPlayersNick) {
-        mLabelAndButton = new VBox();
+    public void showEndPanel(String pPlayersNick) {
         setGameOverPanel(pPlayersNick);
+        setVisible(true);
+    }
+
+    public void createLabelAndButton() {
+        mLabelAndButton = new VBox();
+        setGameOverPanel("");
         mLabelAndButton.getChildren().addAll(mLabel, mButton);
         mLabelAndButton.setAlignment(Pos.CENTER);
         getChildren().clear();
         getChildren().addAll(mBackground, mLabelAndButton);
         setAlignment(Pos.CENTER);
-        setVisible(true);
     }
 
     private Label mLabel;

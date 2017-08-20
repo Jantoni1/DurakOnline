@@ -5,6 +5,7 @@ import main.java.model.server.Card;
 import main.java.view.Model;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
@@ -146,8 +147,10 @@ public class Room implements Model {
         return mCurrentNumberOfPlayers;
     }
 
-    public synchronized void addPlayer(Player player) {
-        mPlayers.add(player);
+    public synchronized void addPlayer(Player pPlayer) {
+        Optional<Player> emptyPlayer = mPlayers.stream().filter(player -> player.getUserID() == -1).findFirst();
+        emptyPlayer.ifPresent(player -> mPlayers.remove(player));
+        mPlayers.add(pPlayer);
         setPositionsOnTable();
         if(isRoomFull()) {
             isGameStarting = true;

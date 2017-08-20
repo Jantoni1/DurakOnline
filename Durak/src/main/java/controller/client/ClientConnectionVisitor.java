@@ -8,7 +8,7 @@ import main.java.network.message.server.ExistingRooms;
 import main.java.network.message.Message;
 import main.java.network.message.server.RoomUpdate;
 import main.java.network.message.server.Welcome;
-import main.java.view.LobbyScene;
+import main.java.view.lobby_scene.LobbyScene;
 import main.java.view.LoginScene;
 
 
@@ -22,15 +22,10 @@ public class ClientConnectionVisitor extends Visitor implements Client.MessageLi
 
     public void visit(Welcome pWelcome) {
         mClientManager.setPlayerData(new PlayerData("PlayerData" + pWelcome.getPlayerId(), pWelcome.getPlayerId()));
-        handshake("PlayerData" + pWelcome.getPlayerId(), pWelcome.getPlayerId() );
     }
 
     public void visit(RoomUpdate pRoomUpdate) {
         mClientManager.updateView(pRoomUpdate);
-    }
-
-    public void handshake(String playerNick, int playerId) {
-        mLoginScene.sendLogin();
     }
 
     @Override

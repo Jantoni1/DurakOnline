@@ -8,12 +8,11 @@ import main.java.network.client.Client;
 import main.java.network.client.ClientConnection;
 import main.java.network.message.Message;
 import main.java.network.message.server.*;
-import main.java.view.LobbyScene;
+import main.java.view.lobby_scene.LobbyScene;
 import main.java.view.LoginScene;
 import main.java.view.room_scene.RoomScene;
 
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Kuba on 28.05.2017.
@@ -37,7 +36,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
             mRoom = new Room(pEnter.getmRoomName(), pEnter.getmMaxplyaers(), pEnter.getmPlayers(), mClientManager.getPlayerData().getUserID());
             mRoom.setmCurrentNumberOfPlayers(mRoom.getmCurrentNumberOfPlayers() + 1);
             mRoomScene = new RoomScene(mRoom, pEnter.getmMaxplyaers(), mClient);
-            updateMultiplePlayersView(mRoom.getPlayers(), true);
+            updateMultiplePlayersView();
             setReadyPanelVisible(mRoom.getPlayers().size());
             mClientManager.showScene(mRoomScene.getRoomScene());
         }
@@ -48,7 +47,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
         if(pAdd.getmPlayer().getUserID() != mClientManager.getPlayerData().getUserID()) {
             mRoom.addPlayer(pAdd.getmPlayer());
             addPlayer(pAdd.getmPlayer().getUserID());
-            setReadyPanelVisible(mRoom.getPlayers().size());
+            setReadyPanelVisible(mRoom.getmCurrentNumberOfPlayers());
         }
     }
 
@@ -59,39 +58,34 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
     public void visit(Leave pLeave) {
         mRoom.setmCurrentNumberOfPlayers(mRoom.getmCurrentNumberOfPlayers() - 1);
         mRoom.removePlayer(pLeave.playerId);
-        updateMultiplePlayersView(mRoom.getPlayers(), true);
+        mRoom.addPlayer(new Player("", -1));
+        matchPlayersWithChairs();
+        updateMultiplePlayersView();
         setReadyPanelVisible(mRoom.getPlayers().size());
     }
 
     public void visit(Start pStart) {
         mRoom.setmCurrentNumberOfPlayers(mRoom.getmMaxPlayers());
-        setReadyPanelVisible(0);
+        hideReadyPanel();
         setTrumpCard(pStart.getCard());
         mRoom.setGameStarting(true);
-        updateMultiplePlayersView(mRoom.getPlayers(), true);
+        updateMultiplePlayersView();
     }
 
     public void visit(End pEnd) {
-//        mRoom.getPlayers().forEach(player -> {
-//            player.setNumberOfCards(0);
-//            if(player.getPlayerCards() != null) {
-//                player.getPlayerCards().clear();
-//            }
-//        });
         mRoom.setGameStarting(false);
        onGameOver(pEnd.getmPlayerNick());
     }
 
     private void onGameOver(String pPlayersNick) {
-//        mRoom.clearCardsOnTable();
-//        hideTrumpCard();
         showEndGameScreen(pPlayersNick);
     }
 
     public void visit(NextRound pNextRound) {
+        updateCardsOnTalon(pNextRound.getmNumberOfCardsLeft());
         if(pNextRound.isTaking()) {
             addCardsToPlayer(pNextRound.getPlayerId());
-            updateMultiplePlayersView(mRoom.getPlayers(), true);
+            updateMultiplePlayersView();
         }
         mRoom.clearCardsOnTable();
         updateCardsOnTable();
@@ -152,7 +146,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
         lightPlayersNick(pNext.getmPlayerId());
         setPassButton(pNext.getmPlayerId());
         setUpMyTurn(isMyID(pNext.getmPlayerId()) ? pNext.getmAvailableCards() : null);
-        updateMultiplePlayersView(mRoom.getPlayers(), mRoom.isTurnBeginning());
+        updateMultiplePlayersView();
     }
 
     private void lightPlayersNick(int playersID) {
@@ -187,12 +181,11 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
         mRoom.setAvailableCards(pAvailableCards);
     }
 
-    private void updateMultiplePlayersView(CopyOnWriteArrayList<Player> pOtherPlayers, boolean pFirstAttack) {
+    private void updateMultiplePlayersView() {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 mRoomScene.resetPlayersViewProperty();
-//                mStage.show();
             }
         });
     }
@@ -201,7 +194,7 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                mRoomScene.activateReadyPanel(pNumberOfPlayers);
+                mRoomScene.activateReadyPanel();
 //                mStage.show();
             }
         });
@@ -221,15 +214,6 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
             @Override
             public void run() {
                 mRoomScene.setTrumpCard(pCard);
-            }
-        });
-    }
-
-    private void hideTrumpCard() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                mRoomScene.hideTrumpCard();
             }
         });
     }
@@ -279,12 +263,36 @@ public class ClientRoomVisitor extends Visitor implements Client.MessageListener
         });
     }
 
+    private void updateCardsOnTalon(int pNumberOfCardsLeft) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                mRoomScene.setNumberOfCards(pNumberOfCardsLeft);
+            }
+        });
+    }
+
+    private void hideReadyPanel() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                mRoomScene.hideActivePanel();
+            }
+        });
+    }
+
+    private void matchPlayersWithChairs() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                mRoomScene.matchPlayersWithTableSpots();
+            }
+        });
+    }
+
 
     public void onClientMessage(Message pServerMessage) {
         pServerMessage.accept(this);
     }
 
-    public Room getmRoom() {
-        return mRoom;
-    }
 }

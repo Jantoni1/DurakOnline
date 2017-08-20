@@ -1,5 +1,6 @@
 package main.java.view.room_scene;
 
+import com.sun.org.apache.xpath.internal.SourceTree;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
@@ -148,8 +149,14 @@ public class PlayersCards extends BorderPane {
 
     }
 
-    public void activateReadyPanel(int pCurrentNumberOfPlayers) {
-        if(pCurrentNumberOfPlayers == mNumberOfPlayers) {
+    public void activateReadyPanel() {
+        int counter = 0;
+        for(Player player : mModel.getPlayers()) {
+            if(player.getUserID() != -1) {
+                ++counter;
+            }
+        }
+        if(counter == mNumberOfPlayers) {
             mReadyPanel.activate();
         }
         else {

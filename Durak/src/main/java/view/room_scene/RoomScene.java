@@ -1,15 +1,8 @@
 package main.java.view.room_scene;
 
-//TODO gameover panel zmień styl żeby pasował do reszty
-//TODO styl dwóch pozostałych scen żeby był taki sam
-//TODO odstep w kartach przeciwnikow
 
-
-// co sie dzieje jak ktos wyjdzie? tutaj tez trzeba bedzie usuwac ziomka
-// dodaj karty na stole do playerscards
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import main.java.model.server.Card;
@@ -21,11 +14,10 @@ public class RoomScene implements GameScene {
     private MessageBox mMessageBox;
     private Scene mRoomScene;
     private AnchorPane mRoot;
-//    private ReadyPanel mReadyPanel;
     private final int mMaxNumberOfPlayers;
-    private GameOverPanel mGameOverPanel;
     private RightSidePanel mRightSidePanel;
     private Model mModel;
+    private GameOverPanel mGameOverPanel;
     private final double width = 652.0;
     private final double height = 130.0;
 
@@ -55,13 +47,17 @@ public class RoomScene implements GameScene {
     private void createGameOverPanel() {
         mGameOverPanel = new GameOverPanel(this);
         mRoot.getChildren().add(mGameOverPanel);
-        AnchorPane.setLeftAnchor(mGameOverPanel, 200.0);
-        AnchorPane.setTopAnchor(mGameOverPanel, 275.0);
+        AnchorPane.setLeftAnchor(mGameOverPanel, 150.0);
+        AnchorPane.setTopAnchor(mGameOverPanel, 140.0);
     }
 
     public void showEndGamePanel(String pPlayerNick) {
-        mGameOverPanel.createLabelAndButton(pPlayerNick);
+        mGameOverPanel.showEndPanel(pPlayerNick);       //)createLabelAndButton(pPlayerNick);
 
+    }
+
+    public void setNumberOfCards(int pNumberOfCardsOnTalon) {
+        mRightSidePanel.setNumberOfCards(pNumberOfCardsOnTalon);
     }
 
     public void setTrumpCard(Card pCard) {
@@ -103,14 +99,15 @@ public class RoomScene implements GameScene {
         mPlayersCards.hideActivePanel();
     }
 
-    public void activateReadyPanel(int pCurrentNumberOfPlayers) {
-        mPlayersCards.activateReadyPanel(pCurrentNumberOfPlayers);
+    public void activateReadyPanel() {
+        mPlayersCards.activateReadyPanel();
     }
 
     public void updateCardsOnTable() {
         mPlayersCards.updateCardsOnTable();
     }
 
+    public void matchPlayersWithTableSpots() {mPlayersCards.updatePlayers();}
 
     private AnchorPane createSceneRoot() {
         mRoot = new AnchorPane();
@@ -131,7 +128,6 @@ public class RoomScene implements GameScene {
     }
 
     public void resetView() {
-        mModel.reset();
         mPlayersCards.resetView();
         mRightSidePanel.hideTrumpCard();
     }

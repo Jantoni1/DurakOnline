@@ -5,14 +5,11 @@ package main.java.controller.server;
 //wygląd
 //kniec gierki pewnie dalej nie działa no bo nie działał jeszcze za starych dobrych czasów
 
-import main.java.model.server.Card;
-import main.java.model.server.CardsOnTable;
-import main.java.model.server.Room;
+import main.java.model.server.*;
 import main.java.network.client.Client;
 import main.java.network.message.client.Play;
 import main.java.network.message.server.*;
 import main.java.network.server.ClientThread;
-import main.java.model.server.Player;
 import main.java.network.message.server.End;
 import main.java.network.message.server.Get;
 import main.java.network.message.server.Next;
@@ -108,6 +105,9 @@ public class RoomController {
         mClients.forEach(player -> {
             player.sendMessage(new Start(mTalonController.mTalon.get(0)));
             sendNewCardsMessages(player);
+        });
+        mClients.forEach(player -> {
+            player.sendMessage(new NextRound(false, attacker(0).id, mRoom.mTalon.deck.size()));
             player.sendMessage(new Next(attacker(0).id, getInitialAvailableCardsIndices(), true));
         });
     }
@@ -255,7 +255,7 @@ public class RoomController {
      */
     private void sendNextRoundMessages(boolean pTrueIfTakesFalseOtherwise) {
         mClients.forEach(player -> {
-            player.sendMessage(new NextRound(pTrueIfTakesFalseOtherwise, defender().id));
+            player.sendMessage(new NextRound(pTrueIfTakesFalseOtherwise, defender().id, mRoom.mTalon.deck.size()));
             sendNewCardsMessages(player);
         });
         mPCController.getNextDefender(pTrueIfTakesFalseOtherwise);
@@ -502,7 +502,7 @@ public class RoomController {
      */
     public void resetRoom() {
         mRoom.mPlayerArrayList.clear();
-        mRoom.mTalon.deck.clear();
+        mTalonController.resetDeck();
         for(int i = 0; i < mRoom.mPlayersReady.size(); ++i) {
             mRoom.mPlayersReady.set(i, -1);
         }

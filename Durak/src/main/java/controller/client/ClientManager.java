@@ -10,7 +10,7 @@ import main.java.network.client.ClientConnection;
 import main.java.network.message.client.*;
 import main.java.network.message.server.ExistingRooms;
 import main.java.network.message.server.RoomUpdate;
-import main.java.view.LobbyScene;
+import main.java.view.lobby_scene.LobbyScene;
 import main.java.view.LoginScene;
 import main.java.view.room_scene.RoomScene;
 
@@ -34,7 +34,7 @@ public class ClientManager {
         mStage = pStage;
         mStage.setOnCloseRequest(event -> Platform.exit());
         mLoginScene = new LoginScene(this);
-        mLobbyScene = new LobbyScene(this);
+        mLobbyScene = new LobbyScene(pClient);
         initializeClient(pClient);
         setClientThreadShutdownWhenWindowIsClosed(pStage);
     }
@@ -56,7 +56,7 @@ public class ClientManager {
             mClient.registerListener(mClientConnectionVisitor);
             mClient.registerListener(mClientRoomVisitor);
             mClient.start();
-            showloginScene();
+            showLoginScene();
     }
 
     public void setPlayerData(PlayerData pPlayerDataData) {
@@ -67,14 +67,9 @@ public class ClientManager {
         return mPlayerDataData;
     }
 
-//    public void setManager(Stage pStage) {
-//        if(mStage == null) {
-//            mStage = pStage;
-//            mStage.setOnCloseRequest(event -> Platform.exit());
-//        }
-//    }
 
-    public void showloginScene() {
+
+    public void showLoginScene() {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -83,11 +78,6 @@ public class ClientManager {
             }
         });
     }
-
-    public void sendChatMessage(String pChatMessage) {
-        mClient.sendMessage(new Chat(pChatMessage));
-    }
-
 
     public void sendHandshakeMessage(String pPlayersNick) {
         Platform.runLater(new Runnable() {
@@ -98,13 +88,6 @@ public class ClientManager {
         });
     }
 
-    public void sendCreateRoomMessage(String pRoomName, int pMaxPlayers) {
-        mClient.sendMessage(new CreateRoom(pRoomName, pMaxPlayers));
-    }
-
-    public void sendAddMessage(int pRoomID) {
-        mClient.sendMessage(new Add(pRoomID));
-    }
 
     public void showLobbyScene(ExistingRooms pExistingRooms) {
         Platform.runLater(new Runnable() {
@@ -138,11 +121,6 @@ public class ClientManager {
             }
         });
     }
-//    public void gameScene() {
-////        mMainStage.setScene(new RoomScene(pGame).getScene());
-//    }
-//    public interface PlayerData {
-//        public int getPositionOnTable()
-//    }
+
 
 }
